@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DRP Compass — The Democratic-Republican Party Platform Test</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#d9a441">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="DRP Compass">
+<link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0b09;--panel:#17130f;--line:#2c241b;--gold:#d9a441;--gold2:#f3d27a;--ember:#c8642a;--text:#efe6d6;--mute:#9d907c;--lib:#e8b04a;--con:#b5562b}
@@ -158,4 +166,8 @@ $('#share').onclick=async()=>{const txt=resultText();try{if(navigator.share){awa
  try{await navigator.clipboard.writeText(txt);toast('Result copied to clipboard')}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Result copied to clipboard')}};
 buildAxis();
 if(window.__DEMO__){answers=window.__DEMO__;finish()}
-</script></body></html>
+</script>
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+</script>
+</body></html>
