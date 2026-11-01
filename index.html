@@ -75,6 +75,12 @@ summary{cursor:pointer;color:var(--gold2);font-weight:500}
 .fig a:hover{color:var(--gold2);text-decoration:underline}
 .pill{font-size:11px;padding:3px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
 .pill.liberal{background:#e8b04a22;color:var(--lib);border:1px solid #e8b04a55}.pill.conservative{background:#b5562b22;color:#e07a48;border:1px solid #b5562b66}
+.legend{margin:14px 0 2px;color:var(--mute);font-size:12px;line-height:1.55}
+.sidepill{display:inline-block;padding:1px 7px;border-radius:99px;font-family:Inter,system-ui,sans-serif;font-size:10px;font-weight:600;letter-spacing:.02em;white-space:nowrap;vertical-align:1px;line-height:1.6}
+.sidepill.left{background:#b5562b22;color:#e07a48;border:1px solid #b5562b66}
+.sidepill.right{background:#e8b04a22;color:var(--lib);border:1px solid #e8b04a55}
+.fig .sidepill{margin-left:.45em;vertical-align:2px}
+.legend .sidepill{margin-right:.28em}
 .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,40px);opacity:0;background:#241c13;border:1px solid var(--gold);color:var(--gold2);padding:10px 18px;border-radius:10px;transition:all .3s}.toast.show{opacity:1;transform:translate(-50%,0)}
 footer{color:#6d6253;font-size:12px;margin-top:22px;text-align:center;line-height:1.6}
 footer a{display:inline-block;margin-top:6px;padding:4px 2px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:11px;text-decoration:none}
@@ -104,7 +110,7 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
   <p class="verdict serif" id="verdict"></p>
   <div class="stats"><div class="stat l"><b id="nl">0</b><span>Liberal answers</span></div><div class="stat c"><b id="nc">0</b><span>Conservative answers</span></div></div>
   <div class="actions"><button class="btn" id="share">Share / copy result</button><button class="btn ghost" id="again">Retake</button></div>
-  <details open><summary>Per-issue breakdown</summary><div id="rows"></div></details>
+  <details open><summary>Per-issue breakdown</summary><p class="legend"><span class="sidepill left" title="Objects from the conservative side">from the left</span> objects from the conservative side · <span class="sidepill right" title="Objects from the liberal side">from the right</span> objects from the liberal side</p><div id="rows"></div></details>
  </section>
 </div>
 <footer>Democratic-Republican Party · DRP Compass<br><a href="mailto:cubzub@gmail.com?subject=DRP%20Compass">Contact us</a></footer>
@@ -153,1092 +159,1180 @@ const ISSUES = [
 ];
 
 const FIGURES = {
- "1": {
-  "agree": [
-   {
-    "name": "Lysander Spooner",
-    "years": "1808–1887",
-    "note": "Called taxation robbery in 'No Treason'",
-    "source": "https://en.wikipedia.org/wiki/No_Treason"
-   },
-   {
-    "name": "Murray Rothbard",
-    "years": "1926–1995",
-    "note": "'The Ethics of Liberty': taxation is theft",
-    "source": "https://en.wikipedia.org/wiki/Taxation_as_theft"
-   },
-   {
-    "name": "Henry David Thoreau",
-    "years": "1817–1862",
-    "note": "Refused poll tax; 'Civil Disobedience'",
-    "source": "https://en.wikipedia.org/wiki/Civil_Disobedience_(Thoreau)"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Oliver Wendell Holmes Jr.",
-    "years": "1841–1935",
-    "note": "'Taxes are what we pay for civilized society'",
-    "source": "https://en.wikiquote.org/wiki/Oliver_Wendell_Holmes_Jr."
-   },
-   {
-    "name": "Adam Smith",
-    "years": "1723–1790",
-    "note": "Wealth of Nations sets out how taxes should be levied",
-    "source": "https://en.wikipedia.org/wiki/Tax"
-   },
-   {
-    "name": "Franklin D. Roosevelt",
-    "years": "1882–1945",
-    "note": "Championed progressive taxation to fund the New Deal",
-    "source": "https://en.wikipedia.org/wiki/New_Deal"
-   }
-  ]
- },
- "2": {
-  "agree": [
-   {
-    "name": "Milton Friedman",
-    "years": "1912–2006",
-    "note": "Friedman rule: optimal policy implies mild deflation",
-    "source": "https://en.wikipedia.org/wiki/Friedman_rule"
-   },
-   {
-    "name": "Ludwig von Mises",
-    "years": "1881–1973",
-    "note": "Condemned inflation as 'an indispensable means of militarism'",
-    "source": "https://en.wikipedia.org/wiki/Ludwig_von_Mises"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "John Maynard Keynes",
-    "years": "1883–1946",
-    "note": "Warned deflation is ruinous to debtors and output",
-    "source": "https://en.wikipedia.org/wiki/John_Maynard_Keynes"
-   },
-   {
-    "name": "Irving Fisher",
-    "years": "1867–1947",
-    "note": "Debt-deflation theory: deflation deepens depressions",
-    "source": "https://en.wikipedia.org/wiki/Debt_deflation"
-   },
-   {
-    "name": "William Jennings Bryan",
-    "years": "1860–1925",
-    "note": "'Cross of Gold': wanted inflationary free silver",
-    "source": "https://en.wikipedia.org/wiki/Cross_of_Gold_speech"
-   }
-  ]
- },
- "3": {
-  "agree": [
-   {
-    "name": "Karl Marx",
-    "years": "1818–1883",
-    "note": "Criticized commodity fetishism and money's dominance",
-    "source": "https://en.wikipedia.org/wiki/Commodity_fetishism"
-   },
-   {
-    "name": "Aristotle",
-    "years": "384–322 BC",
-    "note": "Condemned chrematistics, wealth-getting as an end",
-    "source": "https://en.wikipedia.org/wiki/Chrematistics"
-   },
-   {
-    "name": "John Ruskin",
-    "years": "1819–1900",
-    "note": "'There is no wealth but life' (Unto This Last)",
-    "source": "https://en.wikipedia.org/wiki/Unto_This_Last"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Ayn Rand",
-    "years": "1905–1982",
-    "note": "Francisco's 'money speech' praises money as a tool of exchange",
-    "source": "https://en.wikipedia.org/wiki/Atlas_Shrugged"
-   }
-  ]
- },
- "4": {
-  "agree": [
-   {
-    "name": "John Stuart Mill",
-    "years": "1806–1873",
-    "note": "Near-absolute liberty of expression; harm principle",
-    "source": "https://en.wikipedia.org/wiki/On_Liberty"
-   },
-   {
-    "name": "Hugo Black",
-    "years": "1886–1971",
-    "note": "Read the First Amendment as absolute",
-    "source": "https://en.wikipedia.org/wiki/Hugo_Black"
-   },
-   {
-    "name": "Voltaire",
-    "years": "1694–1778",
-    "note": "Icon of free expression and anti-censorship",
-    "source": "https://en.wikipedia.org/wiki/Voltaire"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Plato",
-    "years": "c.428–348 BC",
-    "note": "Advocated censoring poets in the Republic",
-    "source": "https://en.wikipedia.org/wiki/Republic_(Plato)"
-   },
-   {
-    "name": "Thomas Hobbes",
-    "years": "1588–1679",
-    "note": "Sovereign should control doctrines and speech",
-    "source": "https://en.wikipedia.org/wiki/Leviathan_(Hobbes_book)"
-   },
-   {
-    "name": "Herbert Marcuse",
-    "years": "1898–1979",
-    "note": "'Repressive Tolerance': suppress some speech",
-    "source": "https://en.wikipedia.org/wiki/A_Critique_of_Pure_Tolerance"
-   }
-  ]
- },
- "5": {
-  "agree": [
-   {
-    "name": "Pope Paul VI",
-    "years": "1897–1978",
-    "note": "Humanae Vitae banned contraception and abortion",
-    "source": "https://en.wikipedia.org/wiki/Humanae_vitae"
-   },
-   {
-    "name": "Mother Teresa",
-    "years": "1910–1997",
-    "note": "Opposed abortion and artificial contraception",
-    "source": "https://en.wikipedia.org/wiki/Mother_Teresa"
-   },
-   {
-    "name": "Anthony Comstock",
-    "years": "1844–1915",
-    "note": "Crusaded to outlaw contraception and abortion",
-    "source": "https://en.wikipedia.org/wiki/Comstock_laws"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Margaret Sanger",
-    "years": "1879–1966",
-    "note": "Founded birth-control movement",
-    "source": "https://en.wikipedia.org/wiki/Margaret_Sanger"
-   },
-   {
-    "name": "Simone de Beauvoir",
-    "years": "1908–1986",
-    "note": "Signed Manifesto of the 343 for legal abortion",
-    "source": "https://en.wikipedia.org/wiki/Manifesto_of_the_343"
-   },
-   {
-    "name": "Ruth Bader Ginsburg",
-    "years": "1933–2020",
-    "note": "Defended abortion and contraception rights",
-    "source": "https://en.wikipedia.org/wiki/Ruth_Bader_Ginsburg"
-   }
-  ]
- },
- "6": {
-  "agree": [
-   {
-    "name": "Catherine the Great",
-    "years": "1729–1796",
-    "note": "1763 manifesto invited foreign settlers to Russia; settled in state-assigned colonies",
-    "source": "https://en.wikipedia.org/wiki/Volga_Germans"
-   },
-   {
-    "name": "Lee Kuan Yew",
-    "years": "1923–2015",
-    "note": "Singapore relied on large-scale foreign labour under tight state controls (levies, quotas)",
-    "source": "https://en.wikipedia.org/wiki/Foreign_workers_in_Singapore"
-   },
-   {
-    "name": "Abraham Lincoln",
-    "years": "1809–1865",
-    "note": "Signed the 1864 Act to Encourage Immigration",
-    "source": "https://en.wikipedia.org/wiki/Abraham_Lincoln"
-   },
-   {
-    "name": "Theodore Roosevelt",
-    "years": "1858–1919",
-    "note": "Welcomed immigrants but demanded total assimilation: 'no hyphenated Americans'",
-    "source": "https://en.wikipedia.org/wiki/Hyphenated_American"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Benjamin Franklin",
-    "years": "1706–1790",
-    "note": "1751 pamphlet disparaged German immigrants as 'Palatine Boors'",
-    "source": "https://en.wikipedia.org/wiki/Benjamin_Franklin"
-   },
-   {
-    "name": "Enoch Powell",
-    "years": "1912–1998",
-    "note": "'Rivers of Blood': opposed mass immigration",
-    "source": "https://en.wikipedia.org/wiki/Rivers_of_Blood_speech"
-   },
-   {
-    "name": "Milton Friedman",
-    "years": "1912–2006",
-    "note": "Free immigration incompatible with welfare state",
-    "source": "https://reason.com/2008/06/10/milton-friedman-immigration-an/"
-   }
-  ]
- },
- "7": {
-  "agree": [
-   {
-    "name": "Thomas Hobbes",
-    "years": "1588–1679",
-    "note": "Argued absolute monarchy is best government",
-    "source": "https://en.wikipedia.org/wiki/Leviathan_(Hobbes_book)"
-   },
-   {
-    "name": "Alexander Hamilton",
-    "years": "1755–1804",
-    "note": "Proposed president and senators serving for life",
-    "source": "https://en.wikipedia.org/wiki/Alexander_Hamilton"
-   },
-   {
-    "name": "Plato",
-    "years": "c.428–348 BC",
-    "note": "Rule by philosopher-kings, not democracy",
-    "source": "https://en.wikipedia.org/wiki/Philosopher_king"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Thomas Paine",
-    "years": "1737–1809",
-    "note": "'Common Sense' attacked hereditary monarchy",
-    "source": "https://en.wikipedia.org/wiki/Common_Sense"
-   },
-   {
-    "name": "Thomas Jefferson",
-    "years": "1743–1826",
-    "note": "Republican; accused Federalists of monarchism",
-    "source": "https://en.wikipedia.org/wiki/Thomas_Jefferson"
-   },
-   {
-    "name": "Frederick Douglass",
-    "years": "1818–1895",
-    "note": "Fought for universal suffrage",
-    "source": "https://en.wikipedia.org/wiki/Frederick_Douglass"
-   }
-  ]
- },
- "8": {
-  "agree": [
-   {
-    "name": "Theodore Roosevelt",
-    "years": "1858–1919",
-    "note": "Used federal power to create parks and reserves",
-    "source": "https://en.wikipedia.org/wiki/Theodore_Roosevelt"
-   },
-   {
-    "name": "Rachel Carson",
-    "years": "1907–1964",
-    "note": "'Silent Spring' spurred pesticide regulation",
-    "source": "https://en.wikipedia.org/wiki/Silent_Spring"
-   },
-   {
-    "name": "John Muir",
-    "years": "1838–1914",
-    "note": "Pushed government protection of wilderness",
-    "source": "https://en.wikipedia.org/wiki/John_Muir"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Julian Simon",
-    "years": "1932–1998",
-    "note": "Resource optimist; rejected environmental doom (loose analogue)",
-    "source": "https://en.wikipedia.org/wiki/Julian_Lincoln_Simon"
-   },
-   {
-    "name": "Rush Limbaugh",
-    "years": "1951–2021",
-    "note": "Derided environmentalism and climate regulation",
-    "source": "https://en.wikipedia.org/wiki/Rush_Limbaugh"
-   }
-  ]
- },
- "9": {
-  "agree": [
-   {
-    "name": "Thomas Paine",
-    "years": "1737–1809",
-    "note": "'Age of Reason': deism proven by nature",
-    "source": "https://en.wikipedia.org/wiki/The_Age_of_Reason"
-   },
-   {
-    "name": "Voltaire",
-    "years": "1694–1778",
-    "note": "Prominent deist critic of atheism",
-    "source": "https://en.wikipedia.org/wiki/Religious_views_of_Voltaire"
-   },
-   {
-    "name": "Antony Flew",
-    "years": "1923–2010",
-    "note": "Converted to deism citing scientific evidence",
-    "source": "https://en.wikipedia.org/wiki/Antony_Flew"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "David Hume",
-    "years": "1711–1776",
-    "note": "Dialogues rejected the design argument",
-    "source": "https://en.wikipedia.org/wiki/Dialogues_Concerning_Natural_Religion"
-   },
-   {
-    "name": "Bertrand Russell",
-    "years": "1872–1970",
-    "note": "Atheist; rejected arguments for God",
-    "source": "https://en.wikipedia.org/wiki/Why_I_Am_Not_a_Christian"
-   },
-   {
-    "name": "Christopher Hitchens",
-    "years": "1949–2011",
-    "note": "Atheist critic of all theistic proofs",
-    "source": "https://en.wikipedia.org/wiki/God_Is_Not_Great"
-   }
-  ]
- },
- "10": {
-  "agree": [
-   {
-    "name": "Woodrow Wilson",
-    "years": "1856–1924",
-    "note": "Urged 'economic, peaceful, silent, deadly' boycotts instead of force",
-    "source": "https://www.presidency.ucsb.edu/documents/address-the-coliseum-the-state-fair-grounds-indianapolis-indiana"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "George Washington",
-    "years": "1732–1799",
-    "note": "Farewell Address: avoid foreign entanglements",
-    "source": "https://en.wikipedia.org/wiki/George_Washington%27s_Farewell_Address"
-   },
-   {
-    "name": "John Quincy Adams",
-    "years": "1767–1848",
-    "note": "America 'goes not abroad in search of monsters'",
-    "source": "https://en.wikipedia.org/wiki/John_Quincy_Adams"
-   },
-   {
-    "name": "Mahatma Gandhi",
-    "years": "1869–1948",
-    "note": "Rejected aggressive coercion of other nations",
-    "source": "https://en.wikipedia.org/wiki/Mahatma_Gandhi"
-   }
-  ]
- },
- "11": {
-  "agree": [
-   {
-    "name": "Friedrich Nietzsche",
-    "years": "1844–1900",
-    "note": "Attacked egalitarianism as slave morality",
-    "source": "https://en.wikipedia.org/wiki/Master%E2%80%93slave_morality"
-   },
-   {
-    "name": "Francis Galton",
-    "years": "1822–1911",
-    "note": "Argued innate human abilities differ greatly",
-    "source": "https://en.wikipedia.org/wiki/Francis_Galton"
-   },
-   {
-    "name": "Aristotle",
-    "years": "384–322 BC",
-    "note": "Held some people naturally fit to rule, others to serve",
-    "source": "https://en.wikipedia.org/wiki/Natural_slavery"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Thomas Jefferson",
-    "years": "1743–1826",
-    "note": "'All men are created equal'",
-    "source": "https://en.wikipedia.org/wiki/United_States_Declaration_of_Independence"
-   },
-   {
-    "name": "Martin Luther King Jr.",
-    "years": "1929–1968",
-    "note": "Fought for human equality",
-    "source": "https://en.wikipedia.org/wiki/I_Have_a_Dream"
-   },
-   {
-    "name": "Stephen Jay Gould",
-    "years": "1941–2002",
-    "note": "'Mismeasure of Man' critiqued hereditarianism",
-    "source": "https://en.wikipedia.org/wiki/The_Mismeasure_of_Man"
-   }
-  ]
- },
- "12": {
-  "agree": [
-   {
-    "name": "Alexander Hamilton",
-    "years": "1755–1804",
-    "note": "'Report on Manufactures' backed protective tariffs",
-    "source": "https://en.wikipedia.org/wiki/Report_on_Manufactures"
-   },
-   {
-    "name": "Henry Clay",
-    "years": "1777–1852",
-    "note": "American System: tariffs to build industry",
-    "source": "https://en.wikipedia.org/wiki/American_System_(economic_plan)"
-   },
-   {
-    "name": "Friedrich List",
-    "years": "1789–1846",
-    "note": "Infant-industry protectionism",
-    "source": "https://en.wikipedia.org/wiki/Friedrich_List"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Adam Smith",
-    "years": "1723–1790",
-    "note": "Argued for free trade over protection",
-    "source": "https://en.wikipedia.org/wiki/The_Wealth_of_Nations"
-   },
-   {
-    "name": "David Ricardo",
-    "years": "1772–1823",
-    "note": "Comparative advantage; opposed Corn Laws",
-    "source": "https://en.wikipedia.org/wiki/Comparative_advantage"
-   },
-   {
-    "name": "Richard Cobden",
-    "years": "1804–1865",
-    "note": "Led Anti-Corn Law League for free trade",
-    "source": "https://en.wikipedia.org/wiki/Anti-Corn_Law_League"
-   }
-  ]
- },
- "13": {
-  "agree": [
-   {
-    "name": "Alexander Maconochie",
-    "years": "1787–1860",
-    "note": "Mark System: prisoners earn dignity and growing responsibility",
-    "source": "https://en.wikipedia.org/wiki/Alexander_Maconochie_(penal_reformer)"
-   },
-   {
-    "name": "Eugene V. Debs",
-    "years": "1855–1926",
-    "note": "'Walls and Bars' sharply criticized the prison system",
-    "source": "https://en.wikipedia.org/wiki/Eugene_V._Debs"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Jeremy Bentham",
-    "years": "1748–1832",
-    "note": "Panopticon: constant surveillance and control of prisoners",
-    "source": "https://en.wikipedia.org/wiki/Panopticon"
-   },
-   {
-    "name": "Elam Lynds",
-    "years": "1784–1855",
-    "note": "Sing Sing warden; enforced silence, hard labor",
-    "source": "https://en.wikipedia.org/wiki/Elam_Lynds"
-   }
-  ]
- },
- "14": {
-  "agree": [
-   {
-    "name": "William Blackstone",
-    "years": "1723–1780",
-    "note": "Ratio: better ten guilty escape than one innocent suffer",
-    "source": "https://en.wikipedia.org/wiki/Blackstone%27s_ratio"
-   },
-   {
-    "name": "Thomas Jefferson",
-    "years": "1743–1826",
-    "note": "Jury trial 'the only anchor' holding government to its constitution",
-    "source": "https://founders.archives.gov/documents/Jefferson/01-15-02-0259"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Lord Diplock",
-    "years": "1907–1985",
-    "note": "His 1972 report created non-jury 'Diplock courts' in Northern Ireland",
-    "source": "https://en.wikipedia.org/wiki/Diplock_courts"
-   }
-  ]
- },
- "15": {
-  "agree": [
-   {
-    "name": "Robert Peel",
-    "years": "1788–1850",
-    "note": "Founded the Met in 1829 as an unarmed police force",
-    "source": "https://en.wikipedia.org/wiki/Police_use_of_firearms_in_the_United_Kingdom"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Richard J. Daley",
-    "years": "1902–1976",
-    "note": "Ordered police to 'shoot to kill' arsonists in 1968",
-    "source": "https://en.wikipedia.org/wiki/Richard_J._Daley"
-   }
-  ]
- },
- "16": {
-  "agree": [
-   {
-    "name": "Thomas Hobbes",
-    "years": "1588–1679",
-    "note": "Life in nature 'nasty, brutish, and short'",
-    "source": "https://en.wikipedia.org/wiki/Leviathan_(Hobbes_book)"
-   },
-   {
-    "name": "Augustine of Hippo",
-    "years": "354–430",
-    "note": "Doctrine of original sin",
-    "source": "https://en.wikipedia.org/wiki/Original_sin"
-   },
-   {
-    "name": "Xunzi",
-    "years": "c.310–235 BC",
-    "note": "'Human nature is bad'",
-    "source": "https://en.wikipedia.org/wiki/Xunzi_(philosopher)"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Jean-Jacques Rousseau",
-    "years": "1712–1778",
-    "note": "Man is naturally good, corrupted by society",
-    "source": "https://en.wikipedia.org/wiki/Jean-Jacques_Rousseau"
-   },
-   {
-    "name": "Mencius",
-    "years": "c.372–289 BC",
-    "note": "Human nature is innately good",
-    "source": "https://en.wikipedia.org/wiki/Mencius"
-   },
-   {
-    "name": "Pelagius",
-    "years": "c.354–418",
-    "note": "Denied original sin",
-    "source": "https://en.wikipedia.org/wiki/Pelagianism"
-   }
-  ]
- },
- "17": {
-  "agree": [
-   {
-    "name": "Immanuel Kant",
-    "years": "1724–1804",
-    "note": "'Perpetual Peace': cosmopolitan federation",
-    "source": "https://en.wikipedia.org/wiki/Perpetual_Peace:_A_Philosophical_Sketch"
-   },
-   {
-    "name": "Albert Einstein",
-    "years": "1879–1955",
-    "note": "Called nationalism 'the measles of mankind'; world government",
-    "source": "https://en.wikipedia.org/wiki/Albert_Einstein"
-   },
-   {
-    "name": "H. G. Wells",
-    "years": "1866–1946",
-    "note": "Advocated world state",
-    "source": "https://en.wikipedia.org/wiki/H._G._Wells"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Johann Gottfried Herder",
-    "years": "1744–1803",
-    "note": "Championed national cultures",
-    "source": "https://en.wikipedia.org/wiki/Johann_Gottfried_Herder"
-   },
-   {
-    "name": "Giuseppe Mazzini",
-    "years": "1805–1872",
-    "note": "Nation as basis of political life",
-    "source": "https://en.wikipedia.org/wiki/Giuseppe_Mazzini"
-   },
-   {
-    "name": "Charles de Gaulle",
-    "years": "1890–1970",
-    "note": "'Europe of nations', against supranationalism",
-    "source": "https://en.wikipedia.org/wiki/Charles_de_Gaulle"
-   }
-  ]
- },
- "18": {
-  "agree": [
-   {
-    "name": "John Locke",
-    "years": "1632–1704",
-    "note": "Property a natural right government must protect",
-    "source": "https://en.wikipedia.org/wiki/Two_Treatises_of_Government"
-   },
-   {
-    "name": "Ayn Rand",
-    "years": "1905–1982",
-    "note": "Property rights inviolable",
-    "source": "https://en.wikipedia.org/wiki/Ayn_Rand"
-   },
-   {
-    "name": "Robert Nozick",
-    "years": "1938–2002",
-    "note": "Entitlement theory; against redistribution",
-    "source": "https://en.wikipedia.org/wiki/Anarchy,_State,_and_Utopia"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Pierre-Joseph Proudhon",
-    "years": "1809–1865",
-    "note": "'Property is theft!'",
-    "source": "https://en.wikipedia.org/wiki/Property_is_theft!"
-   },
-   {
-    "name": "Karl Marx",
-    "years": "1818–1883",
-    "note": "Called for abolition of private property",
-    "source": "https://en.wikipedia.org/wiki/The_Communist_Manifesto"
-   },
-   {
-    "name": "Henry George",
-    "years": "1839–1897",
-    "note": "Land value should be taxed/socialized",
-    "source": "https://en.wikipedia.org/wiki/Henry_George"
-   }
-  ]
- },
- "19": {
-  "agree": [
-   {
-    "name": "Abraham Lincoln",
-    "years": "1809–1865",
-    "note": "Ended slavery; backed 13th Amendment",
-    "source": "https://en.wikipedia.org/wiki/Abraham_Lincoln"
-   },
-   {
-    "name": "Frederick Douglass",
-    "years": "1818–1895",
-    "note": "Abolitionist leader",
-    "source": "https://en.wikipedia.org/wiki/Frederick_Douglass"
-   },
-   {
-    "name": "William Wilberforce",
-    "years": "1759–1833",
-    "note": "Led British abolition",
-    "source": "https://en.wikipedia.org/wiki/William_Wilberforce"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "John C. Calhoun",
-    "years": "1782–1850",
-    "note": "Called slavery 'a positive good'",
-    "source": "https://en.wikipedia.org/wiki/Slavery_as_a_positive_good_in_the_United_States"
-   },
-   {
-    "name": "Aristotle",
-    "years": "384–322 BC",
-    "note": "Defended 'natural slavery'",
-    "source": "https://en.wikipedia.org/wiki/Natural_slavery"
-   },
-   {
-    "name": "Alexander Stephens",
-    "years": "1812–1883",
-    "note": "'Cornerstone Speech' defended slavery",
-    "source": "https://en.wikipedia.org/wiki/Cornerstone_Speech"
-   }
-  ]
- },
- "20": {
-  "agree": [
-   {
-    "name": "Friedrich Hayek",
-    "years": "1899–1992",
-    "note": "'Road to Serfdom': coercive socialism leads to tyranny",
-    "source": "https://en.wikipedia.org/wiki/The_Road_to_Serfdom"
-   },
-   {
-    "name": "Robert Nozick",
-    "years": "1938–2002",
-    "note": "Voluntary communes fine, coercion not",
-    "source": "https://en.wikipedia.org/wiki/Anarchy,_State,_and_Utopia"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Karl Marx",
-    "years": "1818–1883",
-    "note": "Advocated revolutionary seizure of state",
-    "source": "https://en.wikipedia.org/wiki/The_Communist_Manifesto"
-   },
-   {
-    "name": "Vladimir Lenin",
-    "years": "1870–1924",
-    "note": "Dictatorship of the proletariat",
-    "source": "https://en.wikipedia.org/wiki/Vladimir_Lenin"
-   }
-  ]
- },
- "21": {
-  "agree": [
-   {
-    "name": "Milton Friedman",
-    "years": "1912–2006",
-    "note": "Called for ending drug prohibition",
-    "source": "https://en.wikipedia.org/wiki/Milton_Friedman"
-   },
-   {
-    "name": "William F. Buckley Jr.",
-    "years": "1925–2008",
-    "note": "Advocated drug legalization",
-    "source": "https://en.wikipedia.org/wiki/William_F._Buckley_Jr."
-   },
-   {
-    "name": "Thomas Szasz",
-    "years": "1920–2012",
-    "note": "'Our Right to Drugs': opposed the war on drugs",
-    "source": "https://en.wikipedia.org/wiki/Thomas_Szasz"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Richard Nixon",
-    "years": "1913–1994",
-    "note": "Declared the War on Drugs",
-    "source": "https://en.wikipedia.org/wiki/War_on_drugs"
-   },
-   {
-    "name": "Harry J. Anslinger",
-    "years": "1892–1975",
-    "note": "Led prohibition of cannabis",
-    "source": "https://en.wikipedia.org/wiki/Harry_J._Anslinger"
-   },
-   {
-    "name": "Lin Zexu",
-    "years": "1785–1850",
-    "note": "Destroyed opium to suppress the trade",
-    "source": "https://en.wikipedia.org/wiki/Lin_Zexu"
-   }
-  ]
- },
- "22": {
-  "agree": [
-   {
-    "name": "Thomas Aquinas",
-    "years": "1225–1274",
-    "note": "Summa II-II q64 a5: suicide is always unlawful",
-    "source": "https://www.newadvent.org/summa/3064.htm"
-   },
-   {
-    "name": "William Blackstone",
-    "years": "1723–1780",
-    "note": "Treated suicide as a crime ('self-murder')",
-    "source": "https://en.wikipedia.org/wiki/William_Blackstone"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "David Hume",
-    "years": "1711–1776",
-    "note": "'Of Suicide' defended its permissibility",
-    "source": "https://davidhume.org/texts/su/"
-   },
-   {
-    "name": "Seneca",
-    "years": "c.4 BC–AD 65",
-    "note": "Stoic defense of choosing one's death",
-    "source": "https://en.wikipedia.org/wiki/Seneca_the_Younger"
-   }
-  ]
- },
- "23": {
-  "agree": [
-   {
-    "name": "Nikolai Fyodorov",
-    "years": "1829–1903",
-    "note": "Cosmism: resurrect all ancestors as humanity's duty",
-    "source": "https://en.wikipedia.org/wiki/Nikolai_Fyodorovich_Fyodorov"
-   },
-   {
-    "name": "Robert Ettinger",
-    "years": "1918–2011",
-    "note": "Founded cryonics for immortality",
-    "source": "https://en.wikipedia.org/wiki/Robert_Ettinger"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Epicurus",
-    "years": "341–270 BC",
-    "note": "'Death is nothing to us'",
-    "source": "https://en.wikipedia.org/wiki/Epicurus"
-   },
-   {
-    "name": "Bernard Williams",
-    "years": "1929–2003",
-    "note": "'The Makropulos Case': immortality would be tedious",
-    "source": "https://en.wikipedia.org/wiki/Bernard_Williams"
-   }
-  ]
- },
- "24": {
-  "agree": [
-   {
-    "name": "James Madison",
-    "years": "1751–1836",
-    "note": "Framed the Second Amendment; praised an armed militia",
-    "source": "https://en.wikipedia.org/wiki/Second_Amendment_to_the_United_States_Constitution"
-   },
-   {
-    "name": "Charlton Heston",
-    "years": "1923–2008",
-    "note": "NRA president; 'cold, dead hands'",
-    "source": "https://en.wikipedia.org/wiki/Charlton_Heston"
-   },
-   {
-    "name": "Malcolm X",
-    "years": "1925–1965",
-    "note": "Urged Black self-defense 'by any means necessary'",
-    "source": "https://en.wikipedia.org/wiki/Malcolm_X"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Ronald Reagan",
-    "years": "1911–2004",
-    "note": "Signed the Mulford Act banning loaded open carry",
-    "source": "https://en.wikipedia.org/wiki/Mulford_Act"
-   },
-   {
-    "name": "Lyndon B. Johnson",
-    "years": "1908–1973",
-    "note": "Signed the Gun Control Act of 1968",
-    "source": "https://en.wikipedia.org/wiki/Gun_Control_Act_of_1968"
-   }
-  ]
- },
- "25": {
-  "agree": [
-   {
-    "name": "Brigham Young",
-    "years": "1801–1877",
-    "note": "Championed polygamy and large families",
-    "source": "https://en.wikipedia.org/wiki/Brigham_Young"
-   },
-   {
-    "name": "Theodore Roosevelt",
-    "years": "1858–1919",
-    "note": "Warned of 'race suicide' from falling birthrates",
-    "source": "https://en.wikipedia.org/wiki/Race_suicide"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Thomas Malthus",
-    "years": "1766–1834",
-    "note": "Population growth outpaces food; urged restraint",
-    "source": "https://en.wikipedia.org/wiki/An_Essay_on_the_Principle_of_Population"
-   },
-   {
-    "name": "Abraham Lincoln",
-    "years": "1809–1865",
-    "note": "Signed the Morrill Anti-Bigamy Act (1862)",
-    "source": "https://en.wikipedia.org/wiki/Morrill_Anti-Bigamy_Act"
-   }
-  ]
- },
- "26": {
-  "agree": [
-   {
-    "name": "Thomas Aquinas",
-    "years": "1225–1274",
-    "note": "Classed 'the unnatural vice' as gravest form of lust",
-    "source": "https://www.newadvent.org/summa/3154.htm"
-   },
-   {
-    "name": "Anita Bryant",
-    "years": "1940–2024",
-    "note": "'Save Our Children' anti-gay campaign",
-    "source": "https://en.wikipedia.org/wiki/Anita_Bryant"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Oscar Wilde",
-    "years": "1854–1900",
-    "note": "Defended 'the love that dare not speak its name'",
-    "source": "https://en.wikipedia.org/wiki/Oscar_Wilde"
-   },
-   {
-    "name": "Harvey Milk",
-    "years": "1930–1978",
-    "note": "Gay rights pioneer",
-    "source": "https://en.wikipedia.org/wiki/Harvey_Milk"
-   },
-   {
-    "name": "Jeremy Bentham",
-    "years": "1748–1832",
-    "note": "Argued for decriminalizing homosexuality",
-    "source": "https://en.wikipedia.org/wiki/Jeremy_Bentham"
-   }
-  ]
- },
- "27": {
-  "agree": [
-   {
-    "name": "Pope Benedict XVI",
-    "years": "1927–2022",
-    "note": "Condemned gender theory as rejecting created human nature",
-    "source": "https://en.wikipedia.org/wiki/Pope_Benedict_XVI"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Magnus Hirschfeld",
-    "years": "1868–1935",
-    "note": "Pioneered transgender care and acceptance",
-    "source": "https://en.wikipedia.org/wiki/Magnus_Hirschfeld"
-   },
-   {
-    "name": "Harry Benjamin",
-    "years": "1885–1986",
-    "note": "Founded transgender medicine",
-    "source": "https://en.wikipedia.org/wiki/Harry_Benjamin"
-   },
-   {
-    "name": "Christine Jorgensen",
-    "years": "1926–1989",
-    "note": "Famous trans woman and advocate",
-    "source": "https://en.wikipedia.org/wiki/Christine_Jorgensen"
-   }
-  ]
- },
- "28": {
-  "agree": [
-   {
-    "name": "Bernard Mandeville",
-    "years": "1670–1733",
-    "note": "Proposed state-licensed public brothels",
-    "source": "https://en.wikipedia.org/wiki/Bernard_Mandeville"
-   },
-   {
-    "name": "Augustine of Hippo",
-    "years": "354–430",
-    "note": "'Remove prostitutes... and you will unsettle everything' (tolerance)",
-    "source": "https://www.roger-pearse.com/weblog/2019/06/25/augustines-de-ordine-and-his-comment-on-prostitution/"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Josephine Butler",
-    "years": "1828–1906",
-    "note": "Fought state regulation of prostitution",
-    "source": "https://en.wikipedia.org/wiki/Josephine_Butler"
-   },
-   {
-    "name": "Andrea Dworkin",
-    "years": "1946–2005",
-    "note": "Saw prostitution as exploitation",
-    "source": "https://en.wikipedia.org/wiki/Andrea_Dworkin"
-   },
-   {
-    "name": "William Gladstone",
-    "years": "1809–1898",
-    "note": "Worked to rescue prostitutes from trade",
-    "source": "https://en.wikipedia.org/wiki/William_Ewart_Gladstone"
-   }
-  ]
- },
- "29": {
-  "agree": [
-   {
-    "name": "Mahatma Gandhi",
-    "years": "1869–1948",
-    "note": "Nonviolent resistance over armed force (analogue)",
-    "source": "https://en.wikipedia.org/wiki/Mahatma_Gandhi"
-   },
-   {
-    "name": "Leo Tolstoy",
-    "years": "1828–1910",
-    "note": "Christian pacifism; against military violence",
-    "source": "https://en.wikipedia.org/wiki/The_Kingdom_of_God_Is_Within_You"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Carl von Clausewitz",
-    "years": "1780–1831",
-    "note": "War as continuation of politics by force",
-    "source": "https://en.wikipedia.org/wiki/Carl_von_Clausewitz"
-   },
-   {
-    "name": "George Orwell",
-    "years": "1903–1950",
-    "note": "Argued pacifists rely on others' violence on their behalf",
-    "source": "https://en.wikipedia.org/wiki/Pacifism"
-   }
-  ]
- },
- "30": {
-  "agree": [
-   {
-    "name": "Cesare Beccaria",
-    "years": "1738–1794",
-    "note": "'On Crimes and Punishments' opposed death penalty",
-    "source": "https://en.wikipedia.org/wiki/On_Crimes_and_Punishments"
-   },
-   {
-    "name": "Victor Hugo",
-    "years": "1802–1885",
-    "note": "'Last Day of a Condemned Man'",
-    "source": "https://en.wikipedia.org/wiki/The_Last_Day_of_a_Condemned_Man"
-   },
-   {
-    "name": "Albert Camus",
-    "years": "1913–1960",
-    "note": "'Reflections on the Guillotine'",
-    "source": "https://en.wikipedia.org/wiki/Reflections_on_the_Guillotine"
-   }
-  ],
-  "disagree": [
-   {
-    "name": "Immanuel Kant",
-    "years": "1724–1804",
-    "note": "Held every murderer deserves to die",
-    "source": "https://en.wikipedia.org/wiki/Capital_punishment_debate"
-   },
-   {
-    "name": "John Stuart Mill",
-    "years": "1806–1873",
-    "note": "1868 Commons speech defending capital punishment",
-    "source": "https://api.parliament.uk/historic-hansard/commons/1868/apr/21/committee"
-   },
-   {
-    "name": "Jean-Jacques Rousseau",
-    "years": "1712–1778",
-    "note": "Social Contract II.5: criminal may be executed as public enemy",
-    "source": "https://standardebooks.org/ebooks/jean-jacques-rousseau/the-social-contract/g-d-h-cole/text/chapter-2-5"
-   }
-  ]
- }
+  "1": {
+    "agree": [
+      {
+        "name": "Lysander Spooner",
+        "years": "1808–1887",
+        "note": "Called taxation robbery in 'No Treason'",
+        "source": "https://en.wikipedia.org/wiki/No_Treason"
+      },
+      {
+        "name": "Murray Rothbard",
+        "years": "1926–1995",
+        "note": "'The Ethics of Liberty': taxation is theft",
+        "source": "https://en.wikipedia.org/wiki/Taxation_as_theft"
+      },
+      {
+        "name": "Henry David Thoreau",
+        "years": "1817–1862",
+        "note": "Refused poll tax; 'Civil Disobedience'",
+        "source": "https://en.wikipedia.org/wiki/Civil_Disobedience_(Thoreau)"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Oliver Wendell Holmes Jr.",
+        "years": "1841–1935",
+        "note": "'Taxes are what we pay for civilized society'",
+        "source": "https://en.wikiquote.org/wiki/Oliver_Wendell_Holmes_Jr.",
+        "side": "left"
+      },
+      {
+        "name": "Adam Smith",
+        "years": "1723–1790",
+        "note": "Wealth of Nations sets out how taxes should be levied",
+        "source": "https://en.wikipedia.org/wiki/Tax",
+        "side": "left"
+      },
+      {
+        "name": "Franklin D. Roosevelt",
+        "years": "1882–1945",
+        "note": "Championed progressive taxation to fund the New Deal",
+        "source": "https://en.wikipedia.org/wiki/New_Deal",
+        "side": "left"
+      }
+    ]
+  },
+  "2": {
+    "agree": [
+      {
+        "name": "Milton Friedman",
+        "years": "1912–2006",
+        "note": "Friedman rule: optimal policy implies mild deflation",
+        "source": "https://en.wikipedia.org/wiki/Friedman_rule"
+      },
+      {
+        "name": "Ludwig von Mises",
+        "years": "1881–1973",
+        "note": "Condemned inflation as 'an indispensable means of militarism'",
+        "source": "https://en.wikipedia.org/wiki/Ludwig_von_Mises"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "John Maynard Keynes",
+        "years": "1883–1946",
+        "note": "Warned deflation is ruinous to debtors and output",
+        "source": "https://en.wikipedia.org/wiki/John_Maynard_Keynes",
+        "side": "left"
+      },
+      {
+        "name": "Irving Fisher",
+        "years": "1867–1947",
+        "note": "Debt-deflation theory: deflation deepens depressions",
+        "source": "https://en.wikipedia.org/wiki/Debt_deflation",
+        "side": "left"
+      },
+      {
+        "name": "William Jennings Bryan",
+        "years": "1860–1925",
+        "note": "'Cross of Gold': wanted inflationary free silver",
+        "source": "https://en.wikipedia.org/wiki/Cross_of_Gold_speech",
+        "side": "left"
+      }
+    ]
+  },
+  "3": {
+    "agree": [
+      {
+        "name": "Karl Marx",
+        "years": "1818–1883",
+        "note": "Criticized commodity fetishism and money's dominance",
+        "source": "https://en.wikipedia.org/wiki/Commodity_fetishism"
+      },
+      {
+        "name": "Aristotle",
+        "years": "384–322 BC",
+        "note": "Condemned chrematistics, wealth-getting as an end",
+        "source": "https://en.wikipedia.org/wiki/Chrematistics"
+      },
+      {
+        "name": "John Ruskin",
+        "years": "1819–1900",
+        "note": "'There is no wealth but life' (Unto This Last)",
+        "source": "https://en.wikipedia.org/wiki/Unto_This_Last"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Ayn Rand",
+        "years": "1905–1982",
+        "note": "Francisco's 'money speech' praises money as a tool of exchange",
+        "source": "https://en.wikipedia.org/wiki/Atlas_Shrugged",
+        "side": "right"
+      }
+    ]
+  },
+  "4": {
+    "agree": [
+      {
+        "name": "Voltaire",
+        "years": "1694–1778",
+        "note": "Free thought; denounced the fanaticism behind the Calas execution",
+        "source": "https://en.wikipedia.org/wiki/Jean_Calas"
+      },
+      {
+        "name": "John Stuart Mill",
+        "years": "1806–1873",
+        "note": "Any doctrine may be discussed, but not speech that inflames a mob against a person",
+        "source": "https://en.wikipedia.org/wiki/On_Liberty"
+      },
+      {
+        "name": "Karl Popper",
+        "years": "1902–1994",
+        "note": "Paradox of tolerance: incitement to persecution should be criminal",
+        "source": "https://en.wikipedia.org/wiki/Paradox_of_tolerance"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Plato",
+        "years": "c.428–348 BC",
+        "note": "Advocated censoring poets in the Republic",
+        "source": "https://en.wikipedia.org/wiki/Republic_(Plato)",
+        "side": "left"
+      },
+      {
+        "name": "Thomas Hobbes",
+        "years": "1588–1679",
+        "note": "Sovereign should control doctrines and speech",
+        "source": "https://en.wikipedia.org/wiki/Leviathan_(Hobbes_book)",
+        "side": "left"
+      },
+      {
+        "name": "Herbert Marcuse",
+        "years": "1898–1979",
+        "note": "'Repressive Tolerance': suppress some viewpoints",
+        "source": "https://en.wikipedia.org/wiki/Repressive_Tolerance",
+        "side": "left"
+      },
+      {
+        "name": "Anthony Comstock",
+        "years": "1844–1915",
+        "note": "Comstock Act (1873) banned \"obscene\" mail, incl. contraception info",
+        "source": "https://en.wikipedia.org/wiki/Anthony_Comstock",
+        "side": "left"
+      },
+      {
+        "name": "Hugo Black",
+        "years": "1886–1971",
+        "note": "Absolutist; Brandenburg concurrence protected KKK threats of \"revengeance\"",
+        "source": "https://en.wikipedia.org/wiki/Brandenburg_v._Ohio",
+        "side": "right"
+      }
+    ]
+  },
+  "5": {
+    "agree": [
+      {
+        "name": "Pope Paul VI",
+        "years": "1897–1978",
+        "note": "Humanae Vitae banned contraception and abortion",
+        "source": "https://en.wikipedia.org/wiki/Humanae_vitae"
+      },
+      {
+        "name": "Mother Teresa",
+        "years": "1910–1997",
+        "note": "Opposed abortion and artificial contraception",
+        "source": "https://en.wikipedia.org/wiki/Mother_Teresa"
+      },
+      {
+        "name": "Anthony Comstock",
+        "years": "1844–1915",
+        "note": "Crusaded to outlaw contraception and abortion",
+        "source": "https://en.wikipedia.org/wiki/Comstock_laws"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Margaret Sanger",
+        "years": "1879–1966",
+        "note": "Founded birth-control movement",
+        "source": "https://en.wikipedia.org/wiki/Margaret_Sanger",
+        "side": "right"
+      },
+      {
+        "name": "Simone de Beauvoir",
+        "years": "1908–1986",
+        "note": "Signed Manifesto of the 343 for legal abortion",
+        "source": "https://en.wikipedia.org/wiki/Manifesto_of_the_343",
+        "side": "right"
+      },
+      {
+        "name": "Ruth Bader Ginsburg",
+        "years": "1933–2020",
+        "note": "Defended abortion and contraception rights",
+        "source": "https://en.wikipedia.org/wiki/Ruth_Bader_Ginsburg",
+        "side": "right"
+      }
+    ]
+  },
+  "6": {
+    "agree": [
+      {
+        "name": "Catherine the Great",
+        "years": "1729–1796",
+        "note": "1763 manifesto invited foreign settlers to Russia; settled in state-assigned colonies",
+        "source": "https://en.wikipedia.org/wiki/Volga_Germans"
+      },
+      {
+        "name": "Lee Kuan Yew",
+        "years": "1923–2015",
+        "note": "Singapore relied on large-scale foreign labour under tight state controls (levies, quotas)",
+        "source": "https://en.wikipedia.org/wiki/Foreign_workers_in_Singapore"
+      },
+      {
+        "name": "Abraham Lincoln",
+        "years": "1809–1865",
+        "note": "Signed the 1864 Act to Encourage Immigration",
+        "source": "https://en.wikipedia.org/wiki/Abraham_Lincoln"
+      },
+      {
+        "name": "Theodore Roosevelt",
+        "years": "1858–1919",
+        "note": "Welcomed immigrants but demanded total assimilation: 'no hyphenated Americans'",
+        "source": "https://en.wikipedia.org/wiki/Hyphenated_American"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Benjamin Franklin",
+        "years": "1706–1790",
+        "note": "1751 pamphlet disparaged German immigrants as 'Palatine Boors'",
+        "source": "https://en.wikipedia.org/wiki/Benjamin_Franklin",
+        "side": "left"
+      },
+      {
+        "name": "Enoch Powell",
+        "years": "1912–1998",
+        "note": "'Rivers of Blood': opposed mass immigration",
+        "source": "https://en.wikipedia.org/wiki/Rivers_of_Blood_speech",
+        "side": "left"
+      },
+      {
+        "name": "Milton Friedman",
+        "years": "1912–2006",
+        "note": "Free immigration incompatible with welfare state",
+        "source": "https://reason.com/2008/06/10/milton-friedman-immigration-an/",
+        "side": "left"
+      }
+    ]
+  },
+  "7": {
+    "agree": [
+      {
+        "name": "Thomas Hobbes",
+        "years": "1588–1679",
+        "note": "Argued absolute monarchy is best government",
+        "source": "https://en.wikipedia.org/wiki/Leviathan_(Hobbes_book)"
+      },
+      {
+        "name": "Alexander Hamilton",
+        "years": "1755–1804",
+        "note": "Proposed president and senators serving for life",
+        "source": "https://en.wikipedia.org/wiki/Alexander_Hamilton"
+      },
+      {
+        "name": "Plato",
+        "years": "c.428–348 BC",
+        "note": "Rule by philosopher-kings, not democracy",
+        "source": "https://en.wikipedia.org/wiki/Philosopher_king"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Thomas Paine",
+        "years": "1737–1809",
+        "note": "'Common Sense' attacked hereditary monarchy",
+        "source": "https://en.wikipedia.org/wiki/Common_Sense",
+        "side": "left"
+      },
+      {
+        "name": "Thomas Jefferson",
+        "years": "1743–1826",
+        "note": "Republican; accused Federalists of monarchism",
+        "source": "https://en.wikipedia.org/wiki/Thomas_Jefferson",
+        "side": "left"
+      },
+      {
+        "name": "Frederick Douglass",
+        "years": "1818–1895",
+        "note": "Fought for universal suffrage",
+        "source": "https://en.wikipedia.org/wiki/Frederick_Douglass",
+        "side": "left"
+      }
+    ]
+  },
+  "8": {
+    "agree": [
+      {
+        "name": "Theodore Roosevelt",
+        "years": "1858–1919",
+        "note": "Used federal power to create parks and reserves",
+        "source": "https://en.wikipedia.org/wiki/Theodore_Roosevelt"
+      },
+      {
+        "name": "Rachel Carson",
+        "years": "1907–1964",
+        "note": "'Silent Spring' spurred pesticide regulation",
+        "source": "https://en.wikipedia.org/wiki/Silent_Spring"
+      },
+      {
+        "name": "John Muir",
+        "years": "1838–1914",
+        "note": "Pushed government protection of wilderness",
+        "source": "https://en.wikipedia.org/wiki/John_Muir"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Julian Simon",
+        "years": "1932–1998",
+        "note": "Resource optimist; rejected environmental doom (loose analogue)",
+        "source": "https://en.wikipedia.org/wiki/Julian_Lincoln_Simon",
+        "side": "right"
+      },
+      {
+        "name": "Rush Limbaugh",
+        "years": "1951–2021",
+        "note": "Derided environmentalism and climate regulation",
+        "source": "https://en.wikipedia.org/wiki/Rush_Limbaugh",
+        "side": "right"
+      }
+    ]
+  },
+  "9": {
+    "agree": [
+      {
+        "name": "Thomas Paine",
+        "years": "1737–1809",
+        "note": "'Age of Reason': deism proven by nature",
+        "source": "https://en.wikipedia.org/wiki/The_Age_of_Reason"
+      },
+      {
+        "name": "Voltaire",
+        "years": "1694–1778",
+        "note": "Prominent deist critic of atheism",
+        "source": "https://en.wikipedia.org/wiki/Religious_views_of_Voltaire"
+      },
+      {
+        "name": "Antony Flew",
+        "years": "1923–2010",
+        "note": "Converted to deism citing scientific evidence",
+        "source": "https://en.wikipedia.org/wiki/Antony_Flew"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "David Hume",
+        "years": "1711–1776",
+        "note": "Dialogues rejected the design argument",
+        "source": "https://en.wikipedia.org/wiki/Dialogues_Concerning_Natural_Religion",
+        "side": "left"
+      },
+      {
+        "name": "Bertrand Russell",
+        "years": "1872–1970",
+        "note": "Atheist; rejected arguments for God",
+        "source": "https://en.wikipedia.org/wiki/Why_I_Am_Not_a_Christian",
+        "side": "left"
+      },
+      {
+        "name": "Christopher Hitchens",
+        "years": "1949–2011",
+        "note": "Atheist critic of all theistic proofs",
+        "source": "https://en.wikipedia.org/wiki/God_Is_Not_Great",
+        "side": "left"
+      }
+    ]
+  },
+  "10": {
+    "agree": [
+      {
+        "name": "Woodrow Wilson",
+        "years": "1856–1924",
+        "note": "Urged 'economic, peaceful, silent, deadly' boycotts instead of force",
+        "source": "https://www.presidency.ucsb.edu/documents/address-the-coliseum-the-state-fair-grounds-indianapolis-indiana"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "George Washington",
+        "years": "1732–1799",
+        "note": "Farewell Address: avoid foreign entanglements",
+        "source": "https://en.wikipedia.org/wiki/George_Washington%27s_Farewell_Address",
+        "side": "left"
+      },
+      {
+        "name": "John Quincy Adams",
+        "years": "1767–1848",
+        "note": "America 'goes not abroad in search of monsters'",
+        "source": "https://en.wikipedia.org/wiki/John_Quincy_Adams",
+        "side": "left"
+      },
+      {
+        "name": "Mahatma Gandhi",
+        "years": "1869–1948",
+        "note": "Rejected aggressive coercion of other nations",
+        "source": "https://en.wikipedia.org/wiki/Mahatma_Gandhi",
+        "side": "left"
+      }
+    ]
+  },
+  "11": {
+    "agree": [
+      {
+        "name": "Friedrich Nietzsche",
+        "years": "1844–1900",
+        "note": "Attacked egalitarianism as slave morality",
+        "source": "https://en.wikipedia.org/wiki/Master%E2%80%93slave_morality"
+      },
+      {
+        "name": "Francis Galton",
+        "years": "1822–1911",
+        "note": "Argued innate human abilities differ greatly",
+        "source": "https://en.wikipedia.org/wiki/Francis_Galton"
+      },
+      {
+        "name": "Aristotle",
+        "years": "384–322 BC",
+        "note": "Held some people naturally fit to rule, others to serve",
+        "source": "https://en.wikipedia.org/wiki/Natural_slavery"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Thomas Jefferson",
+        "years": "1743–1826",
+        "note": "'All men are created equal'",
+        "source": "https://en.wikipedia.org/wiki/United_States_Declaration_of_Independence",
+        "side": "left"
+      },
+      {
+        "name": "Martin Luther King Jr.",
+        "years": "1929–1968",
+        "note": "Fought for human equality",
+        "source": "https://en.wikipedia.org/wiki/I_Have_a_Dream",
+        "side": "left"
+      },
+      {
+        "name": "Stephen Jay Gould",
+        "years": "1941–2002",
+        "note": "'Mismeasure of Man' critiqued hereditarianism",
+        "source": "https://en.wikipedia.org/wiki/The_Mismeasure_of_Man",
+        "side": "left"
+      }
+    ]
+  },
+  "12": {
+    "agree": [
+      {
+        "name": "Alexander Hamilton",
+        "years": "1755–1804",
+        "note": "'Report on Manufactures' backed protective tariffs",
+        "source": "https://en.wikipedia.org/wiki/Report_on_Manufactures"
+      },
+      {
+        "name": "Henry Clay",
+        "years": "1777–1852",
+        "note": "American System: tariffs to build industry",
+        "source": "https://en.wikipedia.org/wiki/American_System_(economic_plan)"
+      },
+      {
+        "name": "Friedrich List",
+        "years": "1789–1846",
+        "note": "Infant-industry protectionism",
+        "source": "https://en.wikipedia.org/wiki/Friedrich_List"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Adam Smith",
+        "years": "1723–1790",
+        "note": "Argued for free trade over protection",
+        "source": "https://en.wikipedia.org/wiki/The_Wealth_of_Nations",
+        "side": "right"
+      },
+      {
+        "name": "David Ricardo",
+        "years": "1772–1823",
+        "note": "Comparative advantage; opposed Corn Laws",
+        "source": "https://en.wikipedia.org/wiki/Comparative_advantage",
+        "side": "right"
+      },
+      {
+        "name": "Richard Cobden",
+        "years": "1804–1865",
+        "note": "Led Anti-Corn Law League for free trade",
+        "source": "https://en.wikipedia.org/wiki/Anti-Corn_Law_League",
+        "side": "right"
+      }
+    ]
+  },
+  "13": {
+    "agree": [
+      {
+        "name": "Alexander Maconochie",
+        "years": "1787–1860",
+        "note": "Mark System: prisoners earn dignity and growing responsibility",
+        "source": "https://en.wikipedia.org/wiki/Alexander_Maconochie_(penal_reformer)"
+      },
+      {
+        "name": "Eugene V. Debs",
+        "years": "1855–1926",
+        "note": "'Walls and Bars' sharply criticized the prison system",
+        "source": "https://en.wikipedia.org/wiki/Eugene_V._Debs"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Jeremy Bentham",
+        "years": "1748–1832",
+        "note": "Panopticon: constant surveillance and control of prisoners",
+        "source": "https://en.wikipedia.org/wiki/Panopticon",
+        "side": "left"
+      },
+      {
+        "name": "Elam Lynds",
+        "years": "1784–1855",
+        "note": "Sing Sing warden; enforced silence, hard labor",
+        "source": "https://en.wikipedia.org/wiki/Elam_Lynds",
+        "side": "left"
+      }
+    ]
+  },
+  "14": {
+    "agree": [
+      {
+        "name": "William Blackstone",
+        "years": "1723–1780",
+        "note": "Ratio: better ten guilty escape than one innocent suffer",
+        "source": "https://en.wikipedia.org/wiki/Blackstone%27s_ratio"
+      },
+      {
+        "name": "Thomas Jefferson",
+        "years": "1743–1826",
+        "note": "Jury trial 'the only anchor' holding government to its constitution",
+        "source": "https://founders.archives.gov/documents/Jefferson/01-15-02-0259"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Lord Diplock",
+        "years": "1907–1985",
+        "note": "His 1972 report created non-jury 'Diplock courts' in Northern Ireland",
+        "source": "https://en.wikipedia.org/wiki/Diplock_courts",
+        "side": "left"
+      }
+    ]
+  },
+  "15": {
+    "agree": [
+      {
+        "name": "Robert Peel",
+        "years": "1788–1850",
+        "note": "Founded the Met in 1829 as an unarmed police force",
+        "source": "https://en.wikipedia.org/wiki/Police_use_of_firearms_in_the_United_Kingdom"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Richard J. Daley",
+        "years": "1902–1976",
+        "note": "Ordered police to 'shoot to kill' arsonists in 1968",
+        "source": "https://en.wikipedia.org/wiki/Richard_J._Daley",
+        "side": "left"
+      }
+    ]
+  },
+  "16": {
+    "agree": [
+      {
+        "name": "Thomas Hobbes",
+        "years": "1588–1679",
+        "note": "Life in nature 'nasty, brutish, and short'",
+        "source": "https://en.wikipedia.org/wiki/Leviathan_(Hobbes_book)"
+      },
+      {
+        "name": "Augustine of Hippo",
+        "years": "354–430",
+        "note": "Doctrine of original sin",
+        "source": "https://en.wikipedia.org/wiki/Original_sin"
+      },
+      {
+        "name": "Xunzi",
+        "years": "c.310–235 BC",
+        "note": "'Human nature is bad'",
+        "source": "https://en.wikipedia.org/wiki/Xunzi_(philosopher)"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Jean-Jacques Rousseau",
+        "years": "1712–1778",
+        "note": "Man is naturally good, corrupted by society",
+        "source": "https://en.wikipedia.org/wiki/Jean-Jacques_Rousseau",
+        "side": "right"
+      },
+      {
+        "name": "Mencius",
+        "years": "c.372–289 BC",
+        "note": "Human nature is innately good",
+        "source": "https://en.wikipedia.org/wiki/Mencius",
+        "side": "right"
+      },
+      {
+        "name": "Pelagius",
+        "years": "c.354–418",
+        "note": "Denied original sin",
+        "source": "https://en.wikipedia.org/wiki/Pelagianism",
+        "side": "right"
+      }
+    ]
+  },
+  "17": {
+    "agree": [
+      {
+        "name": "Immanuel Kant",
+        "years": "1724–1804",
+        "note": "'Perpetual Peace': cosmopolitan federation",
+        "source": "https://en.wikipedia.org/wiki/Perpetual_Peace:_A_Philosophical_Sketch"
+      },
+      {
+        "name": "Albert Einstein",
+        "years": "1879–1955",
+        "note": "Called nationalism 'the measles of mankind'; world government",
+        "source": "https://en.wikipedia.org/wiki/Albert_Einstein"
+      },
+      {
+        "name": "H. G. Wells",
+        "years": "1866–1946",
+        "note": "Advocated world state",
+        "source": "https://en.wikipedia.org/wiki/H._G._Wells"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Johann Gottfried Herder",
+        "years": "1744–1803",
+        "note": "Championed national cultures",
+        "source": "https://en.wikipedia.org/wiki/Johann_Gottfried_Herder",
+        "side": "left"
+      },
+      {
+        "name": "Giuseppe Mazzini",
+        "years": "1805–1872",
+        "note": "Nation as basis of political life",
+        "source": "https://en.wikipedia.org/wiki/Giuseppe_Mazzini",
+        "side": "left"
+      },
+      {
+        "name": "Charles de Gaulle",
+        "years": "1890–1970",
+        "note": "'Europe of nations', against supranationalism",
+        "source": "https://en.wikipedia.org/wiki/Charles_de_Gaulle",
+        "side": "left"
+      }
+    ]
+  },
+  "18": {
+    "agree": [
+      {
+        "name": "John Locke",
+        "years": "1632–1704",
+        "note": "Property a natural right government must protect",
+        "source": "https://en.wikipedia.org/wiki/Two_Treatises_of_Government"
+      },
+      {
+        "name": "Ayn Rand",
+        "years": "1905–1982",
+        "note": "Property rights inviolable",
+        "source": "https://en.wikipedia.org/wiki/Ayn_Rand"
+      },
+      {
+        "name": "Robert Nozick",
+        "years": "1938–2002",
+        "note": "Entitlement theory; against redistribution",
+        "source": "https://en.wikipedia.org/wiki/Anarchy,_State,_and_Utopia"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Pierre-Joseph Proudhon",
+        "years": "1809–1865",
+        "note": "'Property is theft!'",
+        "source": "https://en.wikipedia.org/wiki/Property_is_theft!",
+        "side": "left"
+      },
+      {
+        "name": "Karl Marx",
+        "years": "1818–1883",
+        "note": "Called for abolition of private property",
+        "source": "https://en.wikipedia.org/wiki/The_Communist_Manifesto",
+        "side": "left"
+      },
+      {
+        "name": "Henry George",
+        "years": "1839–1897",
+        "note": "Land value should be taxed/socialized",
+        "source": "https://en.wikipedia.org/wiki/Henry_George",
+        "side": "left"
+      }
+    ]
+  },
+  "19": {
+    "agree": [
+      {
+        "name": "Abraham Lincoln",
+        "years": "1809–1865",
+        "note": "Ended slavery; backed 13th Amendment",
+        "source": "https://en.wikipedia.org/wiki/Abraham_Lincoln"
+      },
+      {
+        "name": "Frederick Douglass",
+        "years": "1818–1895",
+        "note": "Abolitionist leader",
+        "source": "https://en.wikipedia.org/wiki/Frederick_Douglass"
+      },
+      {
+        "name": "William Wilberforce",
+        "years": "1759–1833",
+        "note": "Led British abolition",
+        "source": "https://en.wikipedia.org/wiki/William_Wilberforce"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "John C. Calhoun",
+        "years": "1782–1850",
+        "note": "Called slavery 'a positive good'",
+        "source": "https://en.wikipedia.org/wiki/Slavery_as_a_positive_good_in_the_United_States",
+        "side": "left"
+      },
+      {
+        "name": "Aristotle",
+        "years": "384–322 BC",
+        "note": "Defended 'natural slavery'",
+        "source": "https://en.wikipedia.org/wiki/Natural_slavery",
+        "side": "left"
+      },
+      {
+        "name": "Alexander Stephens",
+        "years": "1812–1883",
+        "note": "'Cornerstone Speech' defended slavery",
+        "source": "https://en.wikipedia.org/wiki/Cornerstone_Speech",
+        "side": "left"
+      }
+    ]
+  },
+  "20": {
+    "agree": [
+      {
+        "name": "Friedrich Hayek",
+        "years": "1899–1992",
+        "note": "'Road to Serfdom': coercive socialism leads to tyranny",
+        "source": "https://en.wikipedia.org/wiki/The_Road_to_Serfdom"
+      },
+      {
+        "name": "Robert Nozick",
+        "years": "1938–2002",
+        "note": "Voluntary communes fine, coercion not",
+        "source": "https://en.wikipedia.org/wiki/Anarchy,_State,_and_Utopia"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Karl Marx",
+        "years": "1818–1883",
+        "note": "Advocated revolutionary seizure of state",
+        "source": "https://en.wikipedia.org/wiki/The_Communist_Manifesto",
+        "side": "left"
+      },
+      {
+        "name": "Vladimir Lenin",
+        "years": "1870–1924",
+        "note": "Dictatorship of the proletariat",
+        "source": "https://en.wikipedia.org/wiki/Vladimir_Lenin",
+        "side": "left"
+      }
+    ]
+  },
+  "21": {
+    "agree": [
+      {
+        "name": "Milton Friedman",
+        "years": "1912–2006",
+        "note": "Called for ending drug prohibition",
+        "source": "https://en.wikipedia.org/wiki/Milton_Friedman"
+      },
+      {
+        "name": "William F. Buckley Jr.",
+        "years": "1925–2008",
+        "note": "Advocated drug legalization",
+        "source": "https://en.wikipedia.org/wiki/William_F._Buckley_Jr."
+      },
+      {
+        "name": "Thomas Szasz",
+        "years": "1920–2012",
+        "note": "'Our Right to Drugs': opposed the war on drugs",
+        "source": "https://en.wikipedia.org/wiki/Thomas_Szasz"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Richard Nixon",
+        "years": "1913–1994",
+        "note": "Declared the War on Drugs",
+        "source": "https://en.wikipedia.org/wiki/War_on_drugs",
+        "side": "left"
+      },
+      {
+        "name": "Harry J. Anslinger",
+        "years": "1892–1975",
+        "note": "Led prohibition of cannabis",
+        "source": "https://en.wikipedia.org/wiki/Harry_J._Anslinger",
+        "side": "left"
+      },
+      {
+        "name": "Lin Zexu",
+        "years": "1785–1850",
+        "note": "Destroyed opium to suppress the trade",
+        "source": "https://en.wikipedia.org/wiki/Lin_Zexu",
+        "side": "left"
+      }
+    ]
+  },
+  "22": {
+    "agree": [
+      {
+        "name": "Thomas Aquinas",
+        "years": "1225–1274",
+        "note": "Summa II-II q64 a5: suicide is always unlawful",
+        "source": "https://www.newadvent.org/summa/3064.htm"
+      },
+      {
+        "name": "William Blackstone",
+        "years": "1723–1780",
+        "note": "Treated suicide as a crime ('self-murder')",
+        "source": "https://en.wikipedia.org/wiki/William_Blackstone"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "David Hume",
+        "years": "1711–1776",
+        "note": "'Of Suicide' defended its permissibility",
+        "source": "https://davidhume.org/texts/su/",
+        "side": "right"
+      },
+      {
+        "name": "Seneca",
+        "years": "c.4 BC–AD 65",
+        "note": "Stoic defense of choosing one's death",
+        "source": "https://en.wikipedia.org/wiki/Seneca_the_Younger",
+        "side": "right"
+      }
+    ]
+  },
+  "23": {
+    "agree": [
+      {
+        "name": "Nikolai Fyodorov",
+        "years": "1829–1903",
+        "note": "Cosmism: resurrect all ancestors as humanity's duty",
+        "source": "https://en.wikipedia.org/wiki/Nikolai_Fyodorovich_Fyodorov"
+      },
+      {
+        "name": "Robert Ettinger",
+        "years": "1918–2011",
+        "note": "Founded cryonics for immortality",
+        "source": "https://en.wikipedia.org/wiki/Robert_Ettinger"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Epicurus",
+        "years": "341–270 BC",
+        "note": "'Death is nothing to us'",
+        "source": "https://en.wikipedia.org/wiki/Epicurus",
+        "side": "right"
+      },
+      {
+        "name": "Bernard Williams",
+        "years": "1929–2003",
+        "note": "'The Makropulos Case': immortality would be tedious",
+        "source": "https://en.wikipedia.org/wiki/Bernard_Williams",
+        "side": "right"
+      }
+    ]
+  },
+  "24": {
+    "agree": [
+      {
+        "name": "James Madison",
+        "years": "1751–1836",
+        "note": "Framed the Second Amendment; praised an armed militia",
+        "source": "https://en.wikipedia.org/wiki/Second_Amendment_to_the_United_States_Constitution"
+      },
+      {
+        "name": "Charlton Heston",
+        "years": "1923–2008",
+        "note": "NRA president; 'cold, dead hands'",
+        "source": "https://en.wikipedia.org/wiki/Charlton_Heston"
+      },
+      {
+        "name": "Malcolm X",
+        "years": "1925–1965",
+        "note": "Urged Black self-defense 'by any means necessary'",
+        "source": "https://en.wikipedia.org/wiki/Malcolm_X"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Ronald Reagan",
+        "years": "1911–2004",
+        "note": "Signed the Mulford Act banning loaded open carry",
+        "source": "https://en.wikipedia.org/wiki/Mulford_Act",
+        "side": "left"
+      },
+      {
+        "name": "Lyndon B. Johnson",
+        "years": "1908–1973",
+        "note": "Signed the Gun Control Act of 1968",
+        "source": "https://en.wikipedia.org/wiki/Gun_Control_Act_of_1968",
+        "side": "left"
+      }
+    ]
+  },
+  "25": {
+    "agree": [
+      {
+        "name": "Brigham Young",
+        "years": "1801–1877",
+        "note": "Championed polygamy and large families",
+        "source": "https://en.wikipedia.org/wiki/Brigham_Young"
+      },
+      {
+        "name": "Theodore Roosevelt",
+        "years": "1858–1919",
+        "note": "Warned of 'race suicide' from falling birthrates",
+        "source": "https://en.wikipedia.org/wiki/Race_suicide"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Thomas Malthus",
+        "years": "1766–1834",
+        "note": "Population growth outpaces food; urged restraint",
+        "source": "https://en.wikipedia.org/wiki/An_Essay_on_the_Principle_of_Population"
+      },
+      {
+        "name": "Abraham Lincoln",
+        "years": "1809–1865",
+        "note": "Signed the Morrill Anti-Bigamy Act (1862)",
+        "source": "https://en.wikipedia.org/wiki/Morrill_Anti-Bigamy_Act",
+        "side": "left"
+      }
+    ]
+  },
+  "26": {
+    "agree": [
+      {
+        "name": "Thomas Aquinas",
+        "years": "1225–1274",
+        "note": "Classed 'the unnatural vice' as gravest form of lust",
+        "source": "https://www.newadvent.org/summa/3154.htm"
+      },
+      {
+        "name": "Anita Bryant",
+        "years": "1940–2024",
+        "note": "'Save Our Children' anti-gay campaign",
+        "source": "https://en.wikipedia.org/wiki/Anita_Bryant"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Oscar Wilde",
+        "years": "1854–1900",
+        "note": "Defended 'the love that dare not speak its name'",
+        "source": "https://en.wikipedia.org/wiki/Oscar_Wilde",
+        "side": "right"
+      },
+      {
+        "name": "Harvey Milk",
+        "years": "1930–1978",
+        "note": "Gay rights pioneer",
+        "source": "https://en.wikipedia.org/wiki/Harvey_Milk",
+        "side": "right"
+      },
+      {
+        "name": "Jeremy Bentham",
+        "years": "1748–1832",
+        "note": "Argued for decriminalizing homosexuality",
+        "source": "https://en.wikipedia.org/wiki/Jeremy_Bentham",
+        "side": "right"
+      }
+    ]
+  },
+  "27": {
+    "agree": [
+      {
+        "name": "Pope Benedict XVI",
+        "years": "1927–2022",
+        "note": "Condemned gender theory as rejecting created human nature",
+        "source": "https://en.wikipedia.org/wiki/Pope_Benedict_XVI"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Magnus Hirschfeld",
+        "years": "1868–1935",
+        "note": "Pioneered transgender care and acceptance",
+        "source": "https://en.wikipedia.org/wiki/Magnus_Hirschfeld",
+        "side": "right"
+      },
+      {
+        "name": "Harry Benjamin",
+        "years": "1885–1986",
+        "note": "Founded transgender medicine",
+        "source": "https://en.wikipedia.org/wiki/Harry_Benjamin",
+        "side": "right"
+      },
+      {
+        "name": "Christine Jorgensen",
+        "years": "1926–1989",
+        "note": "Famous trans woman and advocate",
+        "source": "https://en.wikipedia.org/wiki/Christine_Jorgensen",
+        "side": "right"
+      }
+    ]
+  },
+  "28": {
+    "agree": [
+      {
+        "name": "Bernard Mandeville",
+        "years": "1670–1733",
+        "note": "Proposed state-licensed public brothels",
+        "source": "https://en.wikipedia.org/wiki/Bernard_Mandeville"
+      },
+      {
+        "name": "Augustine of Hippo",
+        "years": "354–430",
+        "note": "'Remove prostitutes... and you will unsettle everything' (tolerance)",
+        "source": "https://www.roger-pearse.com/weblog/2019/06/25/augustines-de-ordine-and-his-comment-on-prostitution/"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Josephine Butler",
+        "years": "1828–1906",
+        "note": "Fought state regulation of prostitution",
+        "source": "https://en.wikipedia.org/wiki/Josephine_Butler"
+      },
+      {
+        "name": "Andrea Dworkin",
+        "years": "1946–2005",
+        "note": "Saw prostitution as exploitation",
+        "source": "https://en.wikipedia.org/wiki/Andrea_Dworkin",
+        "side": "left"
+      },
+      {
+        "name": "William Gladstone",
+        "years": "1809–1898",
+        "note": "Worked to rescue prostitutes from trade",
+        "source": "https://en.wikipedia.org/wiki/William_Ewart_Gladstone",
+        "side": "left"
+      }
+    ]
+  },
+  "29": {
+    "agree": [
+      {
+        "name": "Mahatma Gandhi",
+        "years": "1869–1948",
+        "note": "Nonviolent resistance over armed force (analogue)",
+        "source": "https://en.wikipedia.org/wiki/Mahatma_Gandhi"
+      },
+      {
+        "name": "Leo Tolstoy",
+        "years": "1828–1910",
+        "note": "Christian pacifism; against military violence",
+        "source": "https://en.wikipedia.org/wiki/The_Kingdom_of_God_Is_Within_You"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Carl von Clausewitz",
+        "years": "1780–1831",
+        "note": "War as continuation of politics by force",
+        "source": "https://en.wikipedia.org/wiki/Carl_von_Clausewitz",
+        "side": "left"
+      },
+      {
+        "name": "George Orwell",
+        "years": "1903–1950",
+        "note": "Argued pacifists rely on others' violence on their behalf",
+        "source": "https://en.wikipedia.org/wiki/Pacifism",
+        "side": "left"
+      }
+    ]
+  },
+  "30": {
+    "agree": [
+      {
+        "name": "Cesare Beccaria",
+        "years": "1738–1794",
+        "note": "'On Crimes and Punishments' opposed death penalty",
+        "source": "https://en.wikipedia.org/wiki/On_Crimes_and_Punishments"
+      },
+      {
+        "name": "Victor Hugo",
+        "years": "1802–1885",
+        "note": "'Last Day of a Condemned Man'",
+        "source": "https://en.wikipedia.org/wiki/The_Last_Day_of_a_Condemned_Man"
+      },
+      {
+        "name": "Albert Camus",
+        "years": "1913–1960",
+        "note": "'Reflections on the Guillotine'",
+        "source": "https://en.wikipedia.org/wiki/Reflections_on_the_Guillotine"
+      }
+    ],
+    "disagree": [
+      {
+        "name": "Immanuel Kant",
+        "years": "1724–1804",
+        "note": "Held every murderer deserves to die",
+        "source": "https://en.wikipedia.org/wiki/Capital_punishment_debate",
+        "side": "left"
+      },
+      {
+        "name": "John Stuart Mill",
+        "years": "1806–1873",
+        "note": "1868 Commons speech defending capital punishment",
+        "source": "https://api.parliament.uk/historic-hansard/commons/1868/apr/21/committee",
+        "side": "left"
+      },
+      {
+        "name": "Jean-Jacques Rousseau",
+        "years": "1712–1778",
+        "note": "Social Contract II.5: criminal may be executed as public enemy",
+        "source": "https://standardebooks.org/ebooks/jean-jacques-rousseau/the-social-contract/g-d-h-cole/text/chapter-2-5",
+        "side": "left"
+      }
+    ]
+  }
 };
 
 const $=s=>document.querySelector(s);
@@ -1257,10 +1351,11 @@ function buildAxis(){const g=$('#graph');const N=ISSUES.length;for(let v=-N;v<=N
 function verdict(s){const a=Math.abs(s);if(a<=4)return'Squarely in the center.';const side=s>0?'liberal':'conservative';if(a<=12)return`Leaning ${side}.`;if(a<=22)return`Firmly ${side}.`;return`Strongly ${side}.`}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function hostOf(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return 'source'}}
-function figureCards(list){return list.map(f=>`<div class="fig"><div class="nm">${esc(f.name)} <span class="yrs">${esc(f.years)}</span></div><p class="note">${esc(f.note)}</p><a href="${esc(f.source)}" target="_blank" rel="noopener noreferrer">${esc(hostOf(f.source))}</a></div>`).join('')}
+function sidePill(side){if(side==='left')return `<span class="sidepill left" title="Objects from the conservative side">from the left</span>`;if(side==='right')return `<span class="sidepill right" title="Objects from the liberal side">from the right</span>`;return ''}
+function figureCards(list,showSide){return list.map(f=>`<div class="fig"><div class="nm">${esc(f.name)} <span class="yrs">${esc(f.years)}</span>${showSide?sidePill(f.side):''}</div><p class="note">${esc(f.note)}</p><a href="${esc(f.source)}" target="_blank" rel="noopener noreferrer">${esc(hostOf(f.source))}</a></div>`).join('')}
 function figuresFor(n){const f=FIGURES[String(n)]||{};const parts=[];
- if(f.agree&&f.agree.length)parts.push(`<div class="who agree"><h3>Who agreed</h3>${figureCards(f.agree)}</div>`);
- if(f.disagree&&f.disagree.length)parts.push(`<div class="who disagree"><h3>Who disagreed</h3>${figureCards(f.disagree)}</div>`);
+ if(f.agree&&f.agree.length)parts.push(`<div class="who agree"><h3>Who agreed</h3>${figureCards(f.agree,false)}</div>`);
+ if(f.disagree&&f.disagree.length)parts.push(`<div class="who disagree"><h3>Who disagreed</h3>${figureCards(f.disagree,true)}</div>`);
  return parts.length?`<div class="figures${parts.length===2?' pair':''}">${parts.join('')}</div>`:''}
 function finish(){const{l,c,score}=tally();show('result');$('#nl').textContent=l;$('#nc').textContent=c;$('#verdict').textContent=verdict(score);
  const N=ISSUES.length,m=$('#marker');m.style.transition='none';m.style.left='50%';m.offsetHeight;m.style.transition='';
