@@ -1,4 +1,4 @@
-const CACHE = 'drp-compass-v7';
+const CACHE = 'drp-compass-v8';
 const ASSETS = [
   '/',
   '/index.html',
@@ -28,19 +28,20 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  const cacheKey = new Request(url.pathname);
   event.respondWith((async () => {
     try {
       const response = await fetch(request);
       if (response && response.ok && response.type === 'basic') {
         const copy = response.clone();
         const cache = await caches.open(CACHE);
-        await cache.put(new Request(url.pathname), copy);
+        await cache.put(cacheKey, copy);
       }
       return response;
     } catch (err) {
-      return (await caches.match(request))
-        || (await caches.match(url.pathname))
+      return (await caches.match(cacheKey))
         || (await caches.match('/index.html'))
+        || (await caches.match('/'))
         || Response.error();
     }
   })());
