@@ -56,6 +56,7 @@ p.lead{font-size:17px;line-height:1.65;color:#d9cfbf}
 .stat span{color:var(--mute);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
 .verdict{text-align:center;font-size:20px;margin:0}
 .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+[hidden]{display:none!important}
 details{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
 summary{cursor:pointer;color:var(--gold2);font-weight:500}
 .row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;font-size:14px;align-items:start}
@@ -109,7 +110,7 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
   <div class="graph" id="graph"><div class="axis"></div><div class="marker" id="marker"><div class="lbl" id="score">0</div><div class="dot"></div></div></div>
   <p class="verdict serif" id="verdict"></p>
   <div class="stats"><div class="stat l"><b id="nl">0</b><span>Liberal answers</span></div><div class="stat c"><b id="nc">0</b><span>Conservative answers</span></div></div>
-  <div class="actions"><button class="btn" id="share">Share / copy result</button><button class="btn ghost" id="again">Retake</button></div>
+  <div class="actions"><button class="btn" id="share">Share my results</button><button class="btn ghost" id="again">Retake test</button><button class="btn" id="yours" hidden>Take the test yourself</button></div>
   <details open><summary>Per-issue breakdown</summary><p class="legend"><span class="sidepill left" title="Objects from the conservative side">from the left</span> objects from the conservative side · <span class="sidepill right" title="Objects from the liberal side">from the right</span> objects from the liberal side</p><div id="rows"></div></details>
  </section>
 </div>
@@ -1432,22 +1433,29 @@ function figuresFor(n){const f=FIGURES[String(n)]||{};const parts=[];
  if(f.agree&&f.agree.length)parts.push(`<div class="who agree"><h3>Who agreed</h3>${figureCards(f.agree,true)}</div>`);
  if(f.disagree&&f.disagree.length)parts.push(`<div class="who disagree"><h3>Who disagreed</h3>${figureCards(f.disagree,true)}</div>`);
  return parts.length?`<div class="figures${parts.length===2?' pair':''}">${parts.join('')}</div>`:''}
-function finish(){const{l,c,score}=tally();show('result');$('#nl').textContent=l;$('#nc').textContent=c;$('#verdict').textContent=verdict(score);
+function encodeAnswers(list){let n=0;for(let k=0;k<list.length;k++)n=(n<<1)|(list[k]==='agree'?1:0);return n.toString(36)}
+function decodeAnswers(s){const N=ISSUES.length;if(!s||!/^[0-9a-z]+$/i.test(s)||s.length>8)return null;const n=parseInt(s,36);if(!Number.isSafeInteger(n)||n<0||n>=2**N)return null;const out=[];for(let k=0;k<N;k++)out.push(((n>>(N-1-k))&1)?'agree':'disagree');return out}
+function resultUrl(){const u=new URL('/',location.origin);u.searchParams.set('r',encodeAnswers(answers));return u.href}
+function shareText(){const{score}=tally();const shown=score>0?'+'+score:String(score);const label=verdict(score).replace(/\.$/,'');return `I scored ${shown} on the DRP Compass (${label}). Take it: ${resultUrl()}`}
+function setResultActions(readonly){$('#share').hidden=!!readonly;$('#again').hidden=!!readonly;$('#yours').hidden=!readonly}
+function finish(readonly){const{l,c,score}=tally();show('result');setResultActions(readonly);$('#nl').textContent=l;$('#nc').textContent=c;$('#verdict').textContent=verdict(score);
  const N=ISSUES.length,m=$('#marker');m.style.transition='none';m.style.left='50%';m.offsetHeight;m.style.transition='';
  setTimeout(()=>{m.style.left=((score+N)/(2*N)*100)+'%'},60);
  let cur=0,t0=performance.now();(function step(t){const k=Math.min(1,(t-t0)/1800),e=1-Math.pow(1-k,3);cur=Math.round(score*e);$('#score').textContent=(cur>0?'+':'')+cur;if(k<1)setTimeout(()=>step(performance.now()),16)})(t0);
- $('#rows').innerHTML=ISSUES.map((q,k)=>{const s=sideOf(k,answers[k]);return`<div class="issue"><div class="row"><span class="n">${q.n}</span><span class="t">${q.statement}<em>You: ${answers[k]==='agree'?'More agree':'More disagree'}</em></span><span class="pill ${s}">${s}</span></div>${figuresFor(q.n)}</div>`}).join('')}
-function resultText(){const{l,c,score}=tally();return`My DRP Compass score: ${score>0?'+':''}${score} on a scale of −30 (conservative) to +30 (liberal). ${l} liberal · ${c} conservative. ${verdict(score)}`+(location.protocol.startsWith('http')?' '+location.href:'')}
+ $('#rows').innerHTML=ISSUES.map((q,k)=>{const s=sideOf(k,answers[k]);return`<div class="issue"><div class="row"><span class="n">${q.n}</span><span class="t">${q.statement}<em>You: ${answers[k]==='agree'?'More agree':'More disagree'}</em></span><span class="pill ${s}">${s}</span></div>${figuresFor(q.n)}</div>`}).join('');
+ if(!readonly&&location.protocol.startsWith('http'))history.replaceState(null,'',resultUrl())}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-$('#go').onclick=()=>{i=0;answers=[];show('quiz');render()};
-$('#again').onclick=$('#go').onclick;
+function clearResultUrl(){if(location.search||location.hash)history.replaceState(null,'',location.pathname)}
+$('#go').onclick=()=>{i=0;answers=[];clearResultUrl();show('quiz');render()};
+$('#again').onclick=()=>{i=0;answers=[];clearResultUrl();show('quiz');render()};
+$('#yours').onclick=()=>{i=0;answers=[];clearResultUrl();show('start')};
 document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(b.dataset.a));
 $('#back').onclick=()=>{if(i>0){i--;render()}};
 document.addEventListener('keydown',e=>{if(!$('#quiz').classList.contains('on'))return;if(e.key==='a'||e.key==='ArrowLeft')answer('agree');if(e.key==='d'||e.key==='ArrowRight')answer('disagree')});
-$('#share').onclick=async()=>{const txt=resultText();try{if(navigator.share){await navigator.share({title:'DRP Compass',text:txt});return}}catch(e){}
- try{await navigator.clipboard.writeText(txt);toast('Result copied to clipboard')}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Result copied to clipboard')}};
+$('#share').onclick=async()=>{const text=shareText();const url=resultUrl();if(navigator.share){try{await navigator.share({title:'DRP Compass',text,url});return}catch(e){if(e&&e.name==='AbortError')return;try{await navigator.share({title:'DRP Compass',text});return}catch(e2){if(e2&&e2.name==='AbortError')return}}}
+ try{await navigator.clipboard.writeText(text);toast('Link copied')}catch(e){const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Link copied')}};
 buildAxis();
-if(window.__DEMO__){answers=window.__DEMO__;finish()}
+(function(){const decoded=decodeAnswers(new URLSearchParams(location.search).get('r'));if(decoded){answers=decoded;finish(true);return}if(window.__DEMO__){answers=window.__DEMO__;finish()}})()
 </script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
