@@ -1,7 +1,9 @@
-const CACHE = 'drp-compass-v8';
+const CACHE = 'drp-compass-v9';
 const ASSETS = [
   '/',
   '/index.html',
+  '/privacy.html',
+  '/storage.js',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
