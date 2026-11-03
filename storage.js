@@ -270,7 +270,7 @@
     importFlag: function (userId) { return IMPORT_FLAG + userId; },
 
     /* Records one anonymous count row per completed test (guests and signed-in
-       users). Stores only registered flag, user id (if signed in), score and
+       users). Stores only registered flag, score and
        the raw answer values. No names, emails or IPs.
        Never throws: failures are ignored silently. */
     /* One visit row per page load; the server hashes the IP. Never throws. */
@@ -288,7 +288,6 @@
           var n = Number(score);
           await client.from('test_events').insert({
             registered: !!user,
-            user_id: user ? user.id : null,
             score: Number.isFinite(n) ? n : null,
             answers: Array.isArray(answers) ? answers.map(function (a) { return a == null ? null : String(a); }) : null
           });
