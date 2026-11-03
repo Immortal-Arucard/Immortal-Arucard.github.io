@@ -267,7 +267,32 @@
       }
     },
 
-    importFlag: function (userId) { return IMPORT_FLAG + userId; }
+    importFlag: function (userId) { return IMPORT_FLAG + userId; },
+
+    /* Records one anonymous count row per completed test (guests and signed-in
+       users). Stores only registered flag, user id (if signed in) and score.
+       Never throws: failures are ignored silently. */
+    /* One visit row per page load; the server hashes the IP. Never throws. */
+    logVisit: function (path) {
+      return (async function () {
+        try { await client.rpc('log_visit', { path: String(path || '/').slice(0, 200) }); } catch (e) { /* ignore */ }
+      })();
+    },
+
+    logTestEvent: function (score) {
+      return (async function () {
+        try {
+          var sess = await client.auth.getSession();
+          var user = sess && sess.data && sess.data.session && sess.data.session.user;
+          var n = Number(score);
+          await client.from('test_events').insert({
+            registered: !!user,
+            user_id: user ? user.id : null,
+            score: Number.isFinite(n) ? n : null
+          });
+        } catch (e) { /* ignore */ }
+      })();
+    }
   };
 
   global.DRPStorage = api;
