@@ -42,6 +42,7 @@ h1{font-size:clamp(40px,8vw,64px);margin:0;letter-spacing:.04em;background:linea
 .editnote{margin-top:10px}
 .chart{width:100%;height:auto;display:block;margin:4px 0 8px}
 .signed-box{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);text-align:left;color:#d9cfbf}
+.signed-box a{color:var(--gold)}
 .card{background:linear-gradient(180deg,#1b1611,#130f0c);border:1px solid var(--line);border-radius:18px;padding:clamp(22px,5vw,40px);box-shadow:0 20px 60px #0008,0 0 0 1px #ffffff05 inset;position:relative;overflow:hidden}
 .card:before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7}
 .screen{display:none;animation:in .5s ease both}.screen.on{display:block}
@@ -119,9 +120,10 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
   <select class="switcher" id="switcher" hidden aria-label="Switch account"></select>
   <button type="button" class="textbtn" id="open-history" hidden>My history</button>
   <button type="button" class="textbtn" id="sign-out" hidden>Sign out</button>
+  <button type="button" class="textbtn" id="open-signin">Sign in</button>
   <button type="button" class="textbtn" id="open-account">Create account</button>
  </div>
- <p class="device-note">History is saved on this device only for now.</p>
+ <p class="device-note">Synced to your account.</p>
 </header>
 <div class="card">
  <section id="start" class="screen on center">
@@ -148,20 +150,29 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
    </label>
    <button class="btn ghost" id="save-note" type="button">Save note</button>
   </div>
-  <p id="save-prompt" class="prompt" hidden>Create an account to keep this result on this device. <button type="button" class="textbtn" id="prompt-account">Create account</button></p>
+  <p id="save-prompt" class="prompt" hidden>Create an account or sign in to save this result. <button type="button" class="textbtn" id="prompt-account">Create account</button> <button type="button" class="textbtn" id="prompt-signin">Sign in</button></p>
   <div class="actions"><button class="btn" id="share">Share my results</button><button class="btn ghost" id="again">Retake test</button><button class="btn" id="yours" hidden>Take the test yourself</button></div>
   <details open><summary>Per-issue breakdown</summary><p class="legend"><span class="sidepill left" title="Objects from the conservative side">from the left</span> objects from the conservative side · <span class="sidepill right" title="Objects from the liberal side">from the right</span> objects from the liberal side</p><div id="rows"></div></details>
  </section>
  <section id="account" class="screen">
-  <div class="qtitle center">Create account</div>
+  <div class="qtitle center" id="account-title">Create account</div>
   <form id="account-form">
    <label class="field">Name<input name="name" id="acct-name" autocomplete="name" maxlength="80" required></label>
    <label class="field">Email<input name="email" id="acct-email" type="email" autocomplete="email" maxlength="120" required></label>
    <p class="form-error" id="account-error" hidden></p>
-   <div class="actions"><button class="btn" type="submit">Create account</button><button class="btn ghost" type="button" id="account-cancel">Cancel</button></div>
+   <p class="prompt" id="account-status" hidden></p>
+   <div class="actions"><button class="btn" type="submit" id="account-submit">Create account</button><button class="btn ghost" type="button" id="account-cancel">Cancel</button></div>
+   <p class="prompt"><button type="button" class="textbtn" id="show-signin">Already have an account? Sign in</button></p>
+  </form>
+  <form id="signin-form" hidden>
+   <label class="field">Email<input id="signin-email" type="email" autocomplete="email" maxlength="120" required></label>
+   <p class="form-error" id="signin-error" hidden></p>
+   <p class="prompt" id="signin-status" hidden></p>
+   <div class="actions"><button class="btn" type="submit">Send sign-in link</button><button class="btn ghost" type="button" id="signin-cancel">Cancel</button></div>
+   <p class="prompt"><button type="button" class="textbtn" id="show-create">Need an account? Create one</button></p>
   </form>
   <div class="signed-box" id="signed-box" hidden>
-   <p>Signed in as <b id="signed-name"></b>. Deleting removes this profile and its history from this device.</p>
+   <p>Signed in as <b id="signed-name"></b>. Delete account removes your results and profile from the database. It cannot delete the sign-in itself; email <a href="mailto:cubzub@gmail.com">cubzub@gmail.com</a> for full deletion.</p>
    <button class="btn ghost" type="button" id="delete-account">Delete account</button>
   </div>
  </section>
@@ -175,6 +186,7 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
 <footer>Democratic-Republican Party · DRP Compass<br><a href="mailto:cubzub@gmail.com?subject=DRP%20Compass">Contact us</a> · <a href="/privacy.html">Privacy</a></footer>
 </div>
 <div class="toast" id="toast">Copied to clipboard</div>
+<script src="/vendor/supabase.js"></script>
 <script src="/storage.js"></script>
 <script>
 /* ==========================================================================
@@ -1524,32 +1536,45 @@ function when(at){try{return new Date(at).toLocaleString(undefined,{month:'short
 function renderHistory(rows){$('#chart').innerHTML=scoreChart(rows);
  if(!rows.length){$('#history-list').innerHTML='<p class="lead">No saved results yet.</p>';return}
  $('#history-list').innerHTML=rows.map(row=>`<article class="hrow"><div class="hmeta"><time datetime="${esc(row.at)}">${esc(when(row.at))}</time><b class="${row.score<0?'neg':''}">${row.score>0?'+':''}${row.score}</b><span class="hlabel">${esc(row.label)}</span></div><p class="hnote">${row.note?esc(row.note):'<span class="hlabel">No note</span>'}</p><div class="hactions"><a class="textbtn" href="/?r=${encodeURIComponent(row.r)}">View result</a><button type="button" class="textbtn" data-edit="${esc(row.id)}">Edit note</button><button type="button" class="textbtn danger" data-del="${esc(row.id)}">Delete</button></div><form class="editnote" data-form="${esc(row.id)}" hidden><textarea rows="3">${esc(row.note||'')}</textarea><button class="btn" type="submit">Save note</button></form></article>`).join('')}
-async function openHistory(){const profile=await DRPStorage.currentProfile();if(!profile){openAccount();return}renderHistory(await DRPStorage.listHistory(profile.id));show('history')}
-async function refreshAccount(){if(!window.DRPStorage)return;const profiles=await DRPStorage.listProfiles();const me=await DRPStorage.currentProfile();
- $('#whoami').hidden=!me;$('#whoami').textContent=me?me.name:'';$('#open-history').hidden=!me;$('#sign-out').hidden=!me;$('#open-account').textContent=me?'Add account':'Create account';
- $('#signed-box').hidden=!me;if(me)$('#signed-name').textContent=me.name;const showSwitch=profiles.length>1||(!me&&profiles.length>0);$('#switcher').hidden=!showSwitch;
- if(showSwitch){$('#switcher').innerHTML=(!me?'<option value="">Sign in…</option>':'')+profiles.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('#switcher').value=me?me.id:''}}
+async function openHistory(){try{const profile=await DRPStorage.currentProfile();if(!profile){openSignin();return}renderHistory(await DRPStorage.listHistory(profile.id));show('history')}catch(err){toast(err.message||'Could not load history.')}}
+async function refreshAccount(){if(!window.DRPStorage)return;const me=await DRPStorage.currentProfile();
+ $('#whoami').hidden=!me;$('#whoami').textContent=me?me.name:'';$('#open-history').hidden=!me;$('#sign-out').hidden=!me;$('#open-account').hidden=!!me;$('#open-signin').hidden=!!me;
+ $('#switcher').hidden=true;$('#signed-box').hidden=!me;if(me)$('#signed-name').textContent=me.name}
 async function persistResult(){const token=pendingSave;if(!token||!window.DRPStorage){$('#save-box').hidden=true;$('#save-prompt').hidden=!token;return}
- const profile=await DRPStorage.currentProfile();if(pendingSave!==token)return;if(!profile){$('#save-box').hidden=true;$('#save-prompt').hidden=false;return}
- if(!currentEntry){const saved=await DRPStorage.saveResult(profile.id,token);if(pendingSave!==token)return;saved.profileId=profile.id;currentEntry=saved}
- $('#thoughts').value=currentEntry.note||'';$('#save-box').hidden=false;$('#save-prompt').hidden=true}
-function openAccount(){const on=document.querySelector('.screen.on');accountReturn=on&&on.id!=='account'?on.id:'start';$('#account-error').hidden=true;show('account')}
-$('#open-account').onclick=openAccount;$('#prompt-account').onclick=openAccount;
+ try{const profile=await DRPStorage.currentProfile();if(pendingSave!==token)return;if(!profile){$('#save-box').hidden=true;$('#save-prompt').hidden=false;return}
+  if(!currentEntry){const saved=await DRPStorage.saveResult(profile.id,token);if(pendingSave!==token)return;saved.profileId=profile.id;currentEntry=saved;try{sessionStorage.removeItem('drp.pendingResult')}catch(e){}}
+  $('#thoughts').value=currentEntry.note||'';$('#save-box').hidden=false;$('#save-prompt').hidden=true}catch(err){toast(err.message||'Could not save this result.')}}
+function rememberReturn(){const on=document.querySelector('.screen.on');accountReturn=on&&on.id!=='account'?on.id:'start'}
+function showCreateForm(){$('#account-title').textContent='Create account';$('#account-form').hidden=false;$('#signin-form').hidden=true}
+function showSigninForm(){$('#account-title').textContent='Sign in';$('#account-form').hidden=true;$('#signin-form').hidden=false}
+function openAccount(){rememberReturn();$('#account-error').hidden=true;$('#account-status').hidden=true;showCreateForm();show('account')}
+function openSignin(){rememberReturn();$('#signin-error').hidden=true;$('#signin-status').hidden=true;showSigninForm();show('account')}
+$('#open-account').onclick=openAccount;$('#prompt-account').onclick=openAccount;$('#show-create').onclick=showCreateForm;
+$('#open-signin').onclick=openSignin;$('#prompt-signin').onclick=openSignin;$('#show-signin').onclick=showSigninForm;
 $('#account-cancel').onclick=()=>show(accountReturn||'start');
-$('#account-form').onsubmit=async e=>{e.preventDefault();$('#account-error').hidden=true;try{await DRPStorage.createProfile($('#acct-name').value,$('#acct-email').value);$('#account-form').reset();await refreshAccount();await persistResult();show(pendingSave?'result':(accountReturn||'start'))}catch(err){$('#account-error').textContent=err.message||'Could not create the account.';$('#account-error').hidden=false}};
-$('#sign-out').onclick=async()=>{await DRPStorage.signOut();await refreshAccount();if($('#history').classList.contains('on')||$('#account').classList.contains('on'))show('start');else persistResult()};
-$('#delete-account').onclick=async()=>{const profile=await DRPStorage.currentProfile();if(!profile)return;if(!confirm('Delete '+profile.name+' and their saved history from this device?'))return;await DRPStorage.deleteProfile(profile.id);pendingSave=null;currentEntry=null;await refreshAccount();show('start');toast('Account deleted')};
-$('#switcher').onchange=async()=>{if(!$('#switcher').value)return;await DRPStorage.switchProfile($('#switcher').value);await refreshAccount();if($('#history').classList.contains('on'))openHistory();else persistResult()};
+$('#signin-cancel').onclick=()=>show(accountReturn||'start');
+$('#account-form').onsubmit=async e=>{e.preventDefault();$('#account-error').hidden=true;$('#account-status').hidden=true;try{if(pendingSave)sessionStorage.setItem('drp.pendingResult',JSON.stringify(pendingSave));await DRPStorage.createProfile($('#acct-name').value,$('#acct-email').value);$('#account-status').textContent='Check your email for a sign-in link.';$('#account-status').hidden=false}catch(err){$('#account-error').textContent=err.message||'Could not create the account.';$('#account-error').hidden=false}};
+$('#signin-form').onsubmit=async e=>{e.preventDefault();$('#signin-error').hidden=true;$('#signin-status').hidden=true;try{if(pendingSave)sessionStorage.setItem('drp.pendingResult',JSON.stringify(pendingSave));await DRPStorage.signIn($('#signin-email').value);$('#signin-status').textContent='Check your email for a sign-in link.';$('#signin-status').hidden=false}catch(err){$('#signin-error').textContent=err.message||'Could not send the sign-in link.';$('#signin-error').hidden=false}};
+$('#sign-out').onclick=async()=>{try{await DRPStorage.signOut()}catch(err){toast(err.message);return}await refreshAccount();if($('#history').classList.contains('on')||$('#account').classList.contains('on'))show('start');else persistResult()};
+$('#delete-account').onclick=async()=>{const profile=await DRPStorage.currentProfile();if(!profile)return;if(!confirm('Delete '+profile.name+'’s results and profile? This does not delete the sign-in itself. Email cubzub@gmail.com for full deletion.'))return;try{await DRPStorage.deleteProfile(profile.id);pendingSave=null;currentEntry=null;await refreshAccount();show('start');toast('Results and profile deleted')}catch(err){toast(err.message)}};
 $('#open-history').onclick=()=>openHistory();
 $('#history-back').onclick=()=>show('start');
-$('#save-note').onclick=async()=>{if(!currentEntry)return;const note=$('#thoughts').value;await DRPStorage.updateNote(currentEntry.profileId,currentEntry.id,note);currentEntry.note=note;pendingSave.note=note;toast('Note saved')};
-$('#history-list').onclick=async e=>{const t=e.target;const profile=await DRPStorage.currentProfile();if(!profile)return;
- if(t.dataset.del){if(!confirm('Delete this result from this device?'))return;await DRPStorage.deleteEntry(profile.id,t.dataset.del);renderHistory(await DRPStorage.listHistory(profile.id));return}
- if(t.dataset.edit){const form=document.querySelector('.editnote[data-form="'+t.dataset.edit+'"]');if(form)form.hidden=!form.hidden}};
-$('#history-list').addEventListener('submit',async e=>{const form=e.target;if(!form.classList||!form.classList.contains('editnote'))return;e.preventDefault();const profile=await DRPStorage.currentProfile();if(!profile)return;await DRPStorage.updateNote(profile.id,form.dataset.form,form.querySelector('textarea').value);toast('Note saved');renderHistory(await DRPStorage.listHistory(profile.id))});
+$('#save-note').onclick=async()=>{if(!currentEntry)return;try{const note=$('#thoughts').value;await DRPStorage.updateNote(currentEntry.profileId,currentEntry.id,note);currentEntry.note=note;if(pendingSave)pendingSave.note=note;toast('Note saved')}catch(err){toast(err.message)}};
+$('#history-list').onclick=async e=>{const t=e.target;try{const profile=await DRPStorage.currentProfile();if(!profile)return;
+ if(t.dataset.del){if(!confirm('Delete this result from your account?'))return;await DRPStorage.deleteEntry(profile.id,t.dataset.del);renderHistory(await DRPStorage.listHistory(profile.id));return}
+ if(t.dataset.edit){const form=document.querySelector('.editnote[data-form="'+t.dataset.edit+'"]');if(form)form.hidden=!form.hidden}}catch(err){toast(err.message)}};
+$('#history-list').addEventListener('submit',async e=>{const form=e.target;if(!form.classList||!form.classList.contains('editnote'))return;e.preventDefault();try{const profile=await DRPStorage.currentProfile();if(!profile)return;await DRPStorage.updateNote(profile.id,form.dataset.form,form.querySelector('textarea').value);toast('Note saved');renderHistory(await DRPStorage.listHistory(profile.id))}catch(err){toast(err.message)}});
+async function offerImport(){if(sessionStorage.getItem('drp.importLock')||!window.DRPStorage||!DRPStorage.localMigration)return;sessionStorage.setItem('drp.importLock','1');
+ try{const me=await DRPStorage.currentProfile();if(!me){sessionStorage.removeItem('drp.importLock');return}const flag=DRPStorage.importFlag(me.id);if(localStorage.getItem(flag))return;const pending=DRPStorage.localMigration();if(!pending.entries.length){localStorage.setItem(flag,'1');return}
+  const yes=confirm('Import '+pending.entries.length+' result'+(pending.entries.length===1?'':'s')+' saved on this device into your account?');localStorage.setItem(flag,'1');if(!yes)return;await DRPStorage.importLocal(me.id,pending.entries);toast('Imported results from this device');if($('#history').classList.contains('on'))openHistory()}catch(err){toast(err.message)}}
+async function resumePending(){if(!pendingSave){try{const raw=sessionStorage.getItem('drp.pendingResult');if(raw)pendingSave=JSON.parse(raw)}catch(e){}}
+ await refreshAccount();if(pendingSave)await persistResult();await offerImport()}
+function onStorageReady(e){if(e&&e.detail&&e.detail.error)toast(e.detail.error.message);resumePending()}
 buildAxis();
-refreshAccount();
-(function(){const decoded=decodeAnswers(new URLSearchParams(location.search).get('r'));if(decoded){answers=decoded;finish(true);return}if(window.__DEMO__){answers=window.__DEMO__;finish()}})()
+(function(){const params=new URLSearchParams(location.search);const hash=new URLSearchParams((location.hash||'').replace(/^#/,''));const authError=params.get('error_description')||hash.get('error_description');if(authError)toast(authError.replace(/\+/g,' '));const decoded=decodeAnswers(params.get('r'));if(decoded){answers=decoded;finish(true);return}if(window.__DEMO__){answers=window.__DEMO__;finish()}})();
+window.addEventListener('drp-storage-ready',onStorageReady);
+window.addEventListener('drp-auth',function(e){if(e.detail&&e.detail.error)toast(e.detail.error.message);else resumePending()});
+if(window.DRPStorage)resumePending();
 </script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
