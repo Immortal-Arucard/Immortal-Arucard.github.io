@@ -1509,7 +1509,7 @@ function answer(a){answers[i]=a;$('#bar').style.width=Math.round((i+1)/ISSUES.le
 function tally(){let l=0,c=0;answers.forEach((a,k)=>sideOf(k,a)==='liberal'?l++:c++);return{l,c,score:l-c}}
 function buildAxis(){const g=$('#graph');const N=ISSUES.length;for(let v=-N;v<=N;v+=5){const x=(v+N)/(2*N)*100;const t=document.createElement('div');t.className='tick'+(v%10===0?' major':'');t.style.left=x+'%';g.appendChild(t);
  const l=document.createElement('div');l.className='tl'+(v%10===0?'':' minor');l.style.left=x+'%';l.textContent=v>0?'+'+v:v;g.appendChild(l)}}
-function verdict(s){const a=Math.abs(s);if(a<=4)return'Squarely in the center.';const side=s>0?'liberal':'conservative';if(a<=12)return`Leaning ${side}.`;if(a<=22)return`Firmly ${side}.`;return`Strongly ${side}.`}
+function verdict(s){const a=Math.abs(s);if(a===0)return'Squarely in the center.';const left=s>0;if(a<=5)return left?'Left of center.':'Right of center.';if(a<=10)return left?'Center-left.':'Center-right.';if(a<=20)return left?'Left.':'Right.';return left?'Far left.':'Far right.'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function hostOf(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return 'source'}}
 function sidePill(side){if(side==='left')return `<span class="sidepill left" title="Objects from the conservative side">from the left</span>`;if(side==='right')return `<span class="sidepill right" title="Objects from the liberal side">from the right</span>`;return ''}
