@@ -24,6 +24,7 @@ h1{font-size:clamp(40px,8vw,64px);margin:0;letter-spacing:.04em;background:linea
 .whoami{font-family:"Cormorant Garamond",Georgia,serif;font-size:22px;line-height:1;color:var(--gold2)}
 .device-note{color:var(--mute);font-size:12px;text-align:center;margin:8px 0 0}
 .textbtn{background:none;border:0;padding:0;color:var(--gold);cursor:pointer;font:inherit;font-size:13px;letter-spacing:.04em}
+a.textbtn{text-decoration:none}
 .textbtn:hover{color:var(--gold2);text-decoration:underline}
 .textbtn.danger{color:#e07a48}
 .switcher{background:#1a1510;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:13px;max-width:100%}
@@ -119,6 +120,7 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
   <span class="whoami" id="whoami" hidden></span>
   <select class="switcher" id="switcher" hidden aria-label="Switch account"></select>
   <button type="button" class="textbtn" id="open-history" hidden>My history</button>
+  <a class="textbtn" id="open-stats" href="/stats.html" hidden>Stats</a>
   <button type="button" class="textbtn" id="sign-out" hidden>Sign out</button>
   <button type="button" class="textbtn" id="open-signin">Sign in</button>
   <button type="button" class="textbtn" id="open-account">Create account</button>
@@ -1539,7 +1541,8 @@ function renderHistory(rows){$('#chart').innerHTML=scoreChart(rows);
  $('#history-list').innerHTML=rows.map(row=>`<article class="hrow"><div class="hmeta"><time datetime="${esc(row.at)}">${esc(when(row.at))}</time><b class="${row.score<0?'neg':''}">${row.score>0?'+':''}${row.score}</b><span class="hlabel">${esc(row.label)}</span></div><p class="hnote">${row.note?esc(row.note):'<span class="hlabel">No note</span>'}</p><div class="hactions"><a class="textbtn" href="/?r=${encodeURIComponent(row.r)}">View result</a><button type="button" class="textbtn" data-edit="${esc(row.id)}">Edit note</button><button type="button" class="textbtn danger" data-del="${esc(row.id)}">Delete</button></div><form class="editnote" data-form="${esc(row.id)}" hidden><textarea rows="3">${esc(row.note||'')}</textarea><button class="btn" type="submit">Save note</button></form></article>`).join('')}
 async function openHistory(){try{const profile=await DRPStorage.currentProfile();if(!profile){openSignin();return}renderHistory(await DRPStorage.listHistory(profile.id));show('history')}catch(err){toast(err.message||'Could not load history.')}}
 async function refreshAccount(){if(!window.DRPStorage)return;const me=await DRPStorage.currentProfile();
- $('#whoami').hidden=!me;$('#whoami').textContent=me?me.name:'';$('#open-history').hidden=!me;$('#sign-out').hidden=!me;$('#open-account').hidden=!!me;$('#open-signin').hidden=!!me;
+ const owner=!!(me&&me.email==='cubzub@gmail.com');
+ $('#whoami').hidden=!me;$('#whoami').textContent=me?me.name:'';$('#open-history').hidden=!me;$('#open-stats').hidden=!owner;$('#sign-out').hidden=!me;$('#open-account').hidden=!!me;$('#open-signin').hidden=!!me;
  $('#switcher').hidden=true;$('#signed-box').hidden=!me;if(me)$('#signed-name').textContent=me.name}
 async function persistResult(){const token=pendingSave;if(!token||!window.DRPStorage){$('#save-box').hidden=true;$('#save-prompt').hidden=!token;return}
  try{const profile=await DRPStorage.currentProfile();if(pendingSave!==token)return;if(!profile){$('#save-box').hidden=true;$('#save-prompt').hidden=false;return}
