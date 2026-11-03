@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="DRP Compass">
 <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=Roboto:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0b09;--panel:#17130f;--line:#2c241b;--gold:#d9a441;--gold2:#f3d27a;--ember:#c8642a;--text:#efe6d6;--mute:#9d907c;--lib:#e8b04a;--con:#b5562b}
 *{box-sizing:border-box}html{color-scheme:dark}html,body{margin:0;min-height:100%}
@@ -79,7 +79,18 @@ p.lead{font-size:17px;line-height:1.65;color:#d9cfbf}
 .stat.l b{color:var(--lib)}.stat.c b{color:var(--con)}
 .stat span{color:var(--mute);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
 .verdict{text-align:center;font-size:20px;margin:0}
-.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.actions{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:22px}
+.gsi-material-button{position:relative;appearance:none;overflow:hidden;box-sizing:border-box;height:40px;padding:0 12px;border:1px solid #747775;border-radius:4px;background:#fff;color:#1f1f1f;cursor:pointer;font-family:Roboto,arial,sans-serif;font-size:14px;font-weight:500;letter-spacing:.25px;line-height:20px;text-align:center;white-space:nowrap;vertical-align:middle;transition:background-color .218s,border-color .218s,box-shadow .218s}
+.gsi-material-button .gsi-material-button-state{position:absolute;inset:0;opacity:0;transition:opacity .218s}
+.gsi-material-button .gsi-material-button-content-wrapper{position:relative;display:flex;align-items:center;justify-content:center;height:100%;gap:10px}
+.gsi-material-button .gsi-material-button-icon{display:flex;width:20px;height:20px;flex:none}
+.gsi-material-button .gsi-material-button-icon svg{display:block;width:20px;height:20px}
+.gsi-material-button .gsi-material-button-contents{font-family:Roboto,arial,sans-serif;font-weight:500;line-height:20px}
+.gsi-material-button:not(:disabled):hover{box-shadow:0 1px 2px 0 rgba(60,64,67,.3),0 1px 3px 1px rgba(60,64,67,.15)}
+.gsi-material-button:not(:disabled):hover .gsi-material-button-state,.gsi-material-button:not(:disabled):focus-visible .gsi-material-button-state{background:#001d35;opacity:.08}
+.gsi-material-button:not(:disabled):active .gsi-material-button-state{background:#001d35;opacity:.12}
+.gsi-material-button:focus-visible{outline:2px solid #d9a441;outline-offset:2px}
+.gsi-material-button:disabled{cursor:default;background:#ffffff61;border-color:#1f1f1f1f;box-shadow:none}
 [hidden]{display:none!important}
 details{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
 summary{cursor:pointer;color:var(--gold2);font-weight:500}
@@ -163,14 +174,14 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
    <label class="field">Email<input name="email" id="acct-email" type="email" autocomplete="email" maxlength="120" required></label>
    <p class="form-error" id="account-error" hidden></p>
    <p class="prompt" id="account-status" hidden></p>
-   <div class="actions"><button class="btn" type="submit" id="account-submit">Create account</button><button class="btn ghost" type="button" id="account-cancel">Cancel</button></div>
+   <div class="actions"><button class="btn" type="submit" id="account-submit">Create account</button><button type="button" class="gsi-material-button" id="google-create" data-google><span class="gsi-material-button-state" aria-hidden="true"></span><span class="gsi-material-button-content-wrapper"><span class="gsi-material-button-icon" aria-hidden="true"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg></span><span class="gsi-material-button-contents">Continue with Google</span></span></button><button class="btn ghost" type="button" id="account-cancel">Cancel</button></div>
    <p class="prompt"><button type="button" class="textbtn" id="show-signin">Already have an account? Sign in</button></p>
   </form>
   <form id="signin-form" hidden>
    <label class="field">Email<input id="signin-email" type="email" autocomplete="email" maxlength="120" required></label>
    <p class="form-error" id="signin-error" hidden></p>
    <p class="prompt" id="signin-status" hidden></p>
-   <div class="actions"><button class="btn" type="submit">Send sign-in link</button><button class="btn ghost" type="button" id="signin-cancel">Cancel</button></div>
+   <div class="actions"><button class="btn" type="submit">Send sign-in link</button><button type="button" class="gsi-material-button" id="google-signin" data-google><span class="gsi-material-button-state" aria-hidden="true"></span><span class="gsi-material-button-content-wrapper"><span class="gsi-material-button-icon" aria-hidden="true"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg></span><span class="gsi-material-button-contents">Continue with Google</span></span></button><button class="btn ghost" type="button" id="signin-cancel">Cancel</button></div>
    <p class="prompt"><button type="button" class="textbtn" id="show-create">Need an account? Create one</button></p>
   </form>
   <div class="signed-box" id="signed-box" hidden>
@@ -185,7 +196,7 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
   <div class="actions"><button class="btn ghost" type="button" id="history-back">Back</button></div>
  </section>
 </div>
-<footer>Democratic-Republican Party · DRP Compass<br><a href="mailto:cubzub@gmail.com?subject=DRP%20Compass">Contact us</a> · <a href="/privacy.html">Privacy</a></footer>
+<footer>Democratic-Republican Party · DRP Compass<br><a href="mailto:cubzub@gmail.com?subject=DRP%20Compass">Contact us</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></footer>
 </div>
 <div class="toast" id="toast">Copied to clipboard</div>
 <script src="/vendor/supabase.js"></script>
@@ -1559,6 +1570,7 @@ $('#account-cancel').onclick=()=>show(accountReturn||'start');
 $('#signin-cancel').onclick=()=>show(accountReturn||'start');
 $('#account-form').onsubmit=async e=>{e.preventDefault();$('#account-error').hidden=true;$('#account-status').hidden=true;try{if(pendingSave)sessionStorage.setItem('drp.pendingResult',JSON.stringify(pendingSave));await DRPStorage.createProfile($('#acct-name').value,$('#acct-email').value);$('#account-status').textContent='Check your email for a sign-in link.';$('#account-status').hidden=false}catch(err){$('#account-error').textContent=err.message||'Could not create the account.';$('#account-error').hidden=false}};
 $('#signin-form').onsubmit=async e=>{e.preventDefault();$('#signin-error').hidden=true;$('#signin-status').hidden=true;try{if(pendingSave)sessionStorage.setItem('drp.pendingResult',JSON.stringify(pendingSave));await DRPStorage.signIn($('#signin-email').value);$('#signin-status').textContent='Check your email for a sign-in link.';$('#signin-status').hidden=false}catch(err){$('#signin-error').textContent=err.message||'Could not send the sign-in link.';$('#signin-error').hidden=false}};
+document.querySelectorAll('[data-google]').forEach(btn=>{btn.addEventListener('click',async()=>{const form=btn.closest('form');const errorEl=form&&form.querySelector('.form-error');const statusEl=form&&form.querySelector('[id$="-status"]');if(errorEl)errorEl.hidden=true;if(statusEl)statusEl.hidden=true;btn.disabled=true;try{if(pendingSave)sessionStorage.setItem('drp.pendingResult',JSON.stringify(pendingSave));await DRPStorage.signInWithGoogle()}catch(err){btn.disabled=false;const message=err.message||'Could not continue with Google.';if(errorEl){errorEl.textContent=message;errorEl.hidden=false}else toast(message)}})});
 $('#sign-out').onclick=async()=>{try{await DRPStorage.signOut()}catch(err){toast(err.message);return}await refreshAccount();if($('#history').classList.contains('on')||$('#account').classList.contains('on'))show('start');else persistResult()};
 $('#delete-account').onclick=async()=>{const profile=await DRPStorage.currentProfile();if(!profile)return;if(!confirm('Delete '+profile.name+'’s results and profile? This does not delete the sign-in itself. Email cubzub@gmail.com for full deletion.'))return;try{await DRPStorage.deleteProfile(profile.id);pendingSave=null;currentEntry=null;await refreshAccount();show('start');toast('Results and profile deleted')}catch(err){toast(err.message)}};
 $('#open-history').onclick=()=>openHistory();

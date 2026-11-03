@@ -64,6 +64,23 @@
     return result.data.session ? result.data.session.user : null;
   }
 
+  /* Email sign-up stores the typed name in user_metadata.name.
+     Google often leaves name empty and sets user_metadata.full_name.
+     A value that is only the email address does not count as a name. */
+  function metadataName(user) {
+    var meta = (user && user.user_metadata) || {};
+    var email = String((user && user.email) || meta.email || '').trim().toLowerCase();
+    var fields = [meta.name, meta.full_name];
+    var i, value;
+    for (i = 0; i < fields.length; i++) {
+      value = String(fields[i] || '').trim();
+      if (!value) continue;
+      if (email && value.toLowerCase() === email) continue;
+      return value;
+    }
+    return '';
+  }
+
   async function ensureProfile(user) {
     if (!user) {
       profile = null;
@@ -71,8 +88,7 @@
     }
     var pendingName = '';
     try { pendingName = sessionStorage.getItem('drp.pendingName') || ''; } catch (e) {}
-    var metaName = user.user_metadata && user.user_metadata.name;
-    var name = String(metaName || pendingName || '').trim();
+    var name = metadataName(user) || String(pendingName || '').trim();
     var existing = await client.from('profiles').select('id,name,created_at').eq('id', user.id).maybeSingle();
     if (existing.error) throw friendly(existing.error);
     if (!existing.data) {
@@ -185,6 +201,22 @@
         throw friendly(result.error);
       }
       return { pending: true, email: email };
+    },
+
+    async signInWithGoogle() {
+      var result;
+      try {
+        result = await client.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/'
+          }
+        });
+      } catch (err) {
+        throw friendly(err);
+      }
+      if (result.error) throw friendly(result.error);
+      return result.data;
     },
 
     async switchProfile(id) {
