@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stats — DRP Compass</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#d9a441">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="DRP Compass">
+<link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0b09;--line:#2c241b;--gold:#d9a441;--gold2:#f3d27a;--ember:#c8642a;--text:#efe6d6;--mute:#9d907c;--blue:#2f6fdb;--red:#d33a2c;--zero:#8a8072}
+*{box-sizing:border-box}html{color-scheme:dark}html,body{margin:0;min-height:100%}
+body{background:radial-gradient(1200px 600px at 50% -10%,#2a1c0e 0%,transparent 60%),radial-gradient(800px 500px at 50% 120%,#1e130a 0%,transparent 60%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:28px 16px 48px;min-height:100vh}
+h1,h2{font-family:"Cormorant Garamond",Georgia,serif}
+.wrap{width:100%;max-width:880px;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:flex-end;justify-content:space-between}
+h1{font-size:clamp(40px,8vw,60px);margin:0;letter-spacing:.04em;background:linear-gradient(180deg,var(--gold2),var(--gold) 55%,#9a6a22);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mute);letter-spacing:.16em;text-transform:uppercase;font-size:12px;margin-top:4px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.updated{color:var(--mute);font-size:13px}
+.btn{appearance:none;border:1px solid var(--gold);background:linear-gradient(180deg,#e2b04f,#b9842c);color:#1a1207;font-weight:600;font-size:15px;padding:12px 20px;border-radius:12px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--gold2)}
+.textbtn{background:none;border:0;padding:0;color:var(--gold);cursor:pointer;font:inherit;font-size:13px}
+.textbtn:hover{color:var(--gold2);text-decoration:underline}
+.card{background:linear-gradient(180deg,#1b1611,#130f0c);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,28px);margin-top:18px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{border:1px solid var(--line);border-radius:14px;padding:16px 14px;background:#1a1510;text-align:center}
+.stat b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(32px,5vw,44px);line-height:1;color:var(--gold2);font-weight:600}
+.stat span{display:block;margin-top:8px;color:var(--mute);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+h2{font-size:28px;margin:0 0 8px;color:var(--gold2)}
+.legend{display:flex;gap:16px;color:var(--mute);font-size:13px;margin-bottom:8px}
+.legend i{display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle;border-radius:2px}
+.chart{width:100%;height:auto;display:block}
+.hist{margin-top:8px}
+.msg{color:#d9cfbf;font-size:17px;line-height:1.6}
+.field{display:block;text-align:left;margin:14px 0;color:var(--mute);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.field input{display:block;width:100%;margin-top:6px;background:#120e0b;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;font-size:15px;letter-spacing:0;text-transform:none}
+.err{color:#e07a48;font-size:14px}
+.status{color:#d9cfbf}
+[hidden]{display:none!important}
+@media(max-width:720px){.cards{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<div class="wrap">
+<div class="top">
+ <div><h1>Stats</h1><div class="sub">DRP Compass</div></div>
+ <div class="toolbar">
+  <span class="updated" id="updated" hidden></span>
+  <button class="btn" type="button" id="refresh" hidden>Refresh</button>
+  <button class="textbtn" type="button" id="signout" hidden>Sign out</button>
+ </div>
+</div>
+<section class="card" id="loading"><p class="msg">Loading…</p></section>
+<section class="card" id="gate" hidden>
+ <h2>Sign in</h2>
+ <p class="msg">Sign in to view stats.</p>
+ <form id="signin">
+  <label class="field">Email<input id="email" type="email" autocomplete="email" maxlength="120" required></label>
+  <p class="err" id="signin-error" hidden></p>
+  <p class="status" id="signin-status" hidden></p>
+  <button class="btn" type="submit">Send sign-in link</button>
+ </form>
+</section>
+<section class="card" id="private" hidden><p class="msg">This page is private.</p></section>
+<section class="card" id="error" hidden><p class="err" id="error-text"></p></section>
+<section id="dash" hidden>
+ <div class="cards">
+  <div class="stat"><b id="n-accounts">—</b><span>Total accounts</span></div>
+  <div class="stat"><b id="n-tests">—</b><span>Tests taken</span></div>
+  <div class="stat"><b id="n-notes">—</b><span>Notes written</span></div>
+  <div class="stat"><b id="n-avg">—</b><span>Average score</span></div>
+ </div>
+ <div class="card">
+  <h2>Each day</h2>
+  <div class="legend"><span><i style="background:#d9a441"></i>Sign-ups</span><span><i style="background:#c8642a"></i>Tests</span></div>
+  <div id="daily"></div>
+ </div>
+ <div class="card">
+  <h2>Score distribution</h2>
+  <div class="legend"><span><i style="background:#2f6fdb"></i>Conservative</span><span><i style="background:#8a8072"></i>Zero</span><span><i style="background:#d33a2c"></i>Liberal</span></div>
+  <div id="hist"></div>
+ </div>
+</section>
+</div>
+<script src="/vendor/supabase.js"></script>
+<script>
+var SUPABASE_URL = 'https://xfswvbxuhgqbdqpqiywa.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_xHJ2V2lN-9B3LqSa3La3iw_QhqtU6JC';
+var client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, flowType: 'pkce' }
+});
+
+function show(id) {
+  ['loading', 'gate', 'private', 'error', 'dash'].forEach(function (name) {
+    document.getElementById(name).hidden = name !== id;
+  });
+  var ready = id === 'dash';
+  document.getElementById('refresh').hidden = !ready;
+  document.getElementById('updated').hidden = !ready;
+  document.getElementById('signout').hidden = id === 'loading' || id === 'gate';
+}
+
+function friendly(error) {
+  var msg = (error && (error.message || error.error_description || error.details)) || 'Something went wrong.';
+  if (navigator.onLine === false || /failed to fetch|network|offline|timeout/i.test(String(msg))) {
+    return 'You appear to be offline. Try again when you are connected.';
+  }
+  return String(msg);
+}
+
+function isPrivate(error) {
+  var msg = String((error && (error.message || error.details || error.hint)) || '').toLowerCase();
+  return msg.indexOf('not allowed') !== -1;
+}
+
+function dayKey(value) {
+  var match = String(value == null ? '' : value).match(/^(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : '';
+}
+
+function addDay(iso) {
+  var parts = iso.split('-').map(Number);
+  var date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function recentDays(count) {
+  var fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+  var end = fmt.format(new Date());
+  var days = [end];
+  for (var i = 1; i < count; i++) days.unshift(end = addDayBack(end));
+  return days;
+}
+
+function addDayBack(iso) {
+  var parts = iso.split('-').map(Number);
+  var date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  date.setUTCDate(date.getUTCDate() - 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function seriesMap(rows) {
+  var map = {};
+  (rows || []).forEach(function (row) {
+    var key = dayKey(row.day);
+    if (key) map[key] = (map[key] || 0) + (Number(row.n) || 0);
+  });
+  return map;
+}
+
+function activityDays(signups, tests) {
+  var signMap = seriesMap(signups);
+  var testMap = seriesMap(tests);
+  var keys = Object.keys(signMap).concat(Object.keys(testMap)).sort();
+  var start = keys[0];
+  var end = keys[keys.length - 1];
+  var days = [];
+  if (!start) {
+    recentDays(14).forEach(function (day) { days.push({ day: day, signups: 0, tests: 0 }); });
+    return days;
+  }
+  for (var day = start; day <= end; day = addDay(day)) {
+    days.push({ day: day, signups: signMap[day] || 0, tests: testMap[day] || 0 });
+  }
+  return days;
+}
+
+function formatAvg(value) {
+  if (value == null || value === '' || Number.isNaN(Number(value))) return '—';
+  var n = Number(value);
+  var text = Math.abs(n - Math.round(n)) < 0.05 ? String(Math.round(n)) : n.toFixed(1);
+  return n > 0 ? '+' + text : text;
+}
+
+function formatCount(value) {
+  var n = Number(value);
+  return Number.isFinite(n) ? String(Math.round(n)) : '—';
+}
+
+function lineChart(days) {
+  var w = 720, h = 200, padL = 28, padR = 12, padT = 16, padB = 28;
+  var max = 1;
+  days.forEach(function (d) { max = Math.max(max, d.signups, d.tests); });
+  function x(i) { return days.length < 2 ? (padL + w - padR) / 2 : padL + (w - padL - padR) * i / (days.length - 1); }
+  function y(n) { return padT + (h - padT - padB) * (1 - n / max); }
+  function path(key) {
+    return days.map(function (d, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(d[key]).toFixed(1); }).join(' ');
+  }
+  var step = Math.ceil(days.length / 8);
+  var labels = days.map(function (d, i) {
+    if (i % step !== 0 && i !== days.length - 1) return '';
+    var parts = d.day.split('-');
+    return '<text x="' + x(i).toFixed(1) + '" y="' + (h - 8) + '" fill="#9d907c" font-size="11" text-anchor="middle">' + (Number(parts[1]) + '/' + Number(parts[2])) + '</text>';
+  }).join('');
+  return '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Sign-ups and tests per day">' +
+    '<line x1="' + padL + '" y1="' + y(0) + '" x2="' + (w - padR) + '" y2="' + y(0) + '" stroke="#2c241b"/>' +
+    '<path d="' + path('signups') + '" fill="none" stroke="#d9a441" stroke-width="2"/>' +
+    '<path d="' + path('tests') + '" fill="none" stroke="#c8642a" stroke-width="2"/>' +
+    labels + '</svg>';
+}
+
+function scoreColor(score) {
+  if (score < 0) return '#2f6fdb';
+  if (score > 0) return '#d33a2c';
+  return '#8a8072';
+}
+
+function histogram(buckets) {
+  var counts = [];
+  for (var s = -30; s <= 30; s++) counts.push(0);
+  (buckets || []).forEach(function (row) {
+    var score = Number(row.score);
+    if (score >= -30 && score <= 30) counts[score + 30] += Number(row.n) || 0;
+  });
+  var max = 1;
+  counts.forEach(function (n) { if (n > max) max = n; });
+  var w = 720, h = 180, padB = 22, padT = 8;
+  var gap = 1;
+  var barW = (w - gap * 60) / 61;
+  var bars = counts.map(function (n, i) {
+    var score = i - 30;
+    var bh = n === 0 ? 0 : Math.max(2, (h - padT - padB) * n / max);
+    var x = i * (barW + gap);
+    var y = h - padB - bh;
+    return '<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" width="' + barW.toFixed(2) + '" height="' + bh.toFixed(2) + '" fill="' + scoreColor(score) + '"><title>' + (score > 0 ? '+' : '') + score + ': ' + n + '</title></rect>';
+  }).join('');
+  function tick(score) {
+    var x = (score + 30) * (barW + gap) + barW / 2;
+    var label = score > 0 ? '+' + score : String(score);
+    return '<text x="' + x.toFixed(1) + '" y="' + (h - 6) + '" fill="#9d907c" font-size="11" text-anchor="middle">' + label + '</text>';
+  }
+  return '<svg class="chart hist" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Score distribution from -30 to +30">' +
+    bars + tick(-30) + tick(0) + tick(30) + '</svg>';
+}
+
+function stamp() {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', timeZoneName: 'short'
+  }).format(new Date());
+}
+
+function renderStats(data) {
+  document.getElementById('n-accounts').textContent = formatCount(data.accounts);
+  document.getElementById('n-tests').textContent = formatCount(data.tests);
+  document.getElementById('n-notes').textContent = formatCount(data.notes);
+  document.getElementById('n-avg').textContent = formatAvg(data.avg_score);
+  var days = activityDays(data.signups_by_day, data.tests_by_day);
+  document.getElementById('daily').innerHTML = lineChart(days);
+  document.getElementById('hist').innerHTML = histogram(data.score_buckets);
+  document.getElementById('updated').textContent = 'Last updated ' + stamp();
+  show('dash');
+}
+
+async function loadStats() {
+  show('loading');
+  var result = await client.rpc('admin_stats');
+  if (result.error) {
+    if (isPrivate(result.error)) { show('private'); return; }
+    document.getElementById('error-text').textContent = friendly(result.error);
+    show('error');
+    return;
+  }
+  var data = result.data;
+  if (typeof data === 'string') data = JSON.parse(data);
+  renderStats(data || {});
+}
+
+async function boot() {
+  var sessionResult = await client.auth.getSession();
+  if (sessionResult.error) {
+    document.getElementById('error-text').textContent = friendly(sessionResult.error);
+    show('error');
+    return;
+  }
+  if (!sessionResult.data.session) { show('gate'); return; }
+  await loadStats();
+}
+
+document.getElementById('refresh').onclick = function () { loadStats().catch(function (err) { document.getElementById('error-text').textContent = friendly(err); show('error'); }); };
+document.getElementById('signout').onclick = function () {
+  client.auth.signOut().then(function () { show('gate'); }).catch(function (err) {
+    document.getElementById('error-text').textContent = friendly(err);
+    show('error');
+  });
+};
+document.getElementById('signin').onsubmit = function (event) {
+  event.preventDefault();
+  var error = document.getElementById('signin-error');
+  var status = document.getElementById('signin-status');
+  error.hidden = true;
+  status.hidden = true;
+  var email = document.getElementById('email').value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    error.textContent = 'Enter a valid email.';
+    error.hidden = false;
+    return;
+  }
+  client.auth.signInWithOtp({
+    email: email,
+    options: { emailRedirectTo: location.origin + '/stats.html', shouldCreateUser: false }
+  }).then(function (result) {
+    if (result.error) {
+      var raw = result.error.message || '';
+      error.textContent = /signups not allowed/i.test(raw) ? 'No account found for that email.' : friendly(result.error);
+      error.hidden = false;
+      return;
+    }
+    status.textContent = 'Check your email for a sign-in link.';
+    status.hidden = false;
+  }).catch(function (err) {
+    error.textContent = friendly(err);
+    error.hidden = false;
+  });
+};
+
+client.auth.onAuthStateChange(function (event, session) {
+  if (event === 'SIGNED_OUT') show('gate');
+  else if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) loadStats().catch(function () {});
+});
+
+boot().catch(function (err) {
+  document.getElementById('error-text').textContent = friendly(err);
+  show('error');
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+</script>
+</body></html>
