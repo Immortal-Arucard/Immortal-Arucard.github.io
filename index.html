@@ -79,6 +79,18 @@ p.lead{font-size:17px;line-height:1.65;color:#d9cfbf}
 .stat.l b{color:var(--lib)}.stat.c b{color:var(--con)}
 .stat span{color:var(--mute);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
 .verdict{text-align:center;font-size:20px;margin:0}
+.align{margin:14px 0 0;text-align:center}
+.align-heading{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(26px,4vw,34px);font-weight:600;color:var(--gold2);margin:0;line-height:1.2}
+.align-band{margin:6px 0 0;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;font-size:12px}
+.align-explain{color:#d9cfbf;font-size:15px;line-height:1.55;margin:12px auto 0;max-width:62ch;text-align:left}
+.align-lists{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;text-align:left}
+.align-col{background:#140f0c;border:1px solid var(--line);border-radius:12px;padding:12px 14px 10px}
+.align-col h4{margin:0 0 8px;font-family:Inter,system-ui,sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.align-col.match h4{color:var(--gold2)}
+.align-col.diff h4{color:#e08a55}
+.align-col ul{margin:0;padding-left:18px;color:#d9cfbf;font-size:14px;line-height:1.45}
+.align-col li{margin:3px 0}
+.align-more{color:var(--mute);font-size:13px;margin:8px 0 0}
 .actions{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:22px}
 .gsi-material-button{position:relative;appearance:none;overflow:hidden;box-sizing:border-box;height:40px;padding:0 12px;border:1px solid #747775;border-radius:4px;background:#fff;color:#1f1f1f;cursor:pointer;font-family:Roboto,arial,sans-serif;font-size:14px;font-weight:500;letter-spacing:.25px;line-height:20px;text-align:center;white-space:nowrap;vertical-align:middle;transition:background-color .218s,border-color .218s,box-shadow .218s}
 .gsi-material-button .gsi-material-button-state{position:absolute;inset:0;opacity:0;transition:opacity .218s}
@@ -121,7 +133,7 @@ summary{cursor:pointer;color:var(--gold2);font-weight:500}
 footer{color:#6d6253;font-size:12px;margin-top:22px;text-align:center;line-height:1.6}
 footer a{display:inline-block;margin-top:6px;padding:4px 2px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:11px;text-decoration:none}
 footer a:hover{color:var(--gold2);text-decoration:underline}
-@media(min-width:640px){.figures.pair{grid-template-columns:1fr 1fr}}
+@media(min-width:640px){.figures.pair,.align-lists{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.choices{grid-template-columns:1fr}.tl.minor{display:none}.fig .nm{font-size:17px}}
 </style></head><body>
 <div class="wrap">
@@ -156,6 +168,15 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
   <div class="ends"><span class="c">◀ Conservative</span><span class="l">Liberal ▶</span></div>
   <div class="graph" id="graph"><div class="axis"></div><div class="marker" id="marker"><div class="lbl" id="score">0</div><div class="dot"></div></div></div>
   <p class="verdict serif" id="verdict"></p>
+  <div class="align" id="align">
+   <h3 class="align-heading" id="align-heading">DRP alignment: 0%</h3>
+   <p class="align-band" id="align-band"></p>
+   <p class="align-explain">This is how often your answer matches the Democratic-Republican Party on these 30 proposals. The party agrees with each statement as it is written. More agree is a match. More disagree is opposition. Every proposal counts the same. This is separate from the left/right score above.</p>
+   <div class="align-lists">
+    <div class="align-col match"><h4>Where you most agree</h4><ul id="align-match"></ul><p class="align-more" id="align-match-more" hidden></p></div>
+    <div class="align-col diff"><h4>Where you most differ</h4><ul id="align-diff"></ul><p class="align-more" id="align-diff-more" hidden></p></div>
+   </div>
+  </div>
   <div class="stats"><div class="stat l"><b id="nl">0</b><span>Liberal answers</span></div><div class="stat c"><b id="nc">0</b><span>Conservative answers</span></div></div>
   <div id="save-box" class="note-box" hidden>
    <label class="field" for="thoughts">Your thoughts today
@@ -1510,6 +1531,11 @@ function tally(){let l=0,c=0;answers.forEach((a,k)=>sideOf(k,a)==='liberal'?l++:
 function buildAxis(){const g=$('#graph');const N=ISSUES.length;for(let v=-N;v<=N;v+=5){const x=(v+N)/(2*N)*100;const t=document.createElement('div');t.className='tick'+(v%10===0?' major':'');t.style.left=x+'%';g.appendChild(t);
  const l=document.createElement('div');l.className='tl'+(v%10===0?'':' minor');l.style.left=x+'%';l.textContent=v>0?'+'+v:v;g.appendChild(l)}}
 function verdict(s){const a=Math.abs(s);if(a===0)return'Squarely in the center.';const left=s>0;if(a<=5)return left?'Left of center.':'Right of center.';if(a<=10)return left?'Center-left.':'Center-right.';if(a<=20)return left?'Left.':'Right.';return left?'Far left.':'Far right.'}
+function drpStance(q){return q&&(q.drp==='agree'||q.drp==='disagree')?q.drp:'agree'}
+function drpAlignment(list){const items=ISSUES.map((q,k)=>{const answer=list[k];const match=answer===drpStance(q);return{n:q.n,title:q.title,match}});const matches=items.filter(it=>it.match).length;const pct=Math.round(100*matches/ISSUES.length);let band='Strongly opposed';if(pct>=80)band='Strongly aligned';else if(pct>=60)band='Mostly aligned';else if(pct>=40)band='Mixed';else if(pct>=20)band='Mostly opposed';return{pct,matches,total:ISSUES.length,band,matched:items.filter(it=>it.match),differed:items.filter(it=>!it.match)}}
+function fillAlignList(id,items){const shown=items.slice(0,5);const rest=items.length-shown.length;$('#'+id).innerHTML=shown.length?shown.map(it=>`<li>${esc(it.n+'. '+it.title)}</li>`).join(''):'<li>None</li>';const more=$('#'+id+'-more');more.hidden=rest<=0;more.textContent=rest>0?'and '+rest+' more':''}
+function renderAlignment(list){const a=drpAlignment(list);$('#align-heading').textContent='DRP alignment: '+a.pct+'%';$('#align-band').textContent=a.band;fillAlignList('align-match',a.matched);fillAlignList('align-diff',a.differed);return a}
+function alignmentText(r){const decoded=decodeAnswers(r);if(!decoded)return'';const a=drpAlignment(decoded);return'DRP alignment: '+a.pct+'% · '+a.band}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function hostOf(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return 'source'}}
 function sidePill(side){if(side==='left')return `<span class="sidepill left" title="Objects from the conservative side">from the left</span>`;if(side==='right')return `<span class="sidepill right" title="Objects from the liberal side">from the right</span>`;return ''}
@@ -1521,9 +1547,9 @@ function figuresFor(n){const f=FIGURES[String(n)]||{};const parts=[];
 function encodeAnswers(list){let n=0;for(let k=0;k<list.length;k++)n=(n<<1)|(list[k]==='agree'?1:0);return n.toString(36)}
 function decodeAnswers(s){const N=ISSUES.length;if(!s||!/^[0-9a-z]+$/i.test(s)||s.length>8)return null;const n=parseInt(s,36);if(!Number.isSafeInteger(n)||n<0||n>=2**N)return null;const out=[];for(let k=0;k<N;k++)out.push(((n>>(N-1-k))&1)?'agree':'disagree');return out}
 function resultUrl(){const u=new URL('/',location.origin);u.searchParams.set('r',encodeAnswers(answers));return u.href}
-function shareText(){const{score}=tally();const shown=score>0?'+'+score:String(score);const label=verdict(score).replace(/\.$/,'');return `I scored ${shown} on the DRP Compass (${label}). Take it: ${resultUrl()}`}
+function shareText(){const{score}=tally();const shown=score>0?'+'+score:String(score);const label=verdict(score).replace(/\.$/,'');const align=drpAlignment(answers);return `I scored ${shown} on the DRP Compass (${label}). DRP alignment: ${align.pct}% (${align.band.toLowerCase()}). Take it: ${resultUrl()}`}
 function setResultActions(readonly){$('#share').hidden=!!readonly;$('#again').hidden=!!readonly;$('#yours').hidden=!readonly}
-function finish(readonly){const{l,c,score}=tally();show('result');setResultActions(readonly);$('#nl').textContent=l;$('#nc').textContent=c;$('#verdict').textContent=verdict(score);
+function finish(readonly){const{l,c,score}=tally();show('result');setResultActions(readonly);$('#nl').textContent=l;$('#nc').textContent=c;$('#verdict').textContent=verdict(score);renderAlignment(answers);
  const N=ISSUES.length,m=$('#marker');m.style.transition='none';m.style.left='50%';m.offsetHeight;m.style.transition='';
  setTimeout(()=>{m.style.left=((score+N)/(2*N)*100)+'%'},60);
  let cur=0,t0=performance.now();(function step(t){const k=Math.min(1,(t-t0)/1800),e=1-Math.pow(1-k,3);cur=Math.round(score*e);$('#score').textContent=(cur>0?'+':'')+cur;if(k<1)setTimeout(()=>step(performance.now()),16)})(t0);
@@ -1544,12 +1570,12 @@ $('#share').onclick=async()=>{const text=shareText();const url=resultUrl();if(na
 function scoreChart(rows){const pts=rows.slice().sort((a,b)=>a.at<b.at?-1:1);if(!pts.length)return'';
  const w=640,h=150,pad=22,y=s=>pad+(h-pad*2)*(1-(s+30)/60),x=i=>pts.length<2?w/2:pad+(w-pad*2)*i/(pts.length-1);
  const d=pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(p.score).toFixed(1)).join(' ');
- const dots=pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.score).toFixed(1)}" r="4" fill="#d9a441"><title>${esc((p.score>0?'+':'')+p.score+' '+p.label)}</title></circle>`).join('');
+ const dots=pts.map((p,i)=>{const align=alignmentText(p.r);return `<circle cx="${x(i).toFixed(1)}" cy="${y(p.score).toFixed(1)}" r="4" fill="#d9a441"><title>${esc((p.score>0?'+':'')+p.score+' '+p.label+(align?' · '+align:''))}</title></circle>`}).join('');
  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="Score over time"><line x1="${pad}" y1="${y(0)}" x2="${w-pad}" y2="${y(0)}" stroke="#2c241b" stroke-width="1"/><path d="${d}" fill="none" stroke="#d9a441" stroke-width="2"/>${dots}</svg>`}
 function when(at){try{return new Date(at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return at}}
 function renderHistory(rows){$('#chart').innerHTML=scoreChart(rows);
  if(!rows.length){$('#history-list').innerHTML='<p class="lead">No saved results yet.</p>';return}
- $('#history-list').innerHTML=rows.map(row=>`<article class="hrow"><div class="hmeta"><time datetime="${esc(row.at)}">${esc(when(row.at))}</time><b class="${row.score<0?'neg':''}">${row.score>0?'+':''}${row.score}</b><span class="hlabel">${esc(row.label)}</span></div><p class="hnote">${row.note?esc(row.note):'<span class="hlabel">No note</span>'}</p><div class="hactions"><a class="textbtn" href="/?r=${encodeURIComponent(row.r)}">View result</a><button type="button" class="textbtn" data-edit="${esc(row.id)}">Edit note</button><button type="button" class="textbtn danger" data-del="${esc(row.id)}">Delete</button></div><form class="editnote" data-form="${esc(row.id)}" hidden><textarea rows="3">${esc(row.note||'')}</textarea><button class="btn" type="submit">Save note</button></form></article>`).join('')}
+ $('#history-list').innerHTML=rows.map(row=>{const align=alignmentText(row.r);return `<article class="hrow"><div class="hmeta"><time datetime="${esc(row.at)}">${esc(when(row.at))}</time><b class="${row.score<0?'neg':''}">${row.score>0?'+':''}${row.score}</b><span class="hlabel">${esc(row.label)}</span>${align?`<span class="hlabel">${esc(align)}</span>`:''}</div><p class="hnote">${row.note?esc(row.note):'<span class="hlabel">No note</span>'}</p><div class="hactions"><a class="textbtn" href="/?r=${encodeURIComponent(row.r)}">View result</a><button type="button" class="textbtn" data-edit="${esc(row.id)}">Edit note</button><button type="button" class="textbtn danger" data-del="${esc(row.id)}">Delete</button></div><form class="editnote" data-form="${esc(row.id)}" hidden><textarea rows="3">${esc(row.note||'')}</textarea><button class="btn" type="submit">Save note</button></form></article>`}).join('')}
 async function openHistory(){try{const profile=await DRPStorage.currentProfile();if(!profile){openSignin();return}renderHistory(await DRPStorage.listHistory(profile.id));show('history')}catch(err){toast(err.message||'Could not load history.')}}
 async function refreshAccount(){if(!window.DRPStorage)return;const me=await DRPStorage.currentProfile();
  const owner=!!(me&&me.email==='cubzub@gmail.com');
