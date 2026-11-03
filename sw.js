@@ -1,7 +1,8 @@
-const CACHE = 'drp-compass-v10';
+const CACHE = 'drp-compass-v11';
 const ASSETS = [
   '/',
   '/index.html',
+  '/stats.html',
   '/privacy.html',
   '/storage.js',
   '/vendor/supabase.js',
@@ -29,6 +30,7 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
+  // Stats data is a Supabase RPC. Never cache that host; only the page shell is cached.
   if (url.hostname === 'supabase.co' || url.hostname.endsWith('.supabase.co')) return;
   if (url.origin !== self.location.origin) return;
 
