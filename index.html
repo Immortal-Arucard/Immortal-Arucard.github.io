@@ -1517,7 +1517,7 @@ function finish(readonly){const{l,c,score}=tally();show('result');setResultActio
  $('#rows').innerHTML=ISSUES.map((q,k)=>{const s=sideOf(k,answers[k]);return`<div class="issue"><div class="row"><span class="n">${q.n}</span><span class="t">${q.statement}<em>You: ${answers[k]==='agree'?'More agree':'More disagree'}</em></span><span class="pill ${s}">${s}</span></div>${figuresFor(q.n)}</div>`}).join('');
  if(!readonly&&location.protocol.startsWith('http'))history.replaceState(null,'',resultUrl());
  if(readonly){pendingSave=null;currentEntry=null;$('#save-box').hidden=true;$('#save-prompt').hidden=true}
- else{pendingSave={score,label:verdict(score).replace(/\.$/,''),r:encodeAnswers(answers),note:''};currentEntry=null;$('#thoughts').value='';persistResult();try{if(window.DRPStorage&&DRPStorage.logTestEvent)DRPStorage.logTestEvent(score).catch(()=>{})}catch(e){}}}
+ else{pendingSave={score,label:verdict(score).replace(/\.$/,''),r:encodeAnswers(answers),note:''};currentEntry=null;$('#thoughts').value='';persistResult();try{if(window.DRPStorage&&DRPStorage.logTestEvent)DRPStorage.logTestEvent(score,answers.slice()).catch(()=>{})}catch(e){}}}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
 function clearResultUrl(){if(location.search||location.hash)history.replaceState(null,'',location.pathname)}
 $('#go').onclick=()=>{i=0;answers=[];pendingSave=null;currentEntry=null;clearResultUrl();show('quiz');render()};
