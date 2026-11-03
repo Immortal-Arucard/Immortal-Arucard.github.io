@@ -1,9 +1,10 @@
-const CACHE = 'drp-compass-v11';
+const CACHE = 'drp-compass-v15';
 const ASSETS = [
   '/',
   '/index.html',
   '/stats.html',
   '/privacy.html',
+  '/terms.html',
   '/storage.js',
   '/vendor/supabase.js',
   '/manifest.webmanifest',
