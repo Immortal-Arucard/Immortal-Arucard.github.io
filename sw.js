@@ -1,4 +1,4 @@
-const CACHE = 'drp-compass-v19';
+const CACHE = 'drp-compass-v20';
 const ASSETS = [
   '/',
   '/index.html',
@@ -26,7 +26,35 @@ const ASSETS = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-maskable-512.png',
-  '/icons/apple-touch-icon.png'
+  '/icons/apple-touch-icon.png',
+  '/assets/illustrations/issue-01.png',
+  '/assets/illustrations/issue-02.png',
+  '/assets/illustrations/issue-03.png',
+  '/assets/illustrations/issue-04.png',
+  '/assets/illustrations/issue-05.png',
+  '/assets/illustrations/issue-06.png',
+  '/assets/illustrations/issue-07.png',
+  '/assets/illustrations/issue-08.png',
+  '/assets/illustrations/issue-09.png',
+  '/assets/illustrations/issue-10.png',
+  '/assets/illustrations/issue-11.png',
+  '/assets/illustrations/issue-12.png',
+  '/assets/illustrations/issue-13.png',
+  '/assets/illustrations/issue-14.png',
+  '/assets/illustrations/issue-15.png',
+  '/assets/illustrations/issue-16.png',
+  '/assets/illustrations/issue-17.png',
+  '/assets/illustrations/issue-18.png',
+  '/assets/illustrations/issue-19.png',
+  '/assets/illustrations/issue-20.png',
+  '/assets/illustrations/issue-21.png',
+  '/assets/illustrations/issue-22.png',
+  '/assets/illustrations/issue-23.png',
+  '/assets/illustrations/issue-24.png',
+  '/assets/illustrations/issue-25.png',
+  '/assets/illustrations/issue-28.png',
+  '/assets/illustrations/issue-29.png',
+  '/assets/illustrations/issue-30.png',
 ];
 
 self.addEventListener('install', (event) => {
