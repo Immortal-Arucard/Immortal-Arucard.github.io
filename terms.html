@@ -18,7 +18,8 @@
   <div class="site-bar">
     <a class="home-btn" href="/">Home</a>
     <p class="site-name"><a href="/">The World Government, Inc.</a></p>
-    <nav class="site-nav" aria-label="Primary">
+    <button type="button" class="menu-btn" aria-expanded="false" aria-controls="site-menu">Menu</button>
+    <nav class="site-nav" id="site-menu" hidden aria-label="Primary">
       <a href="/philosophy/">Philosophy</a>
       <a href="/philosophy/politics/democratic/american/drp/platform/">Platform</a>
       <a href="/philosophy/politics/democratic/american/drp/compass/">Compass</a>
@@ -53,5 +54,6 @@
   </nav>
 </footer>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');</script>
+<script src="/assets/site.js"></script>
 </body>
 </html>
