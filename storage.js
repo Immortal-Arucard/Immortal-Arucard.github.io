@@ -46,6 +46,29 @@
     };
   }
 
+  var RESULT_COLS = 'id,user_id,taken_at,score,label,answers,note';
+  var RESULT_COLS_EXT = RESULT_COLS + ',version,strengths';
+
+  function columnMissing(error) {
+    if (!error) return false;
+    if (error.code === 'PGRST204' || error.code === '42703') return true;
+    return /could not find the .+ column|schema cache|column .+ does not exist/i.test(error.message || '');
+  }
+
+  function storedStrengths(value) {
+    if (typeof value === 'string') {
+      try { value = JSON.parse(value); } catch (e) { return null; }
+    }
+    if (!Array.isArray(value)) return null;
+    var nums = [];
+    for (var i = 0; i < value.length; i++) {
+      var n = Number(value[i]);
+      if (!Number.isInteger(n) || n < 1 || n > 100) return null;
+      nums.push(n);
+    }
+    return nums.length ? nums : null;
+  }
+
   function toEntry(row) {
     return {
       id: row.id,
@@ -54,7 +77,9 @@
       label: row.label,
       r: row.answers,
       note: row.note || '',
-      profileId: row.user_id
+      profileId: row.user_id,
+      version: row.version === 'deluxe' ? 'deluxe' : 'standard',
+      strengths: storedStrengths(row.strengths)
     };
   }
 
@@ -245,7 +270,10 @@
     async listHistory() {
       var user = await sessionUser();
       if (!user) return [];
-      var result = await client.from('results').select('id,user_id,taken_at,score,label,answers,note').eq('user_id', user.id).order('taken_at', { ascending: false });
+      var result = await client.from('results').select(RESULT_COLS_EXT).eq('user_id', user.id).order('taken_at', { ascending: false });
+      if (result.error && columnMissing(result.error)) {
+        result = await client.from('results').select(RESULT_COLS).eq('user_id', user.id).order('taken_at', { ascending: false });
+      }
       if (result.error) throw friendly(result.error);
       return (result.data || []).map(toEntry);
     },
@@ -253,6 +281,7 @@
     async saveResult(profileId, entry) {
       var user = await sessionUser();
       if (!user) throw new Error('Sign in to save this result.');
+      var deluxe = entry.version === 'deluxe';
       var row = {
         id: (global.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2)),
         user_id: user.id,
@@ -260,9 +289,16 @@
         score: entry.score,
         label: entry.label,
         answers: entry.r,
-        note: entry.note || ''
+        note: entry.note || '',
+        version: deluxe ? 'deluxe' : 'standard',
+        strengths: deluxe ? storedStrengths(entry.strengths) : null
       };
-      var result = await client.from('results').insert(row).select('id,user_id,taken_at,score,label,answers,note').single();
+      var result = await client.from('results').insert(row).select(RESULT_COLS_EXT).single();
+      if (result.error && columnMissing(result.error)) {
+        delete row.version;
+        delete row.strengths;
+        result = await client.from('results').insert(row).select(RESULT_COLS).single();
+      }
       if (result.error) throw friendly(result.error);
       return toEntry(result.data);
     },
@@ -294,7 +330,9 @@
           score: row.score,
           label: row.label,
           r: row.r,
-          note: row.note || ''
+          note: row.note || '',
+          version: row.version,
+          strengths: row.strengths
         });
       }
     },
@@ -312,18 +350,28 @@
       })();
     },
 
-    logTestEvent: function (score, answers) {
+    logTestEvent: function (score, answers, extra) {
       return (async function () {
         try {
           var sess = await client.auth.getSession();
           var user = sess && sess.data && sess.data.session && sess.data.session.user;
           var n = Number(score);
-          await client.from('test_events').insert({
+          var info = extra || {};
+          var deluxe = info.version === 'deluxe';
+          var payload = {
             registered: !!user,
             user_id: user ? user.id : null,
             score: Number.isFinite(n) ? n : null,
-            answers: Array.isArray(answers) ? answers.map(function (a) { return a == null ? null : String(a); }) : null
-          });
+            answers: Array.isArray(answers) ? answers.map(function (a) { return a == null ? null : String(a); }) : null,
+            version: deluxe ? 'deluxe' : 'standard',
+            strengths: deluxe ? storedStrengths(info.strengths) : null
+          };
+          var inserted = await client.from('test_events').insert(payload);
+          if (inserted.error && columnMissing(inserted.error)) {
+            delete payload.version;
+            delete payload.strengths;
+            await client.from('test_events').insert(payload);
+          }
         } catch (e) { /* ignore */ }
       })();
     }
