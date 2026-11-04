@@ -371,10 +371,21 @@
 </div>
 <script>
 document.querySelectorAll('.plate img').forEach(function(img){
-  function ready(){ if(!img.naturalWidth) return; img.alt='Illustration for '+img.getAttribute('data-title'); img.parentNode.classList.add('is-ready'); }
+  function ready(){
+    if(!img.naturalWidth) return;
+    img.alt='Illustration for '+img.getAttribute('data-title');
+    img.parentNode.classList.add('is-ready');
+  }
+  function missing(){
+    img.alt='';
+    img.parentNode.classList.remove('is-ready');
+  }
   img.addEventListener('load', ready);
-  img.addEventListener('error', function(){ img.alt=''; });
-  if(img.complete) ready();
+  img.addEventListener('error', missing);
+  if(img.complete){
+    if(img.naturalWidth) ready();
+    else missing();
+  }
 });
 </script>
 <footer class="site-footer">

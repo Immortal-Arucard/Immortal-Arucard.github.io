@@ -1,4 +1,4 @@
-const CACHE = 'drp-compass-v23';
+const CACHE = 'drp-compass-v24';
 const ASSETS = [
   '/',
   '/index.html',
