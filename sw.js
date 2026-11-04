@@ -1,7 +1,22 @@
-const CACHE = 'drp-compass-v18';
+const CACHE = 'drp-compass-v19';
 const ASSETS = [
   '/',
   '/index.html',
+  '/assets/site.css',
+  '/philosophy/',
+  '/philosophy/index.html',
+  '/philosophy/politics/',
+  '/philosophy/politics/index.html',
+  '/philosophy/politics/democratic/',
+  '/philosophy/politics/democratic/index.html',
+  '/philosophy/politics/democratic/american/',
+  '/philosophy/politics/democratic/american/index.html',
+  '/philosophy/politics/democratic/american/drp/',
+  '/philosophy/politics/democratic/american/drp/index.html',
+  '/philosophy/politics/democratic/american/drp/platform/',
+  '/philosophy/politics/democratic/american/drp/platform/index.html',
+  '/philosophy/politics/democratic/american/drp/compass/',
+  '/philosophy/politics/democratic/american/drp/compass/index.html',
   '/stats.html',
   '/privacy.html',
   '/terms.html',
