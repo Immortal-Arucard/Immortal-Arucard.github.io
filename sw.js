@@ -1,4 +1,4 @@
-const CACHE = 'drp-compass-v26';
+const CACHE = 'drp-compass-v27';
 const ASSETS = [
   '/',
   '/index.html',
@@ -8,6 +8,16 @@ const ASSETS = [
   '/philosophy/index.html',
   '/philosophy/politics/',
   '/philosophy/politics/index.html',
+  '/philosophy/religion/',
+  '/philosophy/religion/index.html',
+  '/philosophy/science/',
+  '/philosophy/science/index.html',
+  '/philosophy/recreation/',
+  '/philosophy/recreation/index.html',
+  '/philosophy/building/',
+  '/philosophy/building/index.html',
+  '/philosophy/trading/',
+  '/philosophy/trading/index.html',
   '/philosophy/politics/democratic/',
   '/philosophy/politics/democratic/index.html',
   '/philosophy/politics/democratic/american/',
