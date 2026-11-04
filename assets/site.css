@@ -191,6 +191,12 @@ body.platform .crumbs [aria-current="page"]{color:var(--ink)}
 }
 .stance .gloss{font-size:17px;line-height:1.65;max-width:68ch}
 .stance .gloss p{margin:0 0 12px}
+.objections{margin-top:8px;max-width:68ch}
+.objections h3{font-family:Inter,system-ui,sans-serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 12px}
+.objections article{margin:0 0 16px}
+.objections h4{font-family:"Cormorant Garamond",Georgia,serif;font-size:24px;font-weight:600;line-height:1.2;margin:0 0 4px}
+.objections p{margin:0;font-size:16px;line-height:1.55}
+.objections .soon{font-style:italic;color:var(--pencil)}
 @media(max-width:800px){
   .layout{grid-template-columns:1fr}
   .toc{position:sticky;top:64px;max-height:40vh;z-index:5}
