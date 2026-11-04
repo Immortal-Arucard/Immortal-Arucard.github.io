@@ -101,6 +101,10 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
   <div class="stat"><b id="n-visits">—</b><span>Site visits</span></div>
   <div class="stat"><b id="n-unique">—</b><span>Unique visitors (by IP)</span></div>
  </div>
+ <div class="cards" style="margin-top:12px">
+  <div class="stat"><b id="n-standard">—</b><span>Standard tests</span></div>
+  <div class="stat"><b id="n-deluxe">—</b><span>Deluxe tests</span></div>
+ </div>
  <div class="card">
   <h2>Tests: registered vs guest</h2>
   <div class="legend"><span><i style="background:#d9a441"></i>Registered</span><span><i style="background:#2f6fdb"></i>Guest</span></div>
@@ -326,6 +330,8 @@ function renderStats(data) {
   document.getElementById('n-guest').textContent = formatCount(data.guest_tests);
   document.getElementById('n-visits').textContent = formatCount(data.total_visits);
   document.getElementById('n-unique').textContent = formatCount(data.unique_visitors);
+  document.getElementById('n-standard').textContent = data.standard_tests == null ? '—' : formatCount(data.standard_tests);
+  document.getElementById('n-deluxe').textContent = data.deluxe_tests == null ? '—' : formatCount(data.deluxe_tests);
   document.getElementById('split').innerHTML = seriesChart(multiDays(data.events_by_day, ['registered', 'guest']),
     [{ key: 'registered', color: '#d9a441' }, { key: 'guest', color: '#2f6fdb' }], 'Registered and guest tests per day');
   document.getElementById('visits').innerHTML = seriesChart(multiDays(data.visits_by_day, ['total', 'uniq']),

@@ -59,9 +59,22 @@ p.lead{font-size:17px;line-height:1.65;color:#d9cfbf}
 .meta{display:flex;justify-content:space-between;color:var(--mute);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 .qtitle{color:var(--gold);font-size:13px;letter-spacing:.2em;text-transform:uppercase;margin:6px 0 10px}
 .stmt{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(24px,4.6vw,34px);line-height:1.3;margin:0 0 30px;min-height:3.2em}
+.versions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 6px;text-align:left}
+.version{appearance:none;padding:14px 14px 12px;border-radius:14px;border:1px solid var(--line);background:#1d1813;color:var(--text);cursor:pointer;font:inherit;text-align:left}
+.version b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:26px;font-weight:600;color:var(--gold2);line-height:1.1}
+.version span{display:block;margin-top:6px;color:var(--mute);font-size:13px;line-height:1.45;font-weight:400}
+.version.on{border-color:var(--gold);background:#251d14;box-shadow:0 0 0 1px #d9a44155}
+.version:hover{border-color:var(--gold)}
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .choice{padding:18px;border-radius:14px;border:1px solid var(--line);background:#1d1813;color:var(--text);font-size:17px;font-weight:600;cursor:pointer;transition:all .18s}
 .choice:hover{border-color:var(--gold);background:#251d14;transform:translateY(-2px)}
+.choice:disabled,.choice:disabled:hover{opacity:.4;cursor:not-allowed;transform:none;border-color:var(--line);background:#1d1813}
+.meter{margin:0 0 18px;text-align:left}
+.meter-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;color:var(--mute);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.meter-top b{color:var(--gold2);font-family:"Cormorant Garamond",Georgia,serif;font-size:28px;letter-spacing:0;text-transform:none;font-weight:600}
+.meter input[type=range]{width:100%;margin:10px 0 0;accent-color:#d9a441;cursor:pointer}
+.meter.unset input[type=range]{accent-color:#5a4a38}
+.meter-hint{color:#e07a48;font-size:14px;line-height:1.45;margin:8px 0 0}
 .choice small{display:block;font-weight:400;color:var(--mute);font-size:12px;margin-top:4px}
 .back{margin-top:18px;background:none;border:0;color:var(--mute);cursor:pointer;font-size:14px}.back:disabled{opacity:.3;cursor:default}
 .graph{position:relative;height:120px;margin:30px 6px 8px}
@@ -90,6 +103,7 @@ p.lead{font-size:17px;line-height:1.65;color:#d9cfbf}
 .align-col.diff h4{color:#e08a55}
 .align-col ul{margin:0;padding-left:18px;color:#d9cfbf;font-size:14px;line-height:1.45}
 .align-col li{margin:3px 0}
+.align-col b{color:var(--gold2);font-weight:600}
 .align-more{color:var(--mute);font-size:13px;margin:8px 0 0}
 .actions{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:22px}
 .gsi-material-button{position:relative;appearance:none;overflow:hidden;box-sizing:border-box;height:40px;padding:0 12px;border:1px solid #747775;border-radius:4px;background:#fff;color:#1f1f1f;cursor:pointer;font-family:Roboto,arial,sans-serif;font-size:14px;font-weight:500;letter-spacing:.25px;line-height:20px;text-align:center;white-space:nowrap;vertical-align:middle;transition:background-color .218s,border-color .218s,box-shadow .218s}
@@ -134,7 +148,7 @@ footer{color:#6d6253;font-size:12px;margin-top:22px;text-align:center;line-heigh
 footer a{display:inline-block;margin-top:6px;padding:4px 2px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:11px;text-decoration:none}
 footer a:hover{color:var(--gold2);text-decoration:underline}
 @media(min-width:640px){.figures.pair,.align-lists{grid-template-columns:1fr 1fr}}
-@media(max-width:520px){.choices{grid-template-columns:1fr}.tl.minor{display:none}.fig .nm{font-size:17px}}
+@media(max-width:520px){.choices,.versions{grid-template-columns:1fr}.tl.minor{display:none}.fig .nm{font-size:17px}}
 </style></head><body>
 <div class="wrap">
 <header>
@@ -154,27 +168,36 @@ footer a:hover{color:var(--gold2);text-decoration:underline}
  <section id="start" class="screen on center">
   <p class="lead">Thirty proposals from the platform of the Democratic-Republican Party. For each one, choose whether you <b>more agree</b> or <b>more disagree</b>.</p>
   <p class="lead" style="color:var(--mute);font-size:15px">Every liberal answer moves you one point right. Every conservative answer moves you one point left. Your result lands somewhere on a line from −30 to +30.</p>
+  <div class="versions" role="radiogroup" aria-label="Test version">
+   <button type="button" class="version on" id="ver-standard" aria-pressed="true"><b>Standard</b><span>Agree or disagree with each proposal.</span></button>
+   <button type="button" class="version" id="ver-deluxe" aria-pressed="false"><b>Deluxe</b><span>The same 30 proposals, plus a required strength from 1 to 100 on every question.</span></button>
+  </div>
   <button class="btn" id="go">Begin the test</button>
  </section>
  <section id="quiz" class="screen">
   <div class="meta"><span id="count">1 / 30</span><span id="pct">0%</span></div>
   <div class="progress"><i id="bar"></i></div>
   <div id="qbox"><div class="qtitle" id="qtitle"></div><h2 class="stmt" id="stmt"></h2></div>
+  <div class="meter unset" id="meter" hidden>
+   <div class="meter-top"><span>How strongly?</span><b id="meter-value">Not set</b></div>
+   <input id="strength" type="range" min="1" max="100" value="50" aria-label="Strength from 1 to 100" aria-valuetext="Not set">
+   <p class="meter-hint" id="meter-hint" hidden>Set a strength from 1 to 100 before you answer.</p>
+  </div>
   <div class="choices"><button class="choice" data-a="agree">More agree</button><button class="choice" data-a="disagree">More disagree</button></div>
   <button class="back" id="back">← Previous</button>
  </section>
  <section id="result" class="screen">
-  <div class="qtitle center">Your result</div>
+  <div class="qtitle center">Your result · <span id="result-version">Standard</span></div>
   <div class="ends"><span class="c">◀ Conservative</span><span class="l">Liberal ▶</span></div>
   <div class="graph" id="graph"><div class="axis"></div><div class="marker" id="marker"><div class="lbl" id="score">0</div><div class="dot"></div></div></div>
   <p class="verdict serif" id="verdict"></p>
   <div class="align" id="align">
    <h3 class="align-heading" id="align-heading">DRP alignment: 0%</h3>
    <p class="align-band" id="align-band"></p>
-   <p class="align-explain">This is how often your answer matches the Democratic-Republican Party on these 30 proposals. The party agrees with each statement as it is written. More agree is a match. More disagree is opposition. Every proposal counts the same. This is separate from the left/right score above.</p>
+   <p class="align-explain" id="align-explain">This is how often your answer matches the Democratic-Republican Party on these 30 proposals. The party agrees with each statement as it is written. More agree is a match. More disagree is opposition. Every proposal counts the same. This is separate from the left/right score above.</p>
    <div class="align-lists">
-    <div class="align-col match"><h4>Where you most agree</h4><ul id="align-match"></ul><p class="align-more" id="align-match-more" hidden></p></div>
-    <div class="align-col diff"><h4>Where you most differ</h4><ul id="align-diff"></ul><p class="align-more" id="align-diff-more" hidden></p></div>
+    <div class="align-col match"><h4 id="align-match-h">Proposals you agreed with</h4><ul id="align-match"></ul></div>
+    <div class="align-col diff"><h4 id="align-diff-h">Proposals you disagreed with</h4><ul id="align-diff"></ul></div>
    </div>
   </div>
   <div class="stats"><div class="stat l"><b id="nl">0</b><span>Liberal answers</span></div><div class="stat c"><b id="nc">0</b><span>Conservative answers</span></div></div>
@@ -1518,24 +1541,31 @@ const FIGURES = {
 };
 
 const $=s=>document.querySelector(s);
-let i=0, answers=[], pendingSave=null, currentEntry=null, accountReturn='start';
+let i=0, answers=[], strengths=[], strengthSet=[], pendingSave=null, currentEntry=null, accountReturn='start', pickedVersion='standard', testVersion='standard';
+const ALIGN_STANDARD='This is how often your answer matches the Democratic-Republican Party on these 30 proposals. The party agrees with each statement as it is written. More agree is a match. More disagree is opposition. Every proposal counts the same. This is separate from the left/right score above.';
+const ALIGN_DELUXE='This is how closely your answers match the Democratic-Republican Party, weighted by strength. The party agrees with each statement as written. Each proposal you agree with contributes its strength, from 1 to 100. Each proposal you disagree with contributes none. The percentage is matched strength divided by total strength, so a strong disagreement lowers it more than a weak one. The left/right score above still counts each answer once.';
 const other=s=>s==='liberal'?'conservative':'liberal';
 function sideOf(k,a){return a==='agree'?ISSUES[k].agreeIs:other(ISSUES[k].agreeIs)}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on')}
 function render(){const q=ISSUES[i];$('#qtitle').textContent=`Issue ${q.n} · ${q.title}`;$('#stmt').textContent=q.statement;
  $('#count').textContent=`${i+1} / ${ISSUES.length}`;const p=Math.round(i/ISSUES.length*100);$('#pct').textContent=p+'%';$('#bar').style.width=p+'%';$('#back').disabled=i===0;
- const b=$('#qbox');b.classList.remove('screen');b.style.animation='none';b.offsetHeight;b.style.animation='in .45s ease both'}
-function answer(a){answers[i]=a;$('#bar').style.width=Math.round((i+1)/ISSUES.length*100)+'%';const b=$('#qbox');b.style.animation='out .25s ease both';
+ const b=$('#qbox');b.classList.remove('screen');b.style.animation='none';b.offsetHeight;b.style.animation='in .45s ease both';syncMeter()}
+function syncMeter(){const deluxe=testVersion==='deluxe';const box=$('#meter');box.hidden=!deluxe;const set=deluxe&&!!strengthSet[i];document.querySelectorAll('.choice').forEach(btn=>{btn.disabled=deluxe&&!set});if(!deluxe)return;box.classList.toggle('unset',!set);const input=$('#strength');if(set)input.value=String(strengths[i]);else input.value='50';$('#meter-value').textContent=set?String(strengths[i]):'Not set';input.setAttribute('aria-valuetext',set?String(strengths[i]):'Not set');$('#meter-hint').hidden=set}
+function answer(a){if(testVersion==='deluxe'&&!strengthSet[i]){$('#meter-hint').hidden=false;return}answers[i]=a;if(testVersion==='deluxe')strengths[i]=Number($('#strength').value);$('#bar').style.width=Math.round((i+1)/ISSUES.length*100)+'%';const b=$('#qbox');b.style.animation='out .25s ease both';
  setTimeout(()=>{i++;i<ISSUES.length?render():finish()},240)}
 function tally(){let l=0,c=0;answers.forEach((a,k)=>sideOf(k,a)==='liberal'?l++:c++);return{l,c,score:l-c}}
 function buildAxis(){const g=$('#graph');const N=ISSUES.length;for(let v=-N;v<=N;v+=5){const x=(v+N)/(2*N)*100;const t=document.createElement('div');t.className='tick'+(v%10===0?' major':'');t.style.left=x+'%';g.appendChild(t);
  const l=document.createElement('div');l.className='tl'+(v%10===0?'':' minor');l.style.left=x+'%';l.textContent=v>0?'+'+v:v;g.appendChild(l)}}
 function verdict(s){const a=Math.abs(s);if(a===0)return'Squarely in the center.';const left=s>0;if(a<=5)return left?'Left of center.':'Right of center.';if(a<=10)return left?'Center-left.':'Center-right.';if(a<=20)return left?'Left.':'Right.';return left?'Far left.':'Far right.'}
 function drpStance(q){return q&&(q.drp==='agree'||q.drp==='disagree')?q.drp:'agree'}
-function drpAlignment(list){const items=ISSUES.map((q,k)=>{const answer=list[k];const match=answer===drpStance(q);return{n:q.n,title:q.title,match}});const matches=items.filter(it=>it.match).length;const pct=Math.round(100*matches/ISSUES.length);let band='Strongly opposed';if(pct>=80)band='Strongly aligned';else if(pct>=60)band='Mostly aligned';else if(pct>=40)band='Mixed';else if(pct>=20)band='Mostly opposed';return{pct,matches,total:ISSUES.length,band,matched:items.filter(it=>it.match),differed:items.filter(it=>!it.match)}}
-function fillAlignList(id,items){const shown=items.slice(0,5);const rest=items.length-shown.length;$('#'+id).innerHTML=shown.length?shown.map(it=>`<li>${esc(it.n+'. '+it.title)}</li>`).join(''):'<li>None</li>';const more=$('#'+id+'-more');more.hidden=rest<=0;more.textContent=rest>0?'and '+rest+' more':''}
-function renderAlignment(list){const a=drpAlignment(list);$('#align-heading').textContent='DRP alignment: '+a.pct+'%';$('#align-band').textContent=a.band;fillAlignList('align-match',a.matched);fillAlignList('align-diff',a.differed);return a}
-function alignmentText(r){const decoded=decodeAnswers(r);if(!decoded)return'';const a=drpAlignment(decoded);return'DRP alignment: '+a.pct+'% · '+a.band}
+function alignmentBand(pct){if(pct>=80)return'Strongly aligned';if(pct>=60)return'Mostly aligned';if(pct>=40)return'Mixed';if(pct>=20)return'Mostly opposed';return'Strongly opposed'}
+function validStrengths(list){if(!Array.isArray(list)||list.length!==ISSUES.length)return null;const nums=list.map(n=>Number(n));if(nums.some(n=>!Number.isInteger(n)||n<1||n>100))return null;return nums}
+/* Standard: round(100 * matches / 30). Deluxe: round(100 * sum(match * strength) / sum(strength)), strength 1–100. Bands are unchanged. */
+function drpAlignment(list,opts){opts=opts||{};const weights=opts.version==='deluxe'?validStrengths(opts.strengths):null;const deluxe=!!weights;let plain=0,weightSum=0,matchedWeight=0;const items=ISSUES.map((q,k)=>{const answer=list[k];const match=answer===drpStance(q);const strength=deluxe?weights[k]:null;if(match)plain++;if(deluxe){weightSum+=strength;if(match)matchedWeight+=strength}return{n:q.n,title:q.title,answer,match,strength}});const pct=deluxe?(weightSum?Math.round(100*matchedWeight/weightSum):0):Math.round(100*plain/ISSUES.length);const agreed=items.filter(it=>it.answer==='agree');const disagreed=items.filter(it=>it.answer==='disagree');return{pct,band:alignmentBand(pct),deluxe,agreed,disagreed}}
+function alignItem(it,deluxe){return deluxe?`${esc(it.n+'. '+it.title)} <b>${esc(it.strength)}</b>`:esc(it.n+'. '+it.title)}
+function fillAlignList(id,items,deluxe){const rows=deluxe?items.slice().sort((a,b)=>b.strength-a.strength||a.n-b.n):items;$('#'+id).innerHTML=rows.length?rows.map(it=>`<li>${alignItem(it,deluxe)}</li>`).join(''):'<li>None</li>'}
+function renderAlignment(list){const a=drpAlignment(list,{version:testVersion,strengths});$('#align-heading').textContent='DRP alignment: '+a.pct+'%';$('#align-band').textContent=a.band;$('#align-explain').textContent=a.deluxe?ALIGN_DELUXE:ALIGN_STANDARD;$('#align-match-h').textContent=a.deluxe?'Most agree with':'Proposals you agreed with';$('#align-diff-h').textContent=a.deluxe?'Most disagree with':'Proposals you disagreed with';fillAlignList('align-match',a.agreed,a.deluxe);fillAlignList('align-diff',a.disagreed,a.deluxe);return a}
+function alignmentText(r,version,stored){const decoded=decodeAnswers(r);if(!decoded)return'';const a=drpAlignment(decoded,{version,strengths:stored});return'DRP alignment: '+a.pct+'% · '+a.band}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function hostOf(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return 'source'}}
 function sidePill(side){if(side==='left')return `<span class="sidepill left" title="Objects from the conservative side">from the left</span>`;if(side==='right')return `<span class="sidepill right" title="Objects from the liberal side">from the right</span>`;return ''}
@@ -1546,21 +1576,27 @@ function figuresFor(n){const f=FIGURES[String(n)]||{};const parts=[];
  return parts.length?`<div class="figures${parts.length===2?' pair':''}">${parts.join('')}</div>`:''}
 function encodeAnswers(list){let n=0;for(let k=0;k<list.length;k++)n=(n<<1)|(list[k]==='agree'?1:0);return n.toString(36)}
 function decodeAnswers(s){const N=ISSUES.length;if(!s||!/^[0-9a-z]+$/i.test(s)||s.length>8)return null;const n=parseInt(s,36);if(!Number.isSafeInteger(n)||n<0||n>=2**N)return null;const out=[];for(let k=0;k<N;k++)out.push(((n>>(N-1-k))&1)?'agree':'disagree');return out}
-function resultUrl(){const u=new URL('/',location.origin);u.searchParams.set('r',encodeAnswers(answers));return u.href}
-function shareText(){const{score}=tally();const shown=score>0?'+'+score:String(score);const label=verdict(score).replace(/\.$/,'');const align=drpAlignment(answers);return `I scored ${shown} on the DRP Compass (${label}). DRP alignment: ${align.pct}% (${align.band.toLowerCase()}). Take it: ${resultUrl()}`}
+function versionLabel(v){return v==='deluxe'?'Deluxe':'Standard'}
+function resultUrl(){const u=new URL('/',location.origin);u.searchParams.set('r',encodeAnswers(answers));if(testVersion==='deluxe'){u.searchParams.set('v','deluxe');u.searchParams.set('s',strengths.map(n=>Number(n)).join(','))}return u.href}
+function shareText(){const{score}=tally();const shown=score>0?'+'+score:String(score);const label=verdict(score).replace(/\.$/,'');const align=drpAlignment(answers,{version:testVersion,strengths});return `I scored ${shown} on the DRP Compass (${label}), ${versionLabel(testVersion)}. DRP alignment: ${align.pct}% (${align.band.toLowerCase()}). Take it: ${resultUrl()}`}
 function setResultActions(readonly){$('#share').hidden=!!readonly;$('#again').hidden=!!readonly;$('#yours').hidden=!readonly}
-function finish(readonly){const{l,c,score}=tally();show('result');setResultActions(readonly);$('#nl').textContent=l;$('#nc').textContent=c;$('#verdict').textContent=verdict(score);renderAlignment(answers);
+function finish(readonly){const{l,c,score}=tally();show('result');setResultActions(readonly);$('#result-version').textContent=versionLabel(testVersion);$('#nl').textContent=l;$('#nc').textContent=c;$('#verdict').textContent=verdict(score);renderAlignment(answers);
  const N=ISSUES.length,m=$('#marker');m.style.transition='none';m.style.left='50%';m.offsetHeight;m.style.transition='';
  setTimeout(()=>{m.style.left=((score+N)/(2*N)*100)+'%'},60);
  let cur=0,t0=performance.now();(function step(t){const k=Math.min(1,(t-t0)/1800),e=1-Math.pow(1-k,3);cur=Math.round(score*e);$('#score').textContent=(cur>0?'+':'')+cur;if(k<1)setTimeout(()=>step(performance.now()),16)})(t0);
- $('#rows').innerHTML=ISSUES.map((q,k)=>{const s=sideOf(k,answers[k]);return`<div class="issue"><div class="row"><span class="n">${q.n}</span><span class="t">${q.statement}<em>You: ${answers[k]==='agree'?'More agree':'More disagree'}</em></span><span class="pill ${s}">${s}</span></div>${figuresFor(q.n)}</div>`}).join('');
+ $('#rows').innerHTML=ISSUES.map((q,k)=>{const s=sideOf(k,answers[k]);const felt=testVersion==='deluxe'&&strengths[k]?` · ${strengths[k]}`:'';return`<div class="issue"><div class="row"><span class="n">${q.n}</span><span class="t">${q.statement}<em>You: ${answers[k]==='agree'?'More agree':'More disagree'}${felt}</em></span><span class="pill ${s}">${s}</span></div>${figuresFor(q.n)}</div>`}).join('');
  if(!readonly&&location.protocol.startsWith('http'))history.replaceState(null,'',resultUrl());
  if(readonly){pendingSave=null;currentEntry=null;$('#save-box').hidden=true;$('#save-prompt').hidden=true}
- else{pendingSave={score,label:verdict(score).replace(/\.$/,''),r:encodeAnswers(answers),note:''};currentEntry=null;$('#thoughts').value='';persistResult();try{if(window.DRPStorage&&DRPStorage.logTestEvent)DRPStorage.logTestEvent(score,answers.slice()).catch(()=>{})}catch(e){}}}
+ else{pendingSave={score,label:verdict(score).replace(/\.$/,''),r:encodeAnswers(answers),note:'',version:testVersion,strengths:testVersion==='deluxe'?strengths.slice():null};currentEntry=null;$('#thoughts').value='';persistResult();try{if(window.DRPStorage&&DRPStorage.logTestEvent)DRPStorage.logTestEvent(score,answers.slice(),{version:testVersion,strengths:testVersion==='deluxe'?strengths.slice():null}).catch(()=>{})}catch(e){}}}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
 function clearResultUrl(){if(location.search||location.hash)history.replaceState(null,'',location.pathname)}
-$('#go').onclick=()=>{i=0;answers=[];pendingSave=null;currentEntry=null;clearResultUrl();show('quiz');render()};
-$('#again').onclick=()=>{i=0;answers=[];pendingSave=null;currentEntry=null;clearResultUrl();show('quiz');render()};
+function startTest(){i=0;answers=[];strengths=[];strengthSet=[];pendingSave=null;currentEntry=null;testVersion=pickedVersion;clearResultUrl();show('quiz');render()}
+function pickVersion(v){pickedVersion=v==='deluxe'?'deluxe':'standard';$('#ver-standard').classList.toggle('on',pickedVersion==='standard');$('#ver-deluxe').classList.toggle('on',pickedVersion==='deluxe');$('#ver-standard').setAttribute('aria-pressed',pickedVersion==='standard'?'true':'false');$('#ver-deluxe').setAttribute('aria-pressed',pickedVersion==='deluxe'?'true':'false')}
+$('#ver-standard').onclick=()=>pickVersion('standard');
+$('#ver-deluxe').onclick=()=>pickVersion('deluxe');
+$('#strength').addEventListener('input',()=>{if(testVersion!=='deluxe')return;strengthSet[i]=true;strengths[i]=Number($('#strength').value);syncMeter()});
+$('#go').onclick=startTest;
+$('#again').onclick=startTest;
 $('#yours').onclick=()=>{i=0;answers=[];clearResultUrl();show('start')};
 document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(b.dataset.a));
 $('#back').onclick=()=>{if(i>0){i--;render()}};
@@ -1570,12 +1606,12 @@ $('#share').onclick=async()=>{const text=shareText();const url=resultUrl();if(na
 function scoreChart(rows){const pts=rows.slice().sort((a,b)=>a.at<b.at?-1:1);if(!pts.length)return'';
  const w=640,h=150,pad=22,y=s=>pad+(h-pad*2)*(1-(s+30)/60),x=i=>pts.length<2?w/2:pad+(w-pad*2)*i/(pts.length-1);
  const d=pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(p.score).toFixed(1)).join(' ');
- const dots=pts.map((p,i)=>{const align=alignmentText(p.r);return `<circle cx="${x(i).toFixed(1)}" cy="${y(p.score).toFixed(1)}" r="4" fill="#d9a441"><title>${esc((p.score>0?'+':'')+p.score+' '+p.label+(align?' · '+align:''))}</title></circle>`}).join('');
+ const dots=pts.map((p,i)=>{const align=alignmentText(p.r,p.version,p.strengths);const ver=versionLabel(p.version);return `<circle cx="${x(i).toFixed(1)}" cy="${y(p.score).toFixed(1)}" r="4" fill="#d9a441"><title>${esc((p.score>0?'+':'')+p.score+' '+p.label+' · '+ver+(align?' · '+align:''))}</title></circle>`}).join('');
  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="Score over time"><line x1="${pad}" y1="${y(0)}" x2="${w-pad}" y2="${y(0)}" stroke="#2c241b" stroke-width="1"/><path d="${d}" fill="none" stroke="#d9a441" stroke-width="2"/>${dots}</svg>`}
 function when(at){try{return new Date(at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return at}}
 function renderHistory(rows){$('#chart').innerHTML=scoreChart(rows);
  if(!rows.length){$('#history-list').innerHTML='<p class="lead">No saved results yet.</p>';return}
- $('#history-list').innerHTML=rows.map(row=>{const align=alignmentText(row.r);return `<article class="hrow"><div class="hmeta"><time datetime="${esc(row.at)}">${esc(when(row.at))}</time><b class="${row.score<0?'neg':''}">${row.score>0?'+':''}${row.score}</b><span class="hlabel">${esc(row.label)}</span>${align?`<span class="hlabel">${esc(align)}</span>`:''}</div><p class="hnote">${row.note?esc(row.note):'<span class="hlabel">No note</span>'}</p><div class="hactions"><a class="textbtn" href="/?r=${encodeURIComponent(row.r)}">View result</a><button type="button" class="textbtn" data-edit="${esc(row.id)}">Edit note</button><button type="button" class="textbtn danger" data-del="${esc(row.id)}">Delete</button></div><form class="editnote" data-form="${esc(row.id)}" hidden><textarea rows="3">${esc(row.note||'')}</textarea><button class="btn" type="submit">Save note</button></form></article>`}).join('')}
+ $('#history-list').innerHTML=rows.map(row=>{const align=alignmentText(row.r,row.version,row.strengths);const ver=versionLabel(row.version);const href='/?r='+encodeURIComponent(row.r)+(row.version==='deluxe'&&validStrengths(row.strengths)?'&v=deluxe&s='+row.strengths.join(','):'');return `<article class="hrow"><div class="hmeta"><time datetime="${esc(row.at)}">${esc(when(row.at))}</time><b class="${row.score<0?'neg':''}">${row.score>0?'+':''}${row.score}</b><span class="hlabel">${esc(row.label)}</span><span class="hlabel">${esc(ver)}</span>${align?`<span class="hlabel">${esc(align)}</span>`:''}</div><p class="hnote">${row.note?esc(row.note):'<span class="hlabel">No note</span>'}</p><div class="hactions"><a class="textbtn" href="${href}">View result</a><button type="button" class="textbtn" data-edit="${esc(row.id)}">Edit note</button><button type="button" class="textbtn danger" data-del="${esc(row.id)}">Delete</button></div><form class="editnote" data-form="${esc(row.id)}" hidden><textarea rows="3">${esc(row.note||'')}</textarea><button class="btn" type="submit">Save note</button></form></article>`}).join('')}
 async function openHistory(){try{const profile=await DRPStorage.currentProfile();if(!profile){openSignin();return}renderHistory(await DRPStorage.listHistory(profile.id));show('history')}catch(err){toast(err.message||'Could not load history.')}}
 async function refreshAccount(){if(!window.DRPStorage)return;const me=await DRPStorage.currentProfile();
  const owner=!!(me&&me.email==='cubzub@gmail.com');
@@ -1613,7 +1649,7 @@ async function resumePending(){if(!pendingSave){try{const raw=sessionStorage.get
  await refreshAccount();if(pendingSave)await persistResult();await offerImport()}
 function onStorageReady(e){if(e&&e.detail&&e.detail.error)toast(e.detail.error.message);resumePending()}
 buildAxis();
-(function(){const params=new URLSearchParams(location.search);const hash=new URLSearchParams((location.hash||'').replace(/^#/,''));const authError=params.get('error_description')||hash.get('error_description');if(authError)toast(authError.replace(/\+/g,' '));const decoded=decodeAnswers(params.get('r'));if(decoded){answers=decoded;finish(true);return}if(window.__DEMO__){answers=window.__DEMO__;finish()}})();
+(function(){const params=new URLSearchParams(location.search);const hash=new URLSearchParams((location.hash||'').replace(/^#/,''));const authError=params.get('error_description')||hash.get('error_description');if(authError)toast(authError.replace(/\+/g,' '));const decoded=decodeAnswers(params.get('r'));if(decoded){answers=decoded;const loaded=params.get('v')==='deluxe'?validStrengths((params.get('s')||'').split(',')):null;testVersion=loaded?'deluxe':'standard';strengths=loaded||[];finish(true);return}if(window.__DEMO__){answers=window.__DEMO__;finish()}})();
 window.addEventListener('drp-storage-ready',onStorageReady);
 window.addEventListener('drp-auth',function(e){if(e.detail&&e.detail.error)toast(e.detail.error.message);else resumePending()});
 if(window.DRPStorage)resumePending();
