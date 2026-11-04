@@ -182,18 +182,22 @@ body.platform .crumbs [aria-current="page"]{color:var(--ink)}
   font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0;
 }
 .stance .side{margin:8px 0 0;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--pencil)}
-.plate{margin:16px 0}
+.plate{position:relative;margin:16px 0;aspect-ratio:5/3}
 .plate .frame{
-  aspect-ratio:5/3;display:grid;place-items:center;
+  position:absolute;inset:0;display:grid;place-items:center;
   border:1px solid #1c1a17;
   box-shadow:inset 0 0 0 7px #f7f4ec,inset 0 0 0 8px #1c1a17;
   background:
     linear-gradient(#fbf9f4,#efeae0);
   color:#8a8478;letter-spacing:.2em;text-transform:uppercase;font-size:12px;
 }
-.plate img{display:none;width:100%;height:auto;aspect-ratio:5/3;object-fit:cover;border:1px solid #1c1a17}
-.plate.is-ready .frame{display:none}
-.plate.is-ready img{display:block}
+.plate img{
+  position:absolute;inset:0;z-index:1;
+  width:100%;height:100%;object-fit:cover;
+  border:1px solid #1c1a17;opacity:0;
+}
+.plate.is-ready .frame{visibility:hidden}
+.plate.is-ready img{opacity:1}
 .stance blockquote{
   margin:16px 0;padding:0 0 0 16px;border-left:2px solid #1c1a17;
   font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(22px,3vw,28px);line-height:1.35;
