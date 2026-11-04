@@ -1,8 +1,9 @@
-const CACHE = 'drp-compass-v21';
+const CACHE = 'drp-compass-v22';
 const ASSETS = [
   '/',
   '/index.html',
   '/assets/site.css',
+  '/assets/site.js',
   '/philosophy/',
   '/philosophy/index.html',
   '/philosophy/politics/',
