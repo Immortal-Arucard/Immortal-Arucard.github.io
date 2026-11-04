@@ -1,4 +1,4 @@
-const CACHE = 'drp-compass-v20';
+const CACHE = 'drp-compass-v21';
 const ASSETS = [
   '/',
   '/index.html',
@@ -17,6 +17,7 @@ const ASSETS = [
   '/philosophy/politics/democratic/american/drp/platform/index.html',
   '/philosophy/politics/democratic/american/drp/compass/',
   '/philosophy/politics/democratic/american/drp/compass/index.html',
+  '/compass/index.html',
   '/stats.html',
   '/privacy.html',
   '/terms.html',
@@ -78,14 +79,20 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname === 'supabase.co' || url.hostname.endsWith('.supabase.co')) return;
   if (url.origin !== self.location.origin) return;
 
-  const cacheKey = new Request(url.pathname);
+  // /compass and /compass/ are the shortcut page. Keep them on the file
+  // itself so a directory redirect is not stored in place of the shell,
+  // and so an offline miss does not fall through to the site home.
+  const pathname = (url.pathname === '/compass' || url.pathname === '/compass/')
+    ? '/compass/index.html'
+    : url.pathname;
+  const cacheKey = new Request(pathname);
   event.respondWith((async () => {
     try {
       const response = await fetch(request);
-      if (response && response.ok && response.type === 'basic') {
+      if (response && response.ok && response.type === 'basic' && !response.redirected) {
         const copy = response.clone();
         const cache = await caches.open(CACHE);
-        await cache.put(cacheKey, copy);
+        try { await cache.put(cacheKey, copy); } catch (e) { /* a bad cache write must not block the redirect */ }
       }
       return response;
     } catch (err) {
