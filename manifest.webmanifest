@@ -1,7 +1,8 @@
 {
-  "name": "DRP Compass",
-  "short_name": "DRP Compass",
-  "description": "The Democratic-Republican Party Platform Test",
+  "name": "The World Government, Inc.",
+  "short_name": "TWGI",
+  "description": "The World Government, Inc. publishes this website. Its work is arranged in divisions.",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,19 +11,19 @@
   "lang": "en",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/icons/twgi-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icons/twgi-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-maskable-512.png",
+      "src": "/icons/twgi-icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
