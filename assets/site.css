@@ -50,7 +50,7 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 }
 .menu-btn:hover{background:#4fc3ff;color:#000}
 .menu-btn[aria-expanded="true"]{border-color:var(--sky);background:#4fc3ff;color:#000}
-.compass-btn:focus-visible,.menu-btn:focus-visible,.site-nav a:focus-visible,.crumbs a:focus-visible,.child a:focus-visible,.take:focus-visible{
+.compass-btn:focus-visible,.menu-btn:focus-visible,.expand:focus-visible,.site-nav a:focus-visible,.crumbs a:focus-visible,.child a:focus-visible,.take:focus-visible{
   outline:2px solid var(--sky);outline-offset:3px;
 }
 .site-name{margin:0;flex:1 1 160px;min-width:0}
@@ -60,17 +60,32 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 }
 .site-nav{
   display:none;position:absolute;left:16px;top:100%;z-index:30;
-  flex-direction:column;align-items:stretch;gap:0;min-width:12rem;
+  flex-direction:column;align-items:stretch;gap:2px;min-width:16rem;
+  max-width:min(24rem,calc(100vw - 24px));max-height:calc(100vh - 64px);overflow:auto;
   margin:0;padding:6px;background:#000;border:1px solid var(--sky);
   border-radius:12px;box-shadow:0 16px 40px #000c;
 }
 .site-nav:not([hidden]){display:flex}
+.site-nav .nav-item{display:flex;align-items:stretch;gap:4px}
+.site-nav .nav-item a{flex:1;min-width:0}
+.site-nav .nav-sub{list-style:none;margin:0;padding:0 0 0 12px}
 .site-nav a{
   color:var(--sky);text-decoration:none;min-height:44px;
   display:flex;align-items:center;padding:0 12px;border-radius:8px;
   font-size:15px;letter-spacing:.04em;
 }
 .site-nav a:hover,.site-nav a[aria-current="page"]{color:#000;background:#4fc3ff;text-decoration:none}
+.expand{
+  appearance:none;flex:none;min-width:44px;min-height:44px;padding:0 10px;
+  border:1px solid var(--sky);border-radius:12px;background:#000;color:var(--sky);
+  font:inherit;font-weight:700;font-size:22px;line-height:1;cursor:pointer;
+}
+.expand:hover,.expand[aria-expanded="true"]{background:#4fc3ff;color:#000}
+.split{display:flex;align-items:stretch;gap:8px}
+.split>.primary{flex:1;min-width:0}
+.split>.expand{margin-top:22px}
+.child .split>a{flex:1;min-width:0}
+.child .split>.expand{margin-top:0}
 .crumbs{align-self:stretch;width:100%}
 .crumbs ol{
   display:flex;flex-wrap:wrap;gap:4px 0;list-style:none;
