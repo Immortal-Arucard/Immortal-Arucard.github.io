@@ -1,0 +1,32 @@
+{
+  "name": "DRP Compass",
+  "short_name": "DRP Compass",
+  "description": "The Democratic-Republican Party Platform Test",
+  "id": "/philosophy/politics/democratic/american/drp/compass/",
+  "start_url": "/philosophy/politics/democratic/american/drp/compass/",
+  "scope": "/philosophy/politics/democratic/american/drp/compass/",
+  "display": "standalone",
+  "background_color": "#0d0b09",
+  "theme_color": "#d9a441",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
