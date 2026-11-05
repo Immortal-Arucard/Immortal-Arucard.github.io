@@ -1,4 +1,4 @@
-const CACHE = 'drp-compass-v27';
+const CACHE = 'drp-compass-v28';
 const ASSETS = [
   '/',
   '/index.html',
@@ -8,6 +8,16 @@ const ASSETS = [
   '/philosophy/index.html',
   '/philosophy/politics/',
   '/philosophy/politics/index.html',
+  '/religion/',
+  '/religion/index.html',
+  '/science/',
+  '/science/index.html',
+  '/recreation/',
+  '/recreation/index.html',
+  '/building/',
+  '/building/index.html',
+  '/trading/',
+  '/trading/index.html',
   '/philosophy/religion/',
   '/philosophy/religion/index.html',
   '/philosophy/science/',
@@ -95,9 +105,31 @@ self.addEventListener('fetch', (event) => {
   // /compass and /compass/ are the shortcut page. Keep them on the file
   // itself so a directory redirect is not stored in place of the shell,
   // and so an offline miss does not fall through to the site home.
-  const pathname = (url.pathname === '/compass' || url.pathname === '/compass/')
-    ? '/compass/index.html'
-    : url.pathname;
+  const shells = {
+    '/compass': '/compass/index.html',
+    '/compass/': '/compass/index.html',
+    '/religion': '/religion/index.html',
+    '/religion/': '/religion/index.html',
+    '/science': '/science/index.html',
+    '/science/': '/science/index.html',
+    '/recreation': '/recreation/index.html',
+    '/recreation/': '/recreation/index.html',
+    '/building': '/building/index.html',
+    '/building/': '/building/index.html',
+    '/trading': '/trading/index.html',
+    '/trading/': '/trading/index.html',
+    '/philosophy/religion': '/philosophy/religion/index.html',
+    '/philosophy/religion/': '/philosophy/religion/index.html',
+    '/philosophy/science': '/philosophy/science/index.html',
+    '/philosophy/science/': '/philosophy/science/index.html',
+    '/philosophy/recreation': '/philosophy/recreation/index.html',
+    '/philosophy/recreation/': '/philosophy/recreation/index.html',
+    '/philosophy/building': '/philosophy/building/index.html',
+    '/philosophy/building/': '/philosophy/building/index.html',
+    '/philosophy/trading': '/philosophy/trading/index.html',
+    '/philosophy/trading/': '/philosophy/trading/index.html'
+  };
+  const pathname = shells[url.pathname] || url.pathname;
   const cacheKey = new Request(pathname);
   event.respondWith((async () => {
     try {
