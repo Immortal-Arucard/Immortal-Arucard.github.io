@@ -102,6 +102,7 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 }
 .primary span{display:block;margin-top:6px;color:#e8e8e8;line-height:1.5}
 .children{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:12px}
+.under{margin-top:12px;margin-left:16px}
 .child a{
   display:block;padding:16px 16px 14px;text-decoration:none;color:#fff;
   border:1px solid var(--line);border-radius:14px;background:#000;
