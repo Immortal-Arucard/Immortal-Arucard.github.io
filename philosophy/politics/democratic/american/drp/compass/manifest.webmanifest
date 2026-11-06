@@ -6,8 +6,8 @@
   "start_url": "/philosophy/politics/democratic/american/drp/compass/",
   "scope": "/philosophy/politics/democratic/american/drp/compass/",
   "display": "standalone",
-  "background_color": "#0d0b09",
-  "theme_color": "#d9a441",
+  "background_color": "#000000",
+  "theme_color": "#6366f1",
   "lang": "en",
   "icons": [
     {
