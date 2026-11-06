@@ -89,8 +89,10 @@
     });
   }
 
-  if (menu) menu.innerHTML = render(tree);
-  wire(document);
+  if (menu) {
+    menu.innerHTML = render(tree);
+    wire(menu);
+  }
 
   if (!button || !menu) return;
 
