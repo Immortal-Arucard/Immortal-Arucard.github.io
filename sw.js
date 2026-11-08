@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v40';
+const CACHE = 'twgi-v41';
 const ASSETS = [
   '/',
   '/index.html',
@@ -45,7 +45,6 @@ const ASSETS = [
   '/storage.js',
   '/vendor/supabase.js',
   '/manifest.webmanifest',
-  '/philosophy/politics/democratic/american/drp/compass/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-maskable-512.png',
