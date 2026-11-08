@@ -24,7 +24,7 @@
                       href: '/philosophy/politics/democratic/american/drp/',
                       name: 'DRP',
                       children: [
-                        { href: '/philosophy/politics/democratic/american/drp/platform/', name: 'Platform' },
+                        { href: 'https://party-platform.theworldgovernmentincorporated.com/', name: 'Platform' },
                         { href: 'https://political-compass.theworldgovernmentincorporated.com/', name: 'Compass' }
                       ]
                     }
