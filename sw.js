@@ -1,9 +1,12 @@
-const CACHE = 'twgi-v48';
+const CACHE = 'twgi-v49';
 const ASSETS = [
   '/',
   '/index.html',
   '/assets/site.css',
   '/assets/site.js',
+  '/assets/login.js',
+  '/login/',
+  '/login/index.html',
   '/philosophy/',
   '/philosophy/index.html',
   '/philosophy/politics/',
@@ -138,6 +141,8 @@ self.addEventListener('fetch', (event) => {
   // itself so a directory redirect is not stored in place of the shell,
   // and so an offline miss does not fall through to the site home.
   const shells = {
+    '/login': '/login/index.html',
+    '/login/': '/login/index.html',
     '/compass': '/compass/index.html',
     '/compass/': '/compass/index.html',
     '/religion': '/religion/index.html',
