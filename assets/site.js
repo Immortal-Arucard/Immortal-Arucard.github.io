@@ -33,11 +33,29 @@
               ]
             }
           ]
-        }
+        },
+        { href: '/philosophy/poetry/', name: 'Poetry' }
       ]
     },
-    { href: '/religion/', name: 'Religion' },
-    { href: '/science/', name: 'Science' },
+    {
+      href: '/religion/',
+      name: 'Religion',
+      children: [
+        { href: '/religion/the-church-of-the-second-coming-of-jesus-christ/', name: 'The Church of the Second Coming of Jesus Christ' }
+      ]
+    },
+    {
+      href: '/science/',
+      name: 'Science',
+      children: [
+        { href: '/science/military-rd/', name: 'Military R&amp;D' },
+        { href: '/science/immortality/', name: 'Immortality' },
+        { href: '/science/resurrection/', name: 'Resurrection' },
+        { href: '/science/flight/', name: 'Flight' },
+        { href: '/science/oceanic-travel/', name: 'Oceanic Travel' },
+        { href: '/science/interplanetary-travel/', name: 'Interplanetary Travel' }
+      ]
+    },
     {
       href: '/recreation/',
       name: 'Recreation',
