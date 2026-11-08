@@ -38,7 +38,13 @@
     },
     { href: '/religion/', name: 'Religion' },
     { href: '/science/', name: 'Science' },
-    { href: '/recreation/', name: 'Recreation' },
+    {
+      href: '/recreation/',
+      name: 'Recreation',
+      children: [
+        { href: '/recreation/chess/', name: 'Chess' }
+      ]
+    },
     { href: '/building/', name: 'Building' },
     { href: '/trading/', name: 'Trading' }
   ];
