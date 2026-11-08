@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v41';
+const CACHE = 'twgi-v42';
 const ASSETS = [
   '/',
   '/index.html',
