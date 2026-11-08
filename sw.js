@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v45';
+const CACHE = 'twgi-v46';
 const ASSETS = [
   '/',
   '/index.html',
@@ -34,6 +34,12 @@ const ASSETS = [
   '/recreation/chess/index.html',
   '/building/',
   '/building/index.html',
+  '/building/lands/',
+  '/building/lands/index.html',
+  '/building/infrastructure/',
+  '/building/infrastructure/index.html',
+  '/building/proper-supply-chains/',
+  '/building/proper-supply-chains/index.html',
   '/trading/',
   '/trading/index.html',
   '/philosophy/religion/',
@@ -152,6 +158,12 @@ self.addEventListener('fetch', (event) => {
     '/recreation/': '/recreation/index.html',
     '/building': '/building/index.html',
     '/building/': '/building/index.html',
+    '/building/lands': '/building/lands/index.html',
+    '/building/lands/': '/building/lands/index.html',
+    '/building/infrastructure': '/building/infrastructure/index.html',
+    '/building/infrastructure/': '/building/infrastructure/index.html',
+    '/building/proper-supply-chains': '/building/proper-supply-chains/index.html',
+    '/building/proper-supply-chains/': '/building/proper-supply-chains/index.html',
     '/trading': '/trading/index.html',
     '/trading/': '/trading/index.html',
     '/philosophy/poetry': '/philosophy/poetry/index.html',
