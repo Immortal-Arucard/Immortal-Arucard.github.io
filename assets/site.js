@@ -63,7 +63,15 @@
         { href: 'https://chess.theworldgovernmentincorporated.com/', name: 'Chess' }
       ]
     },
-    { href: '/building/', name: 'Building' },
+    {
+      href: '/building/',
+      name: 'Building',
+      children: [
+        { href: '/building/lands/', name: 'Lands' },
+        { href: '/building/infrastructure/', name: 'Infrastructure' },
+        { href: '/building/proper-supply-chains/', name: 'Proper Supply Chains' }
+      ]
+    },
     { href: '/trading/', name: 'Trading' }
   ];
 
