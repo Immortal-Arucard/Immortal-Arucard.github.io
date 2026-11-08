@@ -42,7 +42,7 @@
       href: '/recreation/',
       name: 'Recreation',
       children: [
-        { href: '/recreation/chess/', name: 'Chess' }
+        { href: 'https://chess.theworldgovernmentincorporated.com/', name: 'Chess' }
       ]
     },
     { href: '/building/', name: 'Building' },
