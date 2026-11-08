@@ -72,7 +72,13 @@
         { href: '/building/proper-supply-chains/', name: 'Proper Supply Chains' }
       ]
     },
-    { href: '/trading/', name: 'Trading' }
+    {
+      href: '/trading/',
+      name: 'Trading',
+      children: [
+        { href: '/trading/the-world-citizens-identities-exchange-wcie/', name: 'The World Citizens Identities Exchange (WCIE)' }
+      ]
+    }
   ];
 
   function norm(path) {
