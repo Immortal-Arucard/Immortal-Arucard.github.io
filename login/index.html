@@ -39,13 +39,15 @@
 <main class="page" id="main">
   <p class="eyebrow">TWGI master account</p>
   <h1>Log in</h1>
-  <p class="lead">Sign in to an existing TWGI master account. This sends a sign-in link to that email. It does not create an account, and it does not list other accounts.</p>
-  <form class="signin" id="login-form">
+  <p class="lead">Sign in to an existing TWGI master account. Email sends a sign-in link and does not create an account. Continue with Google uses the shared sign-in. This page does not list other accounts or enroll a Compass or Chess profile.</p>
+  <p class="note">Open the emailed link, or the return from Google, in this same browser, on this device and profile.</p>
+  <form class="signin" id="login-form" method="post" action="/login/" novalidate onsubmit="return false">
     <label for="login-email">Email</label>
-    <input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" required>
-    <button class="take" type="submit">Email me a sign-in link</button>
-    <p class="note" id="login-status" role="status" aria-live="polite"></p>
+    <input id="login-email" type="email" autocomplete="username" inputmode="email" required disabled>
+    <button class="take" type="submit" id="login-submit" disabled>Email me a sign-in link</button>
+    <button class="take" type="button" id="login-google" disabled>Continue with Google</button>
   </form>
+  <p class="note" id="login-status" role="status" aria-live="polite"></p>
   <div class="signin" id="login-session" hidden>
     <p class="lead" id="login-who"></p>
     <button class="take" type="button" id="login-out">Sign out</button>
