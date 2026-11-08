@@ -126,6 +126,7 @@
   function showSession(session) {
     var email = session && session.user && session.user.email;
     if (!email) {
+      if (who) who.textContent = '';
       if (form) form.hidden = false;
       if (sessionBox) sessionBox.hidden = true;
       setReady(true);
@@ -162,6 +163,7 @@
     else showSession(null);
   }
 
+  var settled = false;
   var callback = Promise.resolve();
   if (authParams.error || authParams.error_description || authParams.error_code) {
     callback = Promise.resolve().then(function () {
@@ -173,6 +175,23 @@
       else finishCallback(result.data && result.data.session, '');
     }).catch(function (err) {
       finishCallback(null, callbackMessage(err));
+    });
+  } else if (hasAuth) {
+    callback = Promise.resolve().then(function () {
+      scrubAuth();
+      say('This sign-in return is not a supported code. Request a new link.');
+      return client.auth.getSession();
+    }).then(function (result) {
+      if (!result) return;
+      if (result.error) {
+        showSession(null);
+        return;
+      }
+      showSession(result.data.session);
+    }).catch(function (err) {
+      scrubAuth();
+      say(message(err));
+      showSession(null);
     });
   } else {
     callback = client.auth.getSession().then(function (result) {
@@ -188,12 +207,14 @@
     });
   }
 
-  callback.then(function () {
-    if (form && !form.hidden) setReady(true);
+  client.auth.onAuthStateChange(function (_event, session) {
+    if (!settled) return;
+    showSession(session);
   });
 
-  client.auth.onAuthStateChange(function (_event, session) {
-    if (session && session.user) showSession(session);
+  callback.then(function () {
+    settled = true;
+    if (form && !form.hidden) setReady(true);
   });
 
   if (form) {

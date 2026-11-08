@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "checks": {
+    "missingLibrary": {
+      "href": "/login/",
+      "status": "Sign-in is unavailable because the auth library did not load.",
+      "statusOutside": true,
+      "method": "post",
+      "named": null,
+      "disabled": true,
+      "after": "/login/"
+    },
+    "providerError": {
+      "status": "The sign-in provider returned an error: User denied access",
+      "href": "/login/",
+      "who": ""
+    },
+    "missingVerifier": {
+      "status": "Open the sign-in link in the same browser, on the same device and profile, that asked for it.",
+      "href": "/login/"
+    },
+    "expiredCode": {
+      "status": "This sign-in link is expired or has already been used. Request a new one.",
+      "href": "/login/",
+      "calls": [
+        "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/token?grant_type=pkce"
+      ],
+      "who": ""
+    },
+    "successAndLocalLogout": {
+      "signed": {
+        "status": "",
+        "href": "/login/",
+        "who": "Signed in as person@example.com.",
+        "formHidden": true,
+        "statusOutside": true
+      },
+      "after": {
+        "status": "Signed out.",
+        "logout": "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/logout?scope=local",
+        "formHidden": false,
+        "who": ""
+      }
+    },
+    "unsupportedQuery": {
+      "status": "This sign-in return is not a supported code. Request a new link.",
+      "href": "/login/",
+      "who": "",
+      "calls": []
+    },
+    "unsupportedHash": {
+      "status": "This sign-in return is not a supported code. Request a new link.",
+      "href": "/login/",
+      "who": ""
+    },
+    "unsupportedTokenHash": {
+      "status": "This sign-in return is not a supported code. Request a new link.",
+      "href": "/login/",
+      "who": ""
+    },
+    "crossTabNull": {
+      "before": "Signed in as person@example.com.",
+      "after": {
+        "who": "",
+        "formHidden": false,
+        "sessionHidden": true
+      }
+    },
+    "google": {
+      "url": "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/authorize?provider=google&redirect_to=http%3A%2F%2F127.0.0.1%3A8766%2Flogin%2F&code_challenge=HvboUOkOLAC4lCXKtUn0Y1czyXDdiY0e0LCrY7XWWLI&code_challenge_method=s256",
+      "stayed": "/login/"
+    },
+    "nativeGet": "/login/"
+  }
+}
