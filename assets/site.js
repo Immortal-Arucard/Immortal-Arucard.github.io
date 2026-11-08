@@ -76,7 +76,8 @@
       href: '/trading/',
       name: 'Trading',
       children: [
-        { href: '/trading/the-world-citizens-identities-exchange-wcie/', name: 'The World Citizens Identities Exchange (WCIE)' }
+        { href: '/trading/the-world-citizens-identities-exchange-wcie/', name: 'The World Citizens Identities Exchange (WCIE)' },
+        { href: '/trading/the-grand-exchange/', name: 'The Grand Exchange' }
       ]
     }
   ];
