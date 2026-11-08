@@ -37,7 +37,13 @@
         { href: '/philosophy/poetry/', name: 'Poetry' }
       ]
     },
-    { href: '/religion/', name: 'Religion' },
+    {
+      href: '/religion/',
+      name: 'Religion',
+      children: [
+        { href: '/religion/the-church-of-the-second-coming-of-jesus-christ/', name: 'The Church of the Second Coming of Jesus Christ' }
+      ]
+    },
     {
       href: '/science/',
       name: 'Science',
