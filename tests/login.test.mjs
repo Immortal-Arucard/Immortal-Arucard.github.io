@@ -1,4 +1,6 @@
-/* Repeatable browser checks for /login/. No Auth email is sent.
+/* Repeatable browser checks for /login/.
+   Every production Auth request is failed closed inside the page and, if one
+   still reaches Chrome's network stack, aborted before it is sent.
    Run from the repo root: node tests/login.test.mjs
    Writes tests/login-test-output.json */
 import { spawn } from 'node:child_process';
@@ -59,10 +61,22 @@ const version = await waitFor(() => fetch('http://127.0.0.1:' + CDP + '/json/ver
 const browser = new WebSocket(version.webSocketDebuggerUrl);
 let seq = 0;
 const pending = new Map();
-const paused = [];
+const networkHits = [];
 browser.addEventListener('message', (event) => {
   const msg = JSON.parse(event.data);
-  if (msg.method === 'Fetch.requestPaused') { paused.push(msg.params); return; }
+  if (msg.method === 'Fetch.requestPaused') {
+    const url = (msg.params.request && msg.params.request.url) || '';
+    networkHits.push(url);
+    const id = ++seq;
+    browser.send(JSON.stringify({
+      id,
+      method: 'Fetch.failRequest',
+      ...(msg.sessionId ? { sessionId: msg.sessionId } : {}),
+      params: { requestId: msg.params.requestId, errorReason: 'Aborted' }
+    }));
+    pending.set(id, { resolve() {}, reject() {} });
+    return;
+  }
   if (!msg.id || !pending.has(msg.id)) return;
   const { resolve, reject } = pending.get(msg.id);
   pending.delete(msg.id);
@@ -78,26 +92,66 @@ function send(method, params = {}, sessionId) {
 
 const mockSource = `
   window.__authCalls = [];
+  window.__otp = '';
   window.__logout = '';
+  window.__blocked = [];
+  function authUrl(input) {
+    return typeof input === 'string' ? input : (input && input.url) || '';
+  }
+  function productionAuth(url) {
+    return url.indexOf('supabase.co') !== -1 || url.indexOf('accounts.google.com') !== -1 || url.indexOf('oauth2.googleapis.com') !== -1 || url.indexOf('www.googleapis.com') !== -1;
+  }
+  function blockedResponse() {
+    return Promise.resolve(new Response(JSON.stringify({ error: 'blocked-by-test', error_description: 'blocked-by-test', message: 'blocked-by-test' }), { status: 400, headers: { 'content-type': 'application/json' } }));
+  }
   const orig = window.fetch.bind(window);
   window.fetch = function (input, init) {
-    const url = typeof input === 'string' ? input : (input && input.url) || '';
-    window.__authCalls.push(url);
-    if (url.indexOf('/auth/v1/token') !== -1) {
-      const mode = sessionStorage.getItem('mock-auth') || '';
-      if (mode === 'ok') {
-        return Promise.resolve(new Response(JSON.stringify(${JSON.stringify(fakeSession())}), { status: 200, headers: { 'content-type': 'application/json' } }));
+    const url = authUrl(input);
+    const body = init && init.body ? String(init.body) : '';
+    if (productionAuth(url)) {
+      window.__authCalls.push(url);
+      if (url.indexOf('/auth/v1/otp') !== -1) window.__otp = JSON.stringify({ url: url, body: body });
+      if (url.indexOf('/logout') !== -1) {
+        window.__logout = url;
+        return Promise.resolve(new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } }));
       }
-      if (mode === 'expired') {
-        return Promise.resolve(new Response(JSON.stringify({ error: 'invalid_grant', error_description: 'Email link is invalid or has expired', error_code: 'otp_expired' }), { status: 400, headers: { 'content-type': 'application/json' } }));
+      if (url.indexOf('/auth/v1/token') !== -1) {
+        const mode = sessionStorage.getItem('mock-auth') || '';
+        if (mode === 'ok') {
+          return Promise.resolve(new Response(JSON.stringify(${JSON.stringify(fakeSession())}), { status: 200, headers: { 'content-type': 'application/json' } }));
+        }
+        if (mode === 'expired') {
+          return Promise.resolve(new Response(JSON.stringify({ error: 'invalid_grant', error_description: 'Email link is invalid or has expired', error_code: 'otp_expired' }), { status: 400, headers: { 'content-type': 'application/json' } }));
+        }
       }
-    }
-    if (url.indexOf('/logout') !== -1) {
-      window.__logout = url;
-      return Promise.resolve(new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } }));
+      window.__blocked.push(url);
+      return blockedResponse();
     }
     return orig(input, init);
   };
+  const OrigXHR = window.XMLHttpRequest;
+  window.XMLHttpRequest = function () {
+    const xhr = new OrigXHR();
+    const open = xhr.open;
+    xhr.open = function (method, url) {
+      if (productionAuth(String(url))) {
+        window.__blocked.push(String(url));
+        throw new Error('blocked-by-test');
+      }
+      return open.apply(xhr, arguments);
+    };
+    return xhr;
+  };
+  const origBeacon = navigator.sendBeacon && navigator.sendBeacon.bind(navigator);
+  if (origBeacon) {
+    navigator.sendBeacon = function (url, data) {
+      if (productionAuth(String(url))) {
+        window.__blocked.push(String(url));
+        return false;
+      }
+      return origBeacon(url, data);
+    };
+  }
 `;
 
 const { browserContextId } = await send('Target.createBrowserContext', {});
@@ -109,8 +163,10 @@ async function withPage(fn, options = {}) {
   await call('Runtime.enable');
   await call('Page.addScriptToEvaluateOnNewDocument', { source: mockSource });
   const patterns = [
-    { urlPattern: '*supabase.co/auth/v1/authorize*' },
-    { urlPattern: '*accounts.google.com*' }
+    { urlPattern: '*supabase.co*' },
+    { urlPattern: '*accounts.google.com*' },
+    { urlPattern: '*oauth2.googleapis.com*' },
+    { urlPattern: '*www.googleapis.com*' }
   ];
   if (options.blockLibrary) patterns.push({ urlPattern: '*vendor/supabase.js*' });
   await call('Fetch.enable', { patterns });
@@ -143,22 +199,14 @@ function assert(condition, label) {
 
 const report = { ok: false, checks: {} };
 
-report.checks.missingLibrary = await withPage(async (page, call) => {
-  const failing = (async () => {
-    const start = Date.now();
-    while (Date.now() - start < 5000) {
-      const item = paused.find((entry) => entry.request && entry.request.url.includes('vendor/supabase.js'));
-      if (item) {
-        paused.splice(paused.indexOf(item), 1);
-        await call('Fetch.failRequest', { requestId: item.requestId, errorReason: 'Failed' });
-        return true;
-      }
-      await sleep(20);
-    }
-    return false;
-  })();
+report.checks.missingLibrary = await withPage(async (page) => {
+  const seen = networkHits.length;
   await page.goto(ORIGIN + '/login/?code=should-not-remain');
-  assert(await failing, 'supabase.js was blocked');
+  await waitFor(async () => {
+    if (!networkHits.slice(seen).some((url) => url.includes('vendor/supabase.js'))) throw new Error('waiting');
+    return true;
+  });
+  assert(networkHits.slice(seen).some((url) => url.includes('vendor/supabase.js')), 'supabase.js was blocked');
   await sleep(150);
   const state = await page.eval(`({
     href: location.pathname + location.search + location.hash,
@@ -267,40 +315,50 @@ report.checks.google = await withPage(async (page, call) => {
   await page.goto(ORIGIN + '/login/');
   await page.eval(`localStorage.clear(); sessionStorage.clear();`);
   await page.goto(ORIGIN + '/login/');
-  const watch = (async () => {
-    const start = Date.now();
-    while (Date.now() - start < 5000) {
-      const item = paused.find((entry) => entry.request && /authorize|accounts\.google\.com/.test(entry.request.url));
-      if (item) {
-        paused.splice(paused.indexOf(item), 1);
-        await call('Fetch.failRequest', { requestId: item.requestId, errorReason: 'Aborted' });
-        return item.request.url;
-      }
-      await sleep(20);
-    }
-    return '';
-  })();
+  const seen = networkHits.length;
   await page.eval(`document.getElementById('login-google').click()`);
-  const url = new URL(await watch);
+  const raw = await waitFor(async () => {
+    const hit = networkHits.slice(seen).find((url) => url.includes('/auth/v1/authorize'));
+    if (!hit) throw new Error('waiting for authorize');
+    return hit;
+  });
+  const url = new URL(raw);
   assert(url.pathname === '/auth/v1/authorize', 'Google starts the Auth authorize endpoint');
   assert(url.searchParams.get('provider') === 'google', 'Google provider is requested');
   assert(url.searchParams.get('redirect_to') === ORIGIN + '/login/', 'Google returns to /login/');
   assert(url.searchParams.get('code_challenge_method') === 's256' && url.searchParams.get('code_challenge'), 'Google uses PKCE');
   const stayed = await page.eval('location.pathname');
+  const extra = networkHits.slice(seen).filter((hit) => !hit.includes('/auth/v1/authorize'));
   assert(stayed === '/login/', 'the test does not continue to Google');
-  return { url: url.toString(), stayed };
+  assert(extra.length === 0, 'Google start made another Auth network request: ' + extra.join(' | '));
+  return { url: url.toString(), stayed, network: networkHits.slice(seen) };
 });
 
 report.checks.nativeGet = await withPage(async (page) => {
   await page.goto(ORIGIN + '/login/');
   await page.eval(`localStorage.clear(); sessionStorage.clear();`);
   await page.goto(ORIGIN + '/login/');
+  const seen = networkHits.length;
   await page.eval(`document.getElementById('login-email').disabled=false; document.getElementById('login-email').value='person@example.com'; document.getElementById('login-form').requestSubmit();`);
-  await sleep(200);
-  const href = await page.eval('location.pathname + location.search');
-  assert(href === '/login/', 'native submit does not leak the email');
-  return href;
+  await sleep(400);
+  const state = await page.eval(`({ href: location.pathname + location.search, otp: window.__otp })`);
+  const recorded = JSON.parse(state.otp || '{}');
+  const otp = JSON.parse(recorded.body || '{}');
+  const leaked = networkHits.slice(seen).filter((hit) => hit.includes('supabase.co') || hit.includes('accounts.google.com') || hit.includes('googleapis.com'));
+  assert(state.href === '/login/', 'native submit does not leak the email');
+  assert(otp.create_user === false && otp.email === 'person@example.com', 'OTP is mocked with create_user false');
+  assert(String(recorded.url).includes('redirect_to=') && decodeURIComponent(String(recorded.url)).endsWith('/login/'), 'OTP redirect stays on /login/');
+  assert(leaked.length === 0, 'OTP reached the network: ' + leaked.join(' | '));
+  return { href: state.href, otpUrl: recorded.url, otp, network: leaked };
 });
+
+const leaked = networkHits.filter((url) => {
+  if (url.includes('vendor/supabase.js')) return false;
+  if (url.includes('/auth/v1/authorize') && url.includes('provider=google')) return false;
+  return url.includes('supabase.co') || url.includes('accounts.google.com') || url.includes('oauth2.googleapis.com') || url.includes('www.googleapis.com');
+});
+assert(leaked.length === 0, 'unintended Auth network request: ' + leaked.join(' | '));
+report.networkHits = networkHits;
 
 report.ok = true;
 writeFileSync(OUTPUT, JSON.stringify(report, null, 2) + '\n');

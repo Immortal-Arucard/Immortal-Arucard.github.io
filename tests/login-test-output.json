@@ -67,9 +67,29 @@
       }
     },
     "google": {
-      "url": "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/authorize?provider=google&redirect_to=http%3A%2F%2F127.0.0.1%3A8766%2Flogin%2F&code_challenge=HvboUOkOLAC4lCXKtUn0Y1czyXDdiY0e0LCrY7XWWLI&code_challenge_method=s256",
-      "stayed": "/login/"
+      "url": "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/authorize?provider=google&redirect_to=http%3A%2F%2F127.0.0.1%3A8766%2Flogin%2F&code_challenge=_t6-rIQUC6NIKFhVOyIKEGm061DMMzf7nRQjPDLs_UM&code_challenge_method=s256",
+      "stayed": "/login/",
+      "network": [
+        "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/authorize?provider=google&redirect_to=http%3A%2F%2F127.0.0.1%3A8766%2Flogin%2F&code_challenge=_t6-rIQUC6NIKFhVOyIKEGm061DMMzf7nRQjPDLs_UM&code_challenge_method=s256"
+      ]
     },
-    "nativeGet": "/login/"
-  }
+    "nativeGet": {
+      "href": "/login/",
+      "otpUrl": "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/otp?redirect_to=http%3A%2F%2F127.0.0.1%3A8766%2Flogin%2F",
+      "otp": {
+        "email": "person@example.com",
+        "data": {},
+        "create_user": false,
+        "gotrue_meta_security": {},
+        "code_challenge": "ZTYaS4mOEi394ELR26-c4VyxdD9wEVVgPRFxgs7Xtw0",
+        "code_challenge_method": "s256"
+      },
+      "network": []
+    }
+  },
+  "networkHits": [
+    "http://127.0.0.1:8766/vendor/supabase.js",
+    "http://127.0.0.1:8766/vendor/supabase.js",
+    "https://xfswvbxuhgqbdqpqiywa.supabase.co/auth/v1/authorize?provider=google&redirect_to=http%3A%2F%2F127.0.0.1%3A8766%2Flogin%2F&code_challenge=_t6-rIQUC6NIKFhVOyIKEGm061DMMzf7nRQjPDLs_UM&code_challenge_method=s256"
+  ]
 }
