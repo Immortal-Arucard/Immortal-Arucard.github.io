@@ -3,7 +3,13 @@
   var menu = document.getElementById('site-menu');
 
   var tree = [
-    { href: '/', name: 'Home' },
+    {
+      href: '/',
+      name: 'Home',
+      children: [
+        { href: '/login/', name: 'Log in' }
+      ]
+    },
     {
       href: '/philosophy/',
       name: 'Philosophy',

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Log in — The World Government, Inc.</title>
+<link rel="canonical" href="https://theworldgovernmentincorporated.com/login/">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#4fc3ff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="TWGI">
+<link rel="icon" href="/icons/twgi-icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/twgi-apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+
+</head>
+<body class="sheet">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="site-bar">
+    <button type="button" class="menu-btn" aria-expanded="false" aria-controls="site-menu">Menu</button>
+    <p class="site-name"><a href="/">The World Government, Inc.</a></p>
+    <nav class="site-nav" id="site-menu" hidden aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/philosophy/">Philosophy</a>
+      <a href="/religion/">Religion</a>
+      <a href="/science/">Science</a>
+      <a href="/recreation/">Recreation</a>
+      <a href="/building/">Building</a>
+      <a href="/trading/">Trading</a>
+    </nav>
+  </div>
+</header>
+<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><span aria-current="page">Log in</span></li></ol></nav>
+<main class="page" id="main">
+  <p class="eyebrow">TWGI master account</p>
+  <h1>Log in</h1>
+  <p class="lead">Sign in to an existing TWGI master account. This sends a sign-in link to that email. It does not create an account, and it does not list other accounts.</p>
+  <form class="signin" id="login-form">
+    <label for="login-email">Email</label>
+    <input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" required>
+    <button class="take" type="submit">Email me a sign-in link</button>
+    <p class="note" id="login-status" role="status" aria-live="polite"></p>
+  </form>
+  <div class="signin" id="login-session" hidden>
+    <p class="lead" id="login-who"></p>
+    <button class="take" type="button" id="login-out">Sign out</button>
+  </div>
+</main>
+<footer class="site-footer">
+  <p>The World Government, Inc.</p>
+  <nav aria-label="Footer">
+    <a href="mailto:cubzub@gmail.com?subject=The%20World%20Government%2C%20Inc.">Contact</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+    <a href="https://political-compass.theworldgovernmentincorporated.com/">DRP Compass</a>
+  </nav>
+</footer>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');</script>
+<script src="/assets/site.js"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/assets/login.js"></script>
+</body>
+</html>

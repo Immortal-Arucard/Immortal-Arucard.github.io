@@ -51,7 +51,7 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 }
 .menu-btn:hover{background:#4fc3ff;color:#000}
 .menu-btn[aria-expanded="true"]{border-color:var(--sky);background:#4fc3ff;color:#000}
-.compass-btn:focus-visible,.menu-btn:focus-visible,.expand:focus-visible,.site-nav a:focus-visible,.crumbs a:focus-visible,.child a:focus-visible,.take:focus-visible{
+.compass-btn:focus-visible,.menu-btn:focus-visible,.expand:focus-visible,.site-nav a:focus-visible,.crumbs a:focus-visible,.child a:focus-visible,.take:focus-visible,.signin input:focus-visible{
   outline:2px solid var(--sky);outline-offset:3px;
 }
 .site-name{margin:0;flex:1 1 160px;min-width:0}
@@ -133,6 +133,15 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
   background:#4fc3ff;color:#000;
 }
 .take:hover{filter:brightness(1.08)}
+.signin{margin-top:22px;display:grid;gap:12px;max-width:28rem}
+.signin label{font-size:14px;color:var(--mute)}
+.signin input{
+  width:100%;min-height:48px;padding:0 14px;border-radius:12px;
+  border:1px solid var(--line);background:#000;color:#fff;font:inherit;font-size:16px;
+}
+.signin .take{margin-top:0;justify-self:start}
+.signin .note{margin:0;color:var(--mute);font-size:14px;line-height:1.45}
+.signin .lead{margin:0}
 .site-footer{
   align-self:stretch;width:100%;margin-top:36px;padding:22px 16px 8px;
   color:#c8c8c8;font-size:12px;text-align:center;line-height:1.6;
