@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v46';
+const CACHE = 'twgi-v47';
 const ASSETS = [
   '/',
   '/index.html',
@@ -42,6 +42,8 @@ const ASSETS = [
   '/building/proper-supply-chains/index.html',
   '/trading/',
   '/trading/index.html',
+  '/trading/the-world-citizens-identities-exchange-wcie/',
+  '/trading/the-world-citizens-identities-exchange-wcie/index.html',
   '/philosophy/religion/',
   '/philosophy/religion/index.html',
   '/philosophy/science/',
@@ -166,6 +168,8 @@ self.addEventListener('fetch', (event) => {
     '/building/proper-supply-chains/': '/building/proper-supply-chains/index.html',
     '/trading': '/trading/index.html',
     '/trading/': '/trading/index.html',
+    '/trading/the-world-citizens-identities-exchange-wcie': '/trading/the-world-citizens-identities-exchange-wcie/index.html',
+    '/trading/the-world-citizens-identities-exchange-wcie/': '/trading/the-world-citizens-identities-exchange-wcie/index.html',
     '/philosophy/poetry': '/philosophy/poetry/index.html',
     '/philosophy/poetry/': '/philosophy/poetry/index.html',
     '/philosophy/religion': '/philosophy/religion/index.html',
