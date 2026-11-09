@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v50';
+const CACHE = 'twgi-v51';
 const ASSETS = [
   '/',
   '/index.html',
@@ -122,7 +122,9 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
+  event.waitUntil(caches.open(CACHE).then((cache) => Promise.all(ASSETS.map(function (url) {
+    return cache.add(new Request(url, { cache: 'reload' }));
+  }))));
   self.skipWaiting();
 });
 
@@ -203,7 +205,7 @@ self.addEventListener('fetch', (event) => {
   const cacheKey = new Request(pathname);
   event.respondWith((async () => {
     try {
-      const response = await fetch(request);
+      const response = await fetch(request, { cache: 'no-cache' });
       if (response && response.ok && response.type === 'basic' && !response.redirected) {
         const copy = response.clone();
         const cache = await caches.open(CACHE);

@@ -147,7 +147,10 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
   border:1px solid var(--line);background:#000;color:#fff;font:inherit;font-size:16px;
 }
 .home-account{margin-left:auto;min-width:0;max-width:min(42vw,11rem);display:flex;align-items:center}
-.home-account a{display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;color:var(--sky);text-decoration:none;font-size:14px}
+.home-account a,.home-account-bar a{display:flex;align-items:center;gap:8px;min-width:0;max-width:100%;min-height:44px;color:var(--sky);text-decoration:none;font-size:14px}
+.home-account-bar{display:flex;align-self:stretch;width:100%;box-sizing:border-box;justify-content:flex-end;padding:8px 16px 0}
+.home-account-bar[hidden]{display:none !important}
+.home-account-bar .account-name{max-width:min(46vw,14rem)}
 .account-pending{display:inline-block;width:32px;height:32px;border-radius:50%;border:1px solid var(--line)}
 .account-avatar,.account-portrait{
   width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none;
@@ -168,7 +171,7 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 .account-background{display:block;width:100%;height:140px;object-fit:cover}
 .account-title{margin:12px 0 0;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(32px,8vw,48px);line-height:1.05}
 .account-email,.account-since,.account-bio{margin:8px 0 0;line-height:1.45}
-.account-menu:focus-visible,.account-logout:focus-visible,.home-account a:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+.account-menu:focus-visible,.account-logout:focus-visible,.home-account a:focus-visible,.home-account-bar a:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
 .site-footer{
   align-self:stretch;width:100%;margin-top:36px;padding:22px 16px 8px;
   color:#c8c8c8;font-size:12px;text-align:center;line-height:1.6;

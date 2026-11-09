@@ -3,6 +3,8 @@
   "homeSignedOut": {
     "text": "Log in",
     "href": "/login/",
+    "inHeader": true,
+    "chipHidden": true,
     "overflow": 0
   },
   "menuSignedOut": {
@@ -21,6 +23,8 @@
     "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
     "href": "/account/",
     "signedPhrase": false,
+    "belowHeader": true,
+    "aboveContent": true,
     "overflow": 0
   },
   "menuSignedIn": {
@@ -39,7 +43,8 @@
   },
   "phone": {
     "overflow": 0,
-    "nameOverflow": true
+    "nameOverflow": true,
+    "belowHeader": true
   },
   "menuPhone": 0,
   "accountPhoneOverflow": 0,
