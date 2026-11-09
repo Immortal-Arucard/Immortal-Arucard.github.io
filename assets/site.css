@@ -142,6 +142,33 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 .signin .take{margin-top:0;justify-self:start}
 .signin .note{margin:0;color:var(--mute);font-size:14px;line-height:1.45}
 .signin .lead{margin:0}
+.signin textarea{
+  width:100%;min-height:96px;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--line);background:#000;color:#fff;font:inherit;font-size:16px;
+}
+.home-account{margin-left:auto;min-width:0;max-width:min(42vw,11rem);display:flex;align-items:center}
+.home-account a{display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;color:var(--sky);text-decoration:none;font-size:14px}
+.account-pending{display:inline-block;width:32px;height:32px;border-radius:50%;border:1px solid var(--line)}
+.account-avatar,.account-portrait{
+  width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--sky);background:#000;color:var(--sky);font-size:12px;overflow:hidden;
+}
+.account-portrait{width:72px;height:72px;font-size:22px}
+.account-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account-menu,.account-logout{
+  appearance:none;display:flex;align-items:center;gap:8px;width:100%;min-height:44px;
+  padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--sky);
+  font:inherit;font-size:15px;text-align:left;cursor:pointer;
+}
+.account-menu{max-width:100%}
+[data-account-slot]{flex-wrap:wrap}
+[data-account-slot] .nav-sub{flex:1 0 100%;padding-left:12px}
+.account-hero{position:relative;min-height:96px;margin-top:18px;border-radius:18px;overflow:hidden;background:#111;border:1px solid var(--line)}
+.account-background{display:block;width:100%;height:140px;object-fit:cover}
+.account-title{margin:12px 0 0;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(32px,8vw,48px);line-height:1.05}
+.account-email,.account-since,.account-bio{margin:8px 0 0;line-height:1.45}
+.account-menu:focus-visible,.account-logout:focus-visible,.home-account a:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
 .site-footer{
   align-self:stretch;width:100%;margin-top:36px;padding:22px 16px 8px;
   color:#c8c8c8;font-size:12px;text-align:center;line-height:1.6;

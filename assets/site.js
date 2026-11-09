@@ -7,7 +7,7 @@
       href: '/',
       name: 'Home',
       children: [
-        { href: '/login/', name: 'Log in' }
+        { href: '/login/', name: 'Log in', mark: 'login' }
       ]
     },
     {
@@ -102,7 +102,10 @@
   function render(items) {
     return items.map(function (item) {
       var current = here() === norm(item.href) ? ' aria-current="page"' : '';
-      var link = '<a href="' + item.href + '"' + current + '>' + item.name + '</a>';
+      var link = '<a href="' + item.href + '"' + current + (item.mark ? ' data-nav="' + item.mark + '"' : '') + '>' + item.name + '</a>';
+      if (item.mark === 'login') {
+        return '<div class="nav-item" data-account-slot><span class="account-pending" aria-busy="true" aria-label="Account"></span>' + link.replace('<a ', '<a hidden ') + '</div>';
+      }
       if (!item.children) return '<div class="nav-item">' + link + '</div>';
       var id = 'nav-branch-' + (++seq);
       return '<div class="nav-item">' + link +
@@ -168,4 +171,8 @@
     setOpen(false);
     button.focus();
   });
+
+  var accountScript = document.createElement('script');
+  accountScript.src = '/assets/account.js';
+  document.body.appendChild(accountScript);
 })();
