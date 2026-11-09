@@ -93,23 +93,41 @@
   }
 
   function paintHome() {
-    var slot = document.getElementById('home-account');
-    if (!slot) return;
-    clear(slot);
-    if (!settled || !state) return;
-    slot.removeAttribute('aria-busy');
-    if (!state.user) {
-      var link = document.createElement('a');
-      link.href = '/login/';
-      link.textContent = 'Log in';
-      slot.appendChild(link);
+    var loginSlot = document.getElementById('home-login');
+    var chip = document.getElementById('home-account');
+    if (loginSlot) {
+      clear(loginSlot);
+      if (!settled || !state || state.user) {
+        if (!settled || !state) {
+          var pending = document.createElement('span');
+          pending.className = 'account-pending';
+          pending.setAttribute('aria-busy', 'true');
+          pending.setAttribute('aria-label', 'Account');
+          loginSlot.appendChild(pending);
+          loginSlot.setAttribute('aria-busy', 'true');
+        } else {
+          loginSlot.removeAttribute('aria-busy');
+        }
+      } else {
+        loginSlot.removeAttribute('aria-busy');
+        var link = document.createElement('a');
+        link.href = '/login/';
+        link.textContent = 'Log in';
+        loginSlot.appendChild(link);
+      }
+    }
+    if (!chip) return;
+    clear(chip);
+    if (!settled || !state || !state.user) {
+      chip.hidden = true;
       return;
     }
+    chip.hidden = false;
     var account = document.createElement('a');
     account.href = '/account/';
     account.appendChild(avatarNode(state.avatarUrl, state.name));
     account.appendChild(nameNode(state.name));
-    slot.appendChild(account);
+    chip.appendChild(account);
   }
 
   function paintMenu() {

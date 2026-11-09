@@ -158,11 +158,11 @@ const report = { ok: false };
 const signedOut = await withPage(1280, 900);
 await signedOut.goto(ORIGIN + '/');
 await waitFor(async () => {
-  const text = await signedOut.eval(`document.getElementById('home-account').innerText`);
+  const text = await signedOut.eval(`document.getElementById('home-login').innerText`);
   if (text.trim() !== 'Log in') throw new Error(text);
   return text;
 });
-report.homeSignedOut = await signedOut.eval(`({ text: document.getElementById('home-account').innerText.trim(), href: document.getElementById('home-account').querySelector('a').getAttribute('href'), overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`);
+report.homeSignedOut = await signedOut.eval(`({ text: document.getElementById('home-login').innerText.trim(), href: document.getElementById('home-login').querySelector('a').getAttribute('href'), inHeader: !!document.getElementById('home-login').closest('header'), chipHidden: document.getElementById('home-account').hidden, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`);
 await signedOut.shot('account_home_signed_out_desktop.png');
 await openHomeLogin(signedOut);
 report.menuSignedOut = await signedOut.eval(`({ text: document.querySelector('[data-nav="login"]').textContent, href: document.querySelector('[data-nav="login"]').getAttribute('href'), logout: !!document.querySelector('.account-logout') })`);
@@ -180,7 +180,7 @@ report.accountSignedOut = await signedOutPhone.eval(`({ text: document.getElemen
 await signedOutPhone.shot('account_page_signed_out_390.png');
 await signedOutPhone.goto(ORIGIN + '/');
 await waitFor(async () => {
-  const text = await signedOutPhone.eval(`document.getElementById('home-account').innerText`);
+  const text = await signedOutPhone.eval(`document.getElementById('home-login').innerText`);
   if (text.trim() !== 'Log in') throw new Error(text);
   return text;
 });
@@ -196,7 +196,22 @@ await waitFor(async () => {
   if (!text.includes('Ada Lovelace')) throw new Error(text);
   return text;
 });
-report.homeSignedIn = await signedIn.eval(`({ name: document.querySelector('#home-account .account-name').textContent, href: document.querySelector('#home-account a').getAttribute('href'), signedPhrase: document.getElementById('home-account').innerText.includes('Signed in as'), overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`);
+report.homeSignedIn = await signedIn.eval(`(() => {
+  const chip = document.getElementById('home-account');
+  const header = document.querySelector('.site-header');
+  const main = document.getElementById('main');
+  const chipBox = chip.getBoundingClientRect();
+  const headerBox = header.getBoundingClientRect();
+  const mainBox = main.getBoundingClientRect();
+  return {
+    name: chip.querySelector('.account-name').textContent,
+    href: chip.querySelector('a').getAttribute('href'),
+    signedPhrase: chip.innerText.includes('Signed in as'),
+    belowHeader: header.nextElementSibling === chip && !header.contains(chip),
+    aboveContent: chipBox.top >= headerBox.bottom - 1 && chipBox.bottom <= mainBox.top + 1,
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+  };
+})()`);
 await signedIn.shot('account_home_signed_in_desktop.png');
 await openHomeLogin(signedIn);
 await signedIn.eval(`document.querySelector('.account-menu').click()`);
@@ -220,7 +235,7 @@ await waitFor(async () => {
   if (!text) throw new Error('no name');
   return text;
 });
-report.phone = await signedInPhone.eval(`({ overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, nameOverflow: document.querySelector('#home-account .account-name').scrollWidth > document.querySelector('#home-account .account-name').clientWidth })`);
+report.phone = await signedInPhone.eval(`({ overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, nameOverflow: document.querySelector('#home-account .account-name').scrollWidth > document.querySelector('#home-account .account-name').clientWidth, belowHeader: document.querySelector('.site-header').nextElementSibling === document.getElementById('home-account') })`);
 await signedInPhone.shot('account_home_signed_in_390.png');
 await openHomeLogin(signedInPhone);
 await signedInPhone.eval(`document.querySelector('.account-menu').click()`);
@@ -247,21 +262,21 @@ await signedInPhone.eval(`document.getElementById('account-out').click()`);
 await sleep(500);
 await signedInPhone.goto(ORIGIN + '/');
 await waitFor(async () => {
-  const text = await signedInPhone.eval(`document.getElementById('home-account').innerText`);
+  const text = await signedInPhone.eval(`document.getElementById('home-login').innerText`);
   if (text.trim() !== 'Log in') throw new Error(text);
   return text;
 });
-report.afterLogout = await signedInPhone.eval(`document.getElementById('home-account').innerText.trim()`);
+report.afterLogout = await signedInPhone.eval(`document.getElementById('home-login').innerText.trim()`);
 await signedInPhone.close();
 
-assert(report.homeSignedOut.text === 'Log in' && report.homeSignedOut.href === '/login/' && report.homeSignedOut.overflow === 0, 'signed-out home');
+assert(report.homeSignedOut.text === 'Log in' && report.homeSignedOut.href === '/login/' && report.homeSignedOut.inHeader === true && report.homeSignedOut.chipHidden === true && report.homeSignedOut.overflow === 0, 'signed-out home');
 assert(report.menuSignedOut.text === 'Log in' && report.menuSignedOut.href === '/login/' && report.menuSignedOut.logout === false, 'signed-out menu');
 assert(report.accountSignedOut.href === '/login/' && report.accountSignedOut.text.includes('Log in to view this account') && report.accountSignedOut.overflow === 0 && report.accountSignedOut.subaccounts === false, 'signed-out account page');
 assert(report.homeSignedOutPhone === 0, 'signed-out phone overflow');
-assert(report.homeSignedIn.href === '/account/' && report.homeSignedIn.signedPhrase === false && report.homeSignedIn.name.startsWith('Ada Lovelace') && report.homeSignedIn.overflow === 0, 'signed-in home');
+assert(report.homeSignedIn.href === '/account/' && report.homeSignedIn.signedPhrase === false && report.homeSignedIn.name.startsWith('Ada Lovelace') && report.homeSignedIn.belowHeader === true && report.homeSignedIn.aboveContent === true && report.homeSignedIn.overflow === 0, 'signed-in home');
 assert(report.menuSignedIn.account === 'Account' && report.menuSignedIn.accountHref === '/account/' && report.menuSignedIn.logout === 'Log out' && report.menuSignedIn.loginWords === false, 'signed-in menu');
 assert(report.accountSignedIn.email === 'ada@example.com' && report.accountSignedIn.since === 'Member since January 2, 2020' && report.accountSignedIn.listsChess === false && report.accountSignedIn.overflow === 0, 'signed-in account page');
-assert(report.phone.overflow === 0 && report.phone.nameOverflow === true && report.menuPhone === 0 && report.accountPhoneOverflow === 0, 'phone layout');
+assert(report.phone.overflow === 0 && report.phone.nameOverflow === true && report.phone.belowHeader === true && report.menuPhone === 0 && report.accountPhoneOverflow === 0, 'phone layout');
 assert(report.afterLogout === 'Log in', 'logout restores Log in');
 assert(imageCheck.ok.type === 'image/png' && /could not be read/.test(imageCheck.rejected), 'image checks');
 const leaked = networkHits.filter((url) => url.includes('/auth/v1/otp') || url.includes('accounts.google.com'));
