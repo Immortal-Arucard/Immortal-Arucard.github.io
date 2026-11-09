@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "homeSignedOut": {
+    "text": "Log in",
+    "href": "/login/",
+    "overflow": 0
+  },
+  "menuSignedOut": {
+    "text": "Log in",
+    "href": "/login/",
+    "logout": false
+  },
+  "accountSignedOut": {
+    "text": "Log in to view this account.\n\nLog in",
+    "href": "/login/",
+    "overflow": 0,
+    "subaccounts": false
+  },
+  "homeSignedOutPhone": 0,
+  "homeSignedIn": {
+    "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+    "href": "/account/",
+    "signedPhrase": false,
+    "overflow": 0
+  },
+  "menuSignedIn": {
+    "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+    "account": "Account",
+    "accountHref": "/account/",
+    "logout": "Log out",
+    "loginWords": false
+  },
+  "accountSignedIn": {
+    "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+    "email": "ada@example.com",
+    "since": "Member since January 2, 2020",
+    "overflow": 0,
+    "listsChess": false
+  },
+  "phone": {
+    "overflow": 0,
+    "nameOverflow": true
+  },
+  "menuPhone": 0,
+  "accountPhoneOverflow": 0,
+  "afterLogout": "Log in",
+  "networkHits": []
+}

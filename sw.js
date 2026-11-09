@@ -1,12 +1,17 @@
-const CACHE = 'twgi-v49';
+const CACHE = 'twgi-v50';
 const ASSETS = [
   '/',
   '/index.html',
   '/assets/site.css',
   '/assets/site.js',
   '/assets/login.js',
+  '/assets/account.js',
+  '/assets/account-image.js',
+  '/assets/account-page.js',
   '/login/',
   '/login/index.html',
+  '/account/',
+  '/account/index.html',
   '/philosophy/',
   '/philosophy/index.html',
   '/philosophy/politics/',
@@ -143,6 +148,8 @@ self.addEventListener('fetch', (event) => {
   const shells = {
     '/login': '/login/index.html',
     '/login/': '/login/index.html',
+    '/account': '/account/index.html',
+    '/account/': '/account/index.html',
     '/compass': '/compass/index.html',
     '/compass/': '/compass/index.html',
     '/religion': '/religion/index.html',
