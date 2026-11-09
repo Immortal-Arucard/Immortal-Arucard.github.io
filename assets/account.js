@@ -1,5 +1,8 @@
-/* Master-account session for the menu and the home-page indicator.
-   Reads the existing Supabase session. Does not create a profile row. */
+/* Master-account session for the menu and the page indicator.
+   The indicator is injected on every page except /login/ and /account/.
+   A registered section can replace it when the signed-in user has that
+   section's own account. See account-sections.js. This file does not
+   create a profile row and does not read other people's rows. */
 (function () {
   var SUPABASE_URL = 'https://xfswvbxuhgqbdqpqiywa.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_xHJ2V2lN-9B3LqSa3La3iw_QhqtU6JC';
@@ -7,10 +10,22 @@
   var settled = false;
   var listeners = [];
   var client = null;
+  var paintGeneration = 0;
 
   function emit() {
-    paintMenu();
-    paintHome();
+    var generation = ++paintGeneration;
+    var session = state && state.user ? { user: state.user } : null;
+    var sections = window.TWGIAccountSections;
+    var pending = sections ? sections.appearance(session) : Promise.resolve(null);
+    Promise.resolve(pending).then(function (look) {
+      if (generation !== paintGeneration) return;
+      paintMenu(look);
+      paintHome(look);
+    }).catch(function () {
+      if (generation !== paintGeneration) return;
+      paintMenu(null);
+      paintHome(null);
+    });
     listeners.forEach(function (fn) {
       try { fn(state); } catch (err) {}
     });
@@ -92,9 +107,31 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
-  function paintHome() {
+  function masterUrls(look) {
+    if (look && look.master) return look.master;
+    if (window.TWGIAccountSections) return window.TWGIAccountSections.masterUrls();
+    return { signInUrl: '/login/', accountUrl: '/account/' };
+  }
+
+  function shownIdentity(look) {
+    if (look && look.kind === 'local' && look.local) {
+      return {
+        name: look.local.name,
+        avatarUrl: httpsUrl(look.local.avatarUrl),
+        href: look.local.url
+      };
+    }
+    return {
+      name: state && state.name,
+      avatarUrl: state && state.avatarUrl,
+      href: masterUrls(look).accountUrl
+    };
+  }
+
+  function paintHome(look) {
     var loginSlot = document.getElementById('home-login');
     var chip = document.getElementById('home-account');
+    var urls = masterUrls(look);
     if (loginSlot) {
       clear(loginSlot);
       if (!settled || !state || state.user) {
@@ -111,7 +148,7 @@
       } else {
         loginSlot.removeAttribute('aria-busy');
         var link = document.createElement('a');
-        link.href = '/login/';
+        link.href = urls.signInUrl;
         link.textContent = 'Log in';
         loginSlot.appendChild(link);
       }
@@ -122,15 +159,53 @@
       chip.hidden = true;
       return;
     }
+    var identity = shownIdentity(look);
     chip.hidden = false;
     var account = document.createElement('a');
-    account.href = '/account/';
-    account.appendChild(avatarNode(state.avatarUrl, state.name));
-    account.appendChild(nameNode(state.name));
+    account.href = identity.href;
+    account.appendChild(avatarNode(identity.avatarUrl, identity.name));
+    account.appendChild(nameNode(identity.name));
     chip.appendChild(account);
   }
 
-  function paintMenu() {
+  function menuItemsFor(look) {
+    if (look && look.kind === 'local' && look.section && look.section.menuItems && look.section.menuItems.length) {
+      return look.section.menuItems;
+    }
+    return [
+      { label: 'Account', href: shownIdentity(look).href },
+      { label: 'Log out', action: 'sign-out' }
+    ];
+  }
+
+  function appendMenuItem(panel, item) {
+    if (!item || !item.label) return;
+    var li = document.createElement('li');
+    if (item.action === 'sign-out') {
+      var logout = document.createElement('button');
+      logout.type = 'button';
+      logout.className = 'account-logout';
+      logout.textContent = String(item.label);
+      logout.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (client) client.auth.signOut({ scope: 'local' });
+      });
+      li.appendChild(logout);
+      panel.appendChild(li);
+      return;
+    }
+    var href = window.TWGIAccountSections ? window.TWGIAccountSections.safeHref(item.href) : '';
+    if (!href) return;
+    var link = document.createElement('a');
+    link.href = href;
+    link.textContent = String(item.label);
+    if (location.pathname === href || location.pathname + '/' === href) link.setAttribute('aria-current', 'page');
+    li.appendChild(link);
+    panel.appendChild(li);
+  }
+
+  function paintMenu(look) {
     var slot = document.querySelector('[data-account-slot]');
     if (!slot) return;
     clear(slot);
@@ -144,43 +219,26 @@
     }
     if (!state.user) {
       var link = document.createElement('a');
-      link.href = '/login/';
+      link.href = masterUrls(look).signInUrl;
       link.setAttribute('data-nav', 'login');
       if (location.pathname === '/login' || location.pathname === '/login/') link.setAttribute('aria-current', 'page');
       link.textContent = 'Log in';
       slot.appendChild(link);
       return;
     }
+    var identity = shownIdentity(look);
     var button = document.createElement('button');
     button.type = 'button';
     button.className = 'account-menu';
     button.setAttribute('aria-expanded', 'false');
     button.setAttribute('aria-controls', 'account-menu-panel');
-    button.appendChild(avatarNode(state.avatarUrl, state.name));
-    button.appendChild(nameNode(state.name));
+    button.appendChild(avatarNode(identity.avatarUrl, identity.name));
+    button.appendChild(nameNode(identity.name));
     var panel = document.createElement('ul');
     panel.id = 'account-menu-panel';
     panel.className = 'nav-sub';
     panel.hidden = true;
-    var accountItem = document.createElement('li');
-    var accountLink = document.createElement('a');
-    accountLink.href = '/account/';
-    accountLink.textContent = 'Account';
-    if (location.pathname === '/account' || location.pathname === '/account/') accountLink.setAttribute('aria-current', 'page');
-    accountItem.appendChild(accountLink);
-    var logoutItem = document.createElement('li');
-    var logout = document.createElement('button');
-    logout.type = 'button';
-    logout.className = 'account-logout';
-    logout.textContent = 'Log out';
-    logout.addEventListener('click', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (client) client.auth.signOut({ scope: 'local' });
-    });
-    logoutItem.appendChild(logout);
-    panel.appendChild(accountItem);
-    panel.appendChild(logoutItem);
+    menuItemsFor(look).forEach(function (item) { appendMenuItem(panel, item); });
     button.addEventListener('click', function (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -265,6 +323,9 @@
   };
   window.TWGIAccount = api;
   document.dispatchEvent(new CustomEvent('twgi-account-api'));
+  document.addEventListener('twgi-account-sections', function () {
+    if (settled) emit();
+  });
   paintMenu();
   paintHome();
 

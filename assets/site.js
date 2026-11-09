@@ -142,6 +142,9 @@
     wire(menu);
   }
 
+  ensureAccountChrome();
+  loadAccount();
+
   if (!button || !menu) return;
 
   function setOpen(open) {
@@ -172,7 +175,40 @@
     button.focus();
   });
 
-  var accountScript = document.createElement('script');
-  accountScript.src = '/assets/account.js';
-  document.body.appendChild(accountScript);
+  function ensureAccountChrome() {
+    var path = here();
+    if (path === '/login/' || path === '/account/') return;
+    var header = document.querySelector('.site-header');
+    if (!header) return;
+    var bar = header.querySelector('.site-bar');
+    if (bar && !document.getElementById('home-login')) {
+      var login = document.createElement('div');
+      login.id = 'home-login';
+      login.className = 'home-account';
+      login.setAttribute('aria-busy', 'true');
+      var nav = bar.querySelector('.site-nav');
+      if (nav) bar.insertBefore(login, nav);
+      else bar.appendChild(login);
+    }
+    if (!document.getElementById('home-account')) {
+      var chip = document.createElement('div');
+      chip.id = 'home-account';
+      chip.className = 'home-account-bar';
+      chip.hidden = true;
+      header.insertAdjacentElement('afterend', chip);
+    }
+  }
+
+  function loadAccount() {
+    function add(src, next) {
+      var script = document.createElement('script');
+      script.src = src;
+      script.onload = next || function () {};
+      script.onerror = next || function () {};
+      document.body.appendChild(script);
+    }
+    add('/assets/account-sections.js', function () {
+      add('/assets/account.js');
+    });
+  }
 })();
