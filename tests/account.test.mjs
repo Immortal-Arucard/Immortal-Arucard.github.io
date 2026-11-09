@@ -139,6 +139,44 @@ async function withPage(width, height) {
 function assert(condition, label) {
   if (!condition) throw new Error('assertion failed: ' + label);
 }
+const chromeExpr = `(() => {
+  const chip = document.getElementById('home-account');
+  const login = document.getElementById('home-login');
+  const header = document.querySelector('.site-header');
+  const main = document.getElementById('main');
+  const crumbs = document.querySelector('.crumbs');
+  const name = chip && chip.querySelector('.account-name');
+  const chipBox = chip ? chip.getBoundingClientRect() : null;
+  const headerBox = header ? header.getBoundingClientRect() : null;
+  const mainBox = main ? main.getBoundingClientRect() : null;
+  const crumbBox = crumbs ? crumbs.getBoundingClientRect() : null;
+  return {
+    login: login ? login.innerText.trim() : '',
+    loginHref: login && login.querySelector('a') ? login.querySelector('a').getAttribute('href') : '',
+    inHeader: !!(login && login.closest('header')),
+    chipHidden: !chip || chip.hidden,
+    name: name ? name.textContent : '',
+    href: chip && chip.querySelector('a') ? chip.querySelector('a').getAttribute('href') : '',
+    belowHeader: !!(chip && header && header.nextElementSibling === chip && !header.contains(chip)),
+    aboveContent: !!(chip && headerBox && mainBox && chipBox.top >= headerBox.bottom - 1 && chipBox.bottom <= mainBox.top + 1 && (!crumbBox || chipBox.bottom <= crumbBox.top + 1)),
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    nameOverflow: !!(name && name.scrollWidth > name.clientWidth)
+  };
+})()`;
+async function waitMasterLogin(page) {
+  await waitFor(async () => {
+    const text = await page.eval(`(document.getElementById('home-login') || {}).innerText || ''`);
+    if (text.trim() !== 'Log in') throw new Error(text || 'waiting for Log in');
+    return text;
+  });
+}
+async function waitMasterName(page) {
+  await waitFor(async () => {
+    const text = await page.eval(`(document.querySelector('#home-account .account-name') || {}).textContent || ''`);
+    if (!text.includes('Ada Lovelace')) throw new Error(text || 'waiting for name');
+    return text;
+  });
+}
 async function openHomeLogin(page) {
   await page.eval(`document.querySelector('.menu-btn').click(); document.querySelector('button[aria-label="Show categories inside Home"]').click()`);
   await sleep(150);
@@ -167,6 +205,25 @@ await signedOut.shot('account_home_signed_out_desktop.png');
 await openHomeLogin(signedOut);
 report.menuSignedOut = await signedOut.eval(`({ text: document.querySelector('[data-nav="login"]').textContent, href: document.querySelector('[data-nav="login"]').getAttribute('href'), logout: !!document.querySelector('.account-logout') })`);
 await signedOut.shot('account_menu_signed_out_desktop.png');
+await signedOut.goto(ORIGIN + '/philosophy/');
+await waitMasterLogin(signedOut);
+report.philosophySignedOut = await signedOut.eval(chromeExpr);
+await signedOut.goto(ORIGIN + '/science/military-rd/');
+await waitMasterLogin(signedOut);
+report.deepSignedOut = await signedOut.eval(chromeExpr);
+await signedOut.shot('account_division_signed_out_desktop.png');
+await signedOut.goto(ORIGIN + '/login/');
+await waitFor(async () => {
+  const ready = await signedOut.eval(`!!document.querySelector('[data-account-slot]') && !document.getElementById('home-login') && !document.getElementById('home-account')`);
+  if (!ready) throw new Error('login chrome still present');
+  return true;
+});
+report.loginChrome = await signedOut.eval(`({ login: !!document.getElementById('home-login'), chip: !!document.getElementById('home-account') })`);
+await signedOut.goto(ORIGIN + '/recreation/');
+await waitMasterLogin(signedOut);
+await signedOut.eval(`window.__localChecks = 0; TWGIAccountSections.register({ sectionId: 'signed-out-probe', label: 'Probe', pathPrefixes: ['/recreation/'], signInUrl: '/recreation/', hasLocalAccount: function () { window.__localChecks += 1; return true; }, localProfile: function () { return { name: 'Should Not Show', url: '/recreation/' }; } });`);
+await sleep(300);
+report.signedOutSkipsLocal = await signedOut.eval(`({ checks: window.__localChecks, login: document.getElementById('home-login').innerText.trim(), chipHidden: document.getElementById('home-account').hidden })`);
 await signedOut.close();
 
 const signedOutPhone = await withPage(390, 844);
@@ -186,6 +243,10 @@ await waitFor(async () => {
 });
 report.homeSignedOutPhone = await signedOutPhone.eval(`document.documentElement.scrollWidth - document.documentElement.clientWidth`);
 await signedOutPhone.shot('account_home_signed_out_390.png');
+await signedOutPhone.goto(ORIGIN + '/science/military-rd/');
+await waitMasterLogin(signedOutPhone);
+report.deepSignedOutPhone = await signedOutPhone.eval(chromeExpr);
+await signedOutPhone.shot('account_division_signed_out_390.png');
 await signedOutPhone.close();
 
 const signedIn = await withPage(1280, 900);
@@ -217,14 +278,60 @@ await openHomeLogin(signedIn);
 await signedIn.eval(`document.querySelector('.account-menu').click()`);
 report.menuSignedIn = await signedIn.eval(`({ name: document.querySelector('.account-menu .account-name').textContent, account: document.querySelector('#account-menu-panel a').textContent, accountHref: document.querySelector('#account-menu-panel a').getAttribute('href'), logout: document.querySelector('.account-logout').textContent, loginWords: document.querySelector('.account-menu').innerText.includes('Log in') })`);
 await signedIn.shot('account_menu_signed_in_desktop.png');
+await signedIn.goto(ORIGIN + '/philosophy/');
+await waitMasterName(signedIn);
+report.philosophySignedIn = await signedIn.eval(chromeExpr);
+await signedIn.goto(ORIGIN + '/science/military-rd/');
+await waitMasterName(signedIn);
+report.deepSignedIn = await signedIn.eval(chromeExpr);
+await signedIn.shot('account_division_signed_in_desktop.png');
+await openHomeLogin(signedIn);
+await signedIn.eval(`document.querySelector('.account-menu').click()`);
+report.deepMenu = await signedIn.eval(`({ account: document.querySelector('#account-menu-panel a').textContent, href: document.querySelector('#account-menu-panel a').getAttribute('href'), logout: document.querySelector('.account-logout').textContent })`);
 await signedIn.goto(ORIGIN + '/account/');
 await waitFor(async () => {
   const hidden = await signedIn.eval(`document.getElementById('account-signed-in').hidden`);
   if (hidden) throw new Error('account still loading');
   return true;
 });
-report.accountSignedIn = await signedIn.eval(`({ name: document.getElementById('account-name').textContent, email: document.getElementById('account-email').textContent, since: document.getElementById('account-since').textContent, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, listsChess: document.getElementById('main').innerText.includes('Chess') })`);
+report.accountSignedIn = await signedIn.eval(`({ name: document.getElementById('account-name').textContent, email: document.getElementById('account-email').textContent, since: document.getElementById('account-since').textContent, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, listsChess: document.getElementById('main').innerText.includes('Chess'), chrome: !!document.getElementById('home-login') || !!document.getElementById('home-account') })`);
 await signedIn.shot('account_page_signed_in_desktop.png');
+await signedIn.goto(ORIGIN + '/trading/the-grand-exchange/');
+await waitMasterName(signedIn);
+await signedIn.eval(`window.__falseRan = false; TWGIAccountSections.register({ sectionId: 'shorter-false', label: 'Trading', pathPrefixes: ['/trading/'], signInUrl: '/trading/', hasLocalAccount: function () { window.__falseRan = true; return false; }, localProfile: function () { return { name: 'Nope', url: '/trading/' }; } });`);
+await waitFor(async () => {
+  const ran = await signedIn.eval(`window.__falseRan === true && (document.querySelector('#home-account .account-name') || {}).textContent || ''`);
+  if (!String(ran).includes('Ada Lovelace')) throw new Error(String(ran));
+  return ran;
+});
+report.registryFalse = await signedIn.eval(`document.querySelector('#home-account .account-name').textContent`);
+await signedIn.eval(`TWGIAccountSections.register({ sectionId: 'probe', label: 'Probe', pathPrefixes: ['/trading/the-grand-exchange/'], signInUrl: '/trading/the-grand-exchange/', hasLocalAccount: function (session) { window.__sawUser = session && session.user && session.user.id; window.__sawToken = !!(session && session.access_token); return session && session.user && session.user.id === '11111111-1111-1111-1111-111111111111'; }, localProfile: function () { return { name: 'Local Ada', avatarUrl: 'http://insecure.example/a.png', url: '/trading/the-grand-exchange/#local' }; }, menuItems: [{ label: 'Section', href: '/trading/the-grand-exchange/#local' }, { label: 'Log out', action: 'sign-out' }, { label: 'Bad', href: 'javascript:alert(1)' }] });`);
+await waitFor(async () => {
+  const text = await signedIn.eval(`(document.querySelector('#home-account .account-name') || {}).textContent || ''`);
+  if (text !== 'Local Ada') throw new Error(text);
+  return text;
+});
+await openHomeLogin(signedIn);
+await signedIn.eval(`document.querySelector('.account-menu').click()`);
+report.registryLocal = await signedIn.eval(`({ name: document.querySelector('#home-account .account-name').textContent, href: document.querySelector('#home-account a').getAttribute('href'), avatar: document.querySelector('#home-account .account-avatar').textContent, menu: document.querySelector('#account-menu-panel a').textContent, menuHref: document.querySelector('#account-menu-panel a').getAttribute('href'), bad: document.querySelector('#account-menu-panel').innerText.includes('Bad'), logout: document.querySelector('.account-logout').textContent, sawUser: window.__sawUser, sawToken: window.__sawToken, registered: TWGIAccountSections.list().length })`);
+await signedIn.goto(ORIGIN + '/building/');
+await waitMasterName(signedIn);
+await signedIn.eval(`window.__throwRan = false; TWGIAccountSections.register({ sectionId: 'throws', label: 'Building', pathPrefixes: ['/building/'], signInUrl: '/building/', hasLocalAccount: function () { window.__throwRan = true; throw new Error('private store unavailable'); }, localProfile: function () { return { name: 'Should Not Show', url: '/building/' }; } });`);
+await waitFor(async () => {
+  const ran = await signedIn.eval(`window.__throwRan === true && (document.querySelector('#home-account .account-name') || {}).textContent || ''`);
+  if (!String(ran).includes('Ada Lovelace')) throw new Error(String(ran));
+  return ran;
+});
+report.registryThrow = await signedIn.eval(`document.querySelector('#home-account .account-name').textContent`);
+await signedIn.goto(ORIGIN + '/religion/');
+await waitMasterName(signedIn);
+await signedIn.eval(`window.__badRan = false; TWGIAccountSections.register({ sectionId: 'bad-url', label: 'Religion', pathPrefixes: ['/religion/'], signInUrl: '/religion/', hasLocalAccount: function () { window.__badRan = true; return true; }, localProfile: function () { return { name: 'Evil', url: 'javascript:alert(1)' }; } });`);
+await waitFor(async () => {
+  const ran = await signedIn.eval(`window.__badRan === true && (document.querySelector('#home-account a') || {}).getAttribute && document.querySelector('#home-account a').getAttribute('href')`);
+  if (ran !== '/account/') throw new Error(String(ran));
+  return ran;
+});
+report.registryBadUrl = await signedIn.eval(`document.querySelector('#home-account a').getAttribute('href')`);
 await signedIn.close();
 
 const signedInPhone = await withPage(390, 844);
@@ -237,6 +344,12 @@ await waitFor(async () => {
 });
 report.phone = await signedInPhone.eval(`({ overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, nameOverflow: document.querySelector('#home-account .account-name').scrollWidth > document.querySelector('#home-account .account-name').clientWidth, belowHeader: document.querySelector('.site-header').nextElementSibling === document.getElementById('home-account') })`);
 await signedInPhone.shot('account_home_signed_in_390.png');
+await signedInPhone.goto(ORIGIN + '/science/military-rd/');
+await waitMasterName(signedInPhone);
+report.deepPhone = await signedInPhone.eval(chromeExpr);
+await signedInPhone.shot('account_division_signed_in_390.png');
+await signedInPhone.goto(ORIGIN + '/');
+await waitMasterName(signedInPhone);
 await openHomeLogin(signedInPhone);
 await signedInPhone.eval(`document.querySelector('.account-menu').click()`);
 report.menuPhone = await signedInPhone.eval(`document.documentElement.scrollWidth - document.documentElement.clientWidth`);
@@ -277,6 +390,20 @@ assert(report.homeSignedIn.href === '/account/' && report.homeSignedIn.signedPhr
 assert(report.menuSignedIn.account === 'Account' && report.menuSignedIn.accountHref === '/account/' && report.menuSignedIn.logout === 'Log out' && report.menuSignedIn.loginWords === false, 'signed-in menu');
 assert(report.accountSignedIn.email === 'ada@example.com' && report.accountSignedIn.since === 'Member since January 2, 2020' && report.accountSignedIn.listsChess === false && report.accountSignedIn.overflow === 0, 'signed-in account page');
 assert(report.phone.overflow === 0 && report.phone.nameOverflow === true && report.phone.belowHeader === true && report.menuPhone === 0 && report.accountPhoneOverflow === 0, 'phone layout');
+assert(report.philosophySignedOut.login === 'Log in' && report.philosophySignedOut.loginHref === '/login/' && report.philosophySignedOut.inHeader === true && report.philosophySignedOut.chipHidden === true && report.philosophySignedOut.overflow === 0, 'philosophy signed out');
+assert(report.deepSignedOut.login === 'Log in' && report.deepSignedOut.belowHeader === true && report.deepSignedOut.chipHidden === true && report.deepSignedOut.overflow === 0, 'deep signed out');
+assert(report.deepSignedOutPhone.login === 'Log in' && report.deepSignedOutPhone.chipHidden === true && report.deepSignedOutPhone.overflow === 0, 'deep phone signed out');
+assert(report.loginChrome.login === false && report.loginChrome.chip === false, 'login page has no chip');
+assert(report.signedOutSkipsLocal.checks === 0 && report.signedOutSkipsLocal.login === 'Log in' && report.signedOutSkipsLocal.chipHidden === true, 'signed out stays master');
+assert(report.philosophySignedIn.href === '/account/' && report.philosophySignedIn.name.startsWith('Ada Lovelace') && report.philosophySignedIn.belowHeader === true && report.philosophySignedIn.aboveContent === true && report.philosophySignedIn.overflow === 0, 'philosophy signed in');
+assert(report.deepSignedIn.href === '/account/' && report.deepSignedIn.belowHeader === true && report.deepSignedIn.aboveContent === true && report.deepSignedIn.overflow === 0, 'deep signed in');
+assert(report.deepMenu.account === 'Account' && report.deepMenu.href === '/account/' && report.deepMenu.logout === 'Log out', 'deep menu');
+assert(report.deepPhone.overflow === 0 && report.deepPhone.nameOverflow === true && report.deepPhone.belowHeader === true && report.deepPhone.aboveContent === true, 'deep phone');
+assert(report.accountSignedIn.chrome === false, 'account page has no header chip');
+assert(report.registryFalse.startsWith('Ada Lovelace'), 'false local check keeps master');
+assert(report.registryLocal.name === 'Local Ada' && report.registryLocal.href === '/trading/the-grand-exchange/#local' && report.registryLocal.avatar === 'LA' && report.registryLocal.menu === 'Section' && report.registryLocal.menuHref === '/trading/the-grand-exchange/#local' && report.registryLocal.bad === false && report.registryLocal.logout === 'Log out' && report.registryLocal.sawUser === '11111111-1111-1111-1111-111111111111' && report.registryLocal.sawToken === false && report.registryLocal.registered === 2, 'local section');
+assert(report.registryThrow.startsWith('Ada Lovelace'), 'throwing check keeps master');
+assert(report.registryBadUrl === '/account/', 'unsafe local url keeps master');
 assert(report.afterLogout === 'Log in', 'logout restores Log in');
 assert(imageCheck.ok.type === 'image/png' && /could not be read/.test(imageCheck.rejected), 'image checks');
 const leaked = networkHits.filter((url) => url.includes('/auth/v1/otp') || url.includes('accounts.google.com'));
@@ -284,7 +411,7 @@ assert(leaked.length === 0, 'auth network leak ' + leaked.join(' | '));
 report.ok = true;
 report.networkHits = networkHits;
 writeFileSync(OUTPUT, JSON.stringify(report, null, 2) + '\n');
-console.log(JSON.stringify({ ok: report.ok, homeSignedIn: report.homeSignedIn, menuSignedIn: report.menuSignedIn, accountSignedIn: report.accountSignedIn, phone: report.phone, afterLogout: report.afterLogout }, null, 2));
+console.log(JSON.stringify({ ok: report.ok, homeSignedIn: report.homeSignedIn, philosophySignedIn: report.philosophySignedIn, deepSignedIn: report.deepSignedIn, deepPhone: report.deepPhone, accountSignedIn: report.accountSignedIn, registryLocal: report.registryLocal, registryBadUrl: report.registryBadUrl, afterLogout: report.afterLogout }, null, 2));
 chrome.kill('SIGKILL');
 server.kill('SIGKILL');
 process.exit(0);

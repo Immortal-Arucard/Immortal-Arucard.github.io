@@ -12,6 +12,39 @@
     "href": "/login/",
     "logout": false
   },
+  "philosophySignedOut": {
+    "login": "Log in",
+    "loginHref": "/login/",
+    "inHeader": true,
+    "chipHidden": true,
+    "name": "",
+    "href": "",
+    "belowHeader": true,
+    "aboveContent": false,
+    "overflow": 0,
+    "nameOverflow": false
+  },
+  "deepSignedOut": {
+    "login": "Log in",
+    "loginHref": "/login/",
+    "inHeader": true,
+    "chipHidden": true,
+    "name": "",
+    "href": "",
+    "belowHeader": true,
+    "aboveContent": false,
+    "overflow": 0,
+    "nameOverflow": false
+  },
+  "loginChrome": {
+    "login": false,
+    "chip": false
+  },
+  "signedOutSkipsLocal": {
+    "checks": 0,
+    "login": "Log in",
+    "chipHidden": true
+  },
   "accountSignedOut": {
     "text": "Log in to view this account.\n\nLog in",
     "href": "/login/",
@@ -19,6 +52,18 @@
     "subaccounts": false
   },
   "homeSignedOutPhone": 0,
+  "deepSignedOutPhone": {
+    "login": "Log in",
+    "loginHref": "/login/",
+    "inHeader": true,
+    "chipHidden": true,
+    "name": "",
+    "href": "",
+    "belowHeader": true,
+    "aboveContent": false,
+    "overflow": 0,
+    "nameOverflow": false
+  },
   "homeSignedIn": {
     "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
     "href": "/account/",
@@ -34,17 +79,74 @@
     "logout": "Log out",
     "loginWords": false
   },
+  "philosophySignedIn": {
+    "login": "",
+    "loginHref": "",
+    "inHeader": true,
+    "chipHidden": false,
+    "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+    "href": "/account/",
+    "belowHeader": true,
+    "aboveContent": true,
+    "overflow": 0,
+    "nameOverflow": true
+  },
+  "deepSignedIn": {
+    "login": "",
+    "loginHref": "",
+    "inHeader": true,
+    "chipHidden": false,
+    "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+    "href": "/account/",
+    "belowHeader": true,
+    "aboveContent": true,
+    "overflow": 0,
+    "nameOverflow": true
+  },
+  "deepMenu": {
+    "account": "Account",
+    "href": "/account/",
+    "logout": "Log out"
+  },
   "accountSignedIn": {
     "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
     "email": "ada@example.com",
     "since": "Member since January 2, 2020",
     "overflow": 0,
-    "listsChess": false
+    "listsChess": false,
+    "chrome": false
   },
+  "registryFalse": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+  "registryLocal": {
+    "name": "Local Ada",
+    "href": "/trading/the-grand-exchange/#local",
+    "avatar": "LA",
+    "menu": "Section",
+    "menuHref": "/trading/the-grand-exchange/#local",
+    "bad": false,
+    "logout": "Log out",
+    "sawUser": "11111111-1111-1111-1111-111111111111",
+    "sawToken": false,
+    "registered": 2
+  },
+  "registryThrow": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+  "registryBadUrl": "/account/",
   "phone": {
     "overflow": 0,
     "nameOverflow": true,
     "belowHeader": true
+  },
+  "deepPhone": {
+    "login": "",
+    "loginHref": "",
+    "inHeader": true,
+    "chipHidden": false,
+    "name": "Ada Lovelace Alexandra Theodora of a Very Long Household Name",
+    "href": "/account/",
+    "belowHeader": true,
+    "aboveContent": true,
+    "overflow": 0,
+    "nameOverflow": true
   },
   "menuPhone": 0,
   "accountPhoneOverflow": 0,

@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v51';
+const CACHE = 'twgi-v52';
 const ASSETS = [
   '/',
   '/index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   '/assets/site.js',
   '/assets/login.js',
   '/assets/account.js',
+  '/assets/account-sections.js',
   '/assets/account-image.js',
   '/assets/account-page.js',
   '/login/',
