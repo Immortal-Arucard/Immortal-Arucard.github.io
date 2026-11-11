@@ -1,0 +1,32 @@
+{
+  "name": "Democrapedia",
+  "short_name": "Democrapedia",
+  "description": "A wiki-style encyclopedia of the democratic world, published with The World Government, Inc. Install stub for a future Democrapedia app. Current entries are placeholders.",
+  "id": "/democrapedia/",
+  "start_url": "/democrapedia/",
+  "scope": "/democrapedia/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#4fc3ff",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icons/twgi-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/twgi-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/twgi-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

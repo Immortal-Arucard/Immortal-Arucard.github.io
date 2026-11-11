@@ -22,6 +22,7 @@
               href: '/philosophy/politics/democratic/',
               name: 'Democratic Politics',
               children: [
+                { href: '/democrapedia/', name: 'Democrapedia' },
                 {
                   href: '/philosophy/politics/democratic/american/',
                   name: 'American Democratic Politics',

@@ -273,3 +273,63 @@ body.platform .crumbs [aria-current="page"]{color:#000}
 @media(max-width:560px){
   .site-nav{right:12px;left:12px;min-width:0}
 }
+
+.note{color:var(--mute);font-size:14px;line-height:1.45}
+.note a,.wiki a,.account-public a{color:var(--sky)}
+.flag{
+  margin:16px 0 0;padding:10px 12px;border:1px solid var(--sky);border-radius:12px;
+  color:var(--sky);font-size:14px;line-height:1.45;
+}
+.flag a{color:#fff}
+.wiki h2{
+  font-family:"Cormorant Garamond",Georgia,serif;font-size:28px;font-weight:600;margin:22px 0 8px;
+}
+.wiki p,.wiki li{font-size:16px;line-height:1.65}
+.wiki ul{margin:8px 0 0;padding-left:1.2em}
+.shell-list{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:12px}
+.shell-card{padding:16px;border:1px solid var(--line);border-radius:14px;background:#000;min-width:0}
+.shell-card strong{display:block;font-size:18px;color:var(--sky)}
+.shell-state{
+  display:inline-block;margin-top:6px;color:#000;background:var(--sky);
+  border-radius:999px;padding:2px 8px;font-size:12px;font-weight:600;letter-spacing:.04em;
+}
+.shell-card p{margin:8px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
+.taskmaster{margin-top:8px;min-width:0}
+.taskmaster h2{
+  font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(28px,6vw,36px);
+  font-weight:600;margin:18px 0 0;
+}
+.account-signed-in .taskmaster,.page .taskmaster{margin-top:22px}
+#account-signed-in .taskmaster{padding-top:8px;border-top:1px solid var(--line)}
+.task-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;max-width:100%}
+.task-input{
+  flex:1 1 12rem;min-width:0;min-height:48px;padding:0 14px;border-radius:12px;
+  border:1px solid var(--line);background:#000;color:#fff;font:inherit;font-size:16px;
+}
+.task-add{margin-top:0}
+.task-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.task-row{display:flex;align-items:center;gap:8px;min-width:0}
+.task-title{flex:1;min-width:0;overflow-wrap:anywhere;line-height:1.4}
+.task-title.is-done{color:var(--mute);text-decoration:line-through}
+.task-check{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;flex:none}
+.task-check input{width:22px;height:22px;accent-color:#4fc3ff}
+.task-delete{
+  appearance:none;flex:none;min-height:44px;padding:0 12px;border-radius:12px;
+  border:1px solid var(--line);background:#000;color:var(--sky);font:inherit;font-weight:600;cursor:pointer;
+}
+.follow{
+  appearance:none;display:inline-flex;align-items:center;justify-content:center;
+  max-width:100%;min-height:48px;margin-top:8px;padding:8px 22px;border-radius:12px;
+  border:1px solid var(--sky);background:transparent;color:var(--sky);
+  font:inherit;font-weight:600;text-align:center;cursor:pointer;
+}
+.follow[aria-pressed="true"]{background:#4fc3ff;color:#000}
+.profile-portrait{margin-top:16px}
+.profile-id{overflow-wrap:anywhere;color:var(--mute);font-size:13px;line-height:1.45}
+.visually-hidden{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.follow:focus-visible,.task-add:focus-visible,.task-delete:focus-visible,.task-input:focus-visible,.task-check input:focus-visible{
+  outline:2px solid var(--sky);outline-offset:3px;
+}
