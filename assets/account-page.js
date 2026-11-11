@@ -51,6 +51,8 @@
     if (status.textContent === 'Loading account…') say('');
     title.textContent = state.name;
     email.textContent = state.email;
+    var pub = document.getElementById('account-public');
+    if (pub && state.user && state.user.id) pub.href = '/account/public/?id=' + encodeURIComponent(state.user.id);
     since.textContent = memberSince(state.memberSince);
     bio.textContent = (state.profile && state.profile.bio) || '';
     if (!nameInput.value) nameInput.value = state.name;
