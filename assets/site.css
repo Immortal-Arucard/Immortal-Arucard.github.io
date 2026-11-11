@@ -178,6 +178,13 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 .giving p{margin:8px 0 0;color:var(--mute);font-size:15px;line-height:1.45}
 .giving .take{display:flex;margin-top:14px;width:100%;max-width:24rem;text-align:center}
 .giving .take:disabled{background:transparent;color:var(--mute);border-color:var(--line);cursor:not-allowed;opacity:1}
+.journal-entry h2,.account-settings h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(28px,6vw,36px);font-weight:600;margin:28px 0 0;color:#fff}
+.settings-form{margin-top:12px}
+.settings-form fieldset{border:1px solid var(--line);border-radius:14px;margin:0;padding:14px 16px 8px;min-width:0}
+.settings-form legend{font-weight:600;padding:0 6px}
+.opt{display:flex;align-items:center;gap:10px;min-height:44px}
+.opt input{width:20px;height:20px;accent-color:var(--sky)}
+.opt input:disabled{cursor:not-allowed}
 .site-footer{
   align-self:stretch;width:100%;margin-top:36px;padding:22px 16px 8px;
   color:#c8c8c8;font-size:12px;text-align:center;line-height:1.6;

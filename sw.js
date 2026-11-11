@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v55';
+const CACHE = 'twgi-v56';
 const ASSETS = [
   '/',
   '/index.html',
@@ -12,6 +12,8 @@ const ASSETS = [
   '/assets/account-image.js',
   '/assets/account-page.js',
   '/assets/taskmaster.js',
+  '/assets/settings.js',
+  '/assets/settings-ui.js',
   '/assets/profile-public.js',
   '/login/',
   '/login/index.html',
@@ -21,6 +23,8 @@ const ASSETS = [
   '/account/public/index.html',
   '/taskmaster/',
   '/taskmaster/index.html',
+  '/journal/',
+  '/journal/index.html',
   '/philosophy/',
   '/philosophy/index.html',
   '/philosophy/politics/',
@@ -198,6 +202,8 @@ self.addEventListener('fetch', (event) => {
     '/account/public/': '/account/public/index.html',
     '/taskmaster': '/taskmaster/index.html',
     '/taskmaster/': '/taskmaster/index.html',
+    '/journal': '/journal/index.html',
+    '/journal/': '/journal/index.html',
     '/compass': '/compass/index.html',
     '/compass/': '/compass/index.html',
     '/religion': '/religion/index.html',
