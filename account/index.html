@@ -68,6 +68,25 @@
     </section>
     <button class="take" type="button" id="account-out">Log out</button>
   </div>
+  <section class="journal-entry" aria-labelledby="journal-heading">
+    <h2 id="journal-heading">Journal</h2>
+    <p class="note">Journal is its own app for this account.</p>
+    <p><a class="take" href="/journal/">Open Journal</a></p>
+  </section>
+  <section class="account-settings" id="settings" aria-labelledby="settings-h">
+    <h2 id="settings-h">Settings</h2>
+    <form id="settings-form" class="settings-form">
+      <fieldset>
+        <legend>Original dictation copies</legend>
+        <p class="note">After you dictate in the Pensieve, should the recording and unedited transcript be kept with the entry?</p>
+        <label class="opt"><input type="radio" name="dictationOriginals" value="ask"> Ask me each time</label>
+        <label class="opt"><input type="radio" name="dictationOriginals" value="always"> Always save automatically</label>
+        <label class="opt"><input type="radio" name="dictationOriginals" value="never"> Never save</label>
+      </fieldset>
+    </form>
+    <p class="note" id="settings-status" role="status" aria-live="polite"></p>
+    <p class="note">Saved on this device. Sign in to change it. Journal uses the same setting.</p>
+  </section>
 </main>
 <footer class="site-footer">
   <p>The World Government, Inc.</p>
@@ -83,5 +102,7 @@
 <script src="/vendor/supabase.js"></script>
 <script src="/assets/account-image.js"></script>
 <script src="/assets/account-page.js"></script>
+<script src="/assets/settings.js"></script>
+<script src="/assets/settings-ui.js"></script>
 </body>
 </html>
