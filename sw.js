@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v54';
+const CACHE = 'twgi-v55';
 const ASSETS = [
   '/',
   '/index.html',
@@ -21,7 +21,6 @@ const ASSETS = [
   '/account/public/index.html',
   '/taskmaster/',
   '/taskmaster/index.html',
-  '/taskmaster/manifest.webmanifest',
   '/philosophy/',
   '/philosophy/index.html',
   '/philosophy/politics/',
