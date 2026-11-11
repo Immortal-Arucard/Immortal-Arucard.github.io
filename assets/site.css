@@ -171,7 +171,13 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 .account-background{display:block;width:100%;height:140px;object-fit:cover}
 .account-title{margin:12px 0 0;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(32px,8vw,48px);line-height:1.05}
 .account-email,.account-since,.account-bio{margin:8px 0 0;line-height:1.45}
-.account-menu:focus-visible,.account-logout:focus-visible,.home-account a:focus-visible,.home-account-bar a:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+.account-menu:focus-visible,.account-logout:focus-visible,.home-account a:focus-visible,.home-account-bar a:focus-visible,.giving .take:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+.giving{display:grid;gap:12px;margin-top:8px}
+.giving article{border:1px solid var(--line);border-radius:14px;padding:16px 16px 18px;background:#000}
+.giving h2{margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(28px,6vw,36px);font-weight:600;color:var(--sky);line-height:1.1}
+.giving p{margin:8px 0 0;color:var(--mute);font-size:15px;line-height:1.45}
+.giving .take{display:flex;margin-top:14px;width:100%;max-width:24rem;text-align:center}
+.giving .take:disabled{background:transparent;color:var(--mute);border-color:var(--line);cursor:not-allowed;opacity:1}
 .site-footer{
   align-self:stretch;width:100%;margin-top:36px;padding:22px 16px 8px;
   color:#c8c8c8;font-size:12px;text-align:center;line-height:1.6;
