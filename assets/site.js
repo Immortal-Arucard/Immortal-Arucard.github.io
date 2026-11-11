@@ -7,7 +7,9 @@
       href: '/',
       name: 'Home',
       children: [
-        { href: '/login/', name: 'Log in', mark: 'login' }
+        { href: '/login/', name: 'Log in', mark: 'login' },
+        { href: '/donate/', name: 'Donate' },
+        { href: '/memberships/', name: 'Memberships' }
       ]
     },
     {
@@ -31,7 +33,9 @@
                       name: 'DRP',
                       children: [
                         { href: 'https://drp-party-platform.theworldgovernmentincorporated.com/', name: 'Platform' },
-                        { href: 'https://political-compass.theworldgovernmentincorporated.com/', name: 'Compass' }
+                        { href: 'https://political-compass.theworldgovernmentincorporated.com/', name: 'Compass' },
+                        { href: '/philosophy/politics/democratic/american/drp/donate/', name: 'Donate' },
+                        { href: '/memberships/', name: 'Memberships' }
                       ]
                     }
                   ]
@@ -47,19 +51,37 @@
       href: '/religion/',
       name: 'Religion',
       children: [
-        { href: '/religion/the-church-of-the-second-coming-of-jesus-christ/', name: 'The Church of the Second Coming of Jesus Christ' }
+        {
+          href: '/religion/the-church-of-the-second-coming-of-jesus-christ/',
+          name: 'The Church of the Second Coming of Jesus Christ',
+          children: [
+            { href: '/religion/the-church-of-the-second-coming-of-jesus-christ/donate/', name: 'Donate' }
+          ]
+        }
       ]
     },
     {
       href: '/science/',
       name: 'Science',
       children: [
-        { href: '/science/military-rd/', name: 'Military R&amp;D' },
-        { href: '/science/immortality/', name: 'Immortality' },
-        { href: '/science/resurrection/', name: 'Resurrection' },
-        { href: '/science/flight/', name: 'Flight' },
-        { href: '/science/oceanic-travel/', name: 'Oceanic Travel' },
-        { href: '/science/interplanetary-travel/', name: 'Interplanetary Travel' }
+        { href: '/science/military-rd/', name: 'Military R&amp;D', children: [
+          { href: '/science/military-rd/donate/', name: 'Donate' }
+        ] },
+        { href: '/science/immortality/', name: 'Immortality', children: [
+          { href: '/science/immortality/donate/', name: 'Donate' }
+        ] },
+        { href: '/science/resurrection/', name: 'Resurrection', children: [
+          { href: '/science/resurrection/donate/', name: 'Donate' }
+        ] },
+        { href: '/science/flight/', name: 'Flight', children: [
+          { href: '/science/flight/donate/', name: 'Donate' }
+        ] },
+        { href: '/science/oceanic-travel/', name: 'Oceanic Travel', children: [
+          { href: '/science/oceanic-travel/donate/', name: 'Donate' }
+        ] },
+        { href: '/science/interplanetary-travel/', name: 'Interplanetary Travel', children: [
+          { href: '/science/interplanetary-travel/donate/', name: 'Donate' }
+        ] }
       ]
     },
     {
