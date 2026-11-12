@@ -1,4 +1,4 @@
-const CACHE = 'twgi-v56';
+const CACHE = 'twgi-v57';
 const ASSETS = [
   '/',
   '/index.html',
@@ -25,6 +25,14 @@ const ASSETS = [
   '/taskmaster/index.html',
   '/journal/',
   '/journal/index.html',
+  '/apps/',
+  '/apps/index.html',
+  '/icons/apps/twgi-192.png',
+  '/icons/apps/compass-192.png',
+  '/icons/apps/platform-192.png',
+  '/icons/apps/chess-192.png',
+  '/icons/apps/taskmaster-192.png',
+  '/icons/apps/journal-192.png',
   '/philosophy/',
   '/philosophy/index.html',
   '/philosophy/politics/',
@@ -204,6 +212,8 @@ self.addEventListener('fetch', (event) => {
     '/taskmaster/': '/taskmaster/index.html',
     '/journal': '/journal/index.html',
     '/journal/': '/journal/index.html',
+    '/apps': '/apps/index.html',
+    '/apps/': '/apps/index.html',
     '/compass': '/compass/index.html',
     '/compass/': '/compass/index.html',
     '/religion': '/religion/index.html',
