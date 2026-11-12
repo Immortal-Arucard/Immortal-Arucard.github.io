@@ -8,6 +8,7 @@
       name: 'Home',
       children: [
         { href: '/login/', name: 'Log in', mark: 'login' },
+        { href: '/apps/', name: 'Downloadable Free Apps' },
         { href: '/donate/', name: 'Donate' },
         { href: '/memberships/', name: 'Memberships' }
       ]

@@ -22,6 +22,7 @@ body{
   min-height:100vh;
 }
 body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+body.apps{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
 .skip{
   position:absolute;left:12px;top:-40px;z-index:30;
   background:#000;color:var(--sky);padding:8px 12px;border-radius:8px;
@@ -73,7 +74,7 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 .site-nav a{
   color:var(--sky);text-decoration:none;min-height:44px;
   display:flex;align-items:center;padding:0 12px;border-radius:8px;
-  font-size:15px;letter-spacing:.04em;
+  font-size:15px;letter-spacing:.04em;white-space:normal;
 }
 .site-nav a:hover,.site-nav a[aria-current="page"]{color:#000;background:#4fc3ff;text-decoration:none}
 .expand{
@@ -185,6 +186,18 @@ body.sheet{display:flex;flex-direction:column;align-items:center;padding:0 0 40p
 .opt{display:flex;align-items:center;gap:10px;min-height:44px}
 .opt input{width:20px;height:20px;accent-color:var(--sky)}
 .opt input:disabled{cursor:not-allowed}
+.app-list{display:grid;gap:16px;margin:18px 0 0;padding:0;list-style:none}
+.app-card{border:1px solid var(--sky);border-radius:18px;padding:16px 16px 18px;background:#000}
+.app-head{display:flex;align-items:center;gap:12px}
+.app-head img{width:64px;height:64px;border-radius:14px;flex:none;object-fit:cover;background:#000}
+.app-id{min-width:0;flex:1}
+.app-id h2{margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(28px,7vw,36px);line-height:1.05;color:#fff}
+.price-free{display:inline-flex;align-items:center;justify-content:center;margin-top:8px;min-height:32px;padding:0 12px;border-radius:999px;background:#4fc3ff;color:#000;font-weight:700;letter-spacing:.12em;font-size:13px}
+.app-card .lead{margin:14px 0 0}
+.app-card .features{margin:12px 0 0;padding-left:1.15rem;color:#e8e8e8}
+.app-card .features li{margin:6px 0;line-height:1.45}
+.app-card .take{display:flex;width:100%;max-width:none;margin-top:16px}
+.install-hint{margin:8px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
 .site-footer{
   align-self:stretch;width:100%;margin-top:36px;padding:22px 16px 8px;
   color:#c8c8c8;font-size:12px;text-align:center;line-height:1.6;
